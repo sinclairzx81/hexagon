@@ -1,0 +1,1 @@
+tsc-bundle ./test/index.ts ./site/hexagon/hexagon.js -w --exportAs hexagon --removeComments
