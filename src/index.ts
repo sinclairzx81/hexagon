@@ -30,68 +30,37 @@ THE SOFTWARE.
 // mathematics
 //----------------------------------------------
 
-import { Box }        from "./math/box"
-import { Frustum }    from "./math/frustum"
-import { Matrix }     from "./math/matrix"
-import { Plane }      from "./math/plane"
-import { Quaternion } from "./math/quaternion"
-import { Radian }     from "./math/radian"
-import { Ray }        from "./math/ray"
-import { Single }     from "./math/single"
-import { Sphere }     from "./math/sphere"
-import { Triangle }   from "./math/triangle"
-import { Vector2 }    from "./math/vector2"
-import { Vector3 }    from "./math/vector3"
-import { Vector4 }    from "./math/vector4"
-import { VectorN }    from "./math/vectorN"
+export { Box }        from "./math/box"
+export { Frustum }    from "./math/frustum"
+export { Matrix }     from "./math/matrix"
+export { Plane }      from "./math/plane"
+export { Quaternion } from "./math/quaternion"
+export { Radian }     from "./math/radian"
+export { Ray }        from "./math/ray"
+export { Single }     from "./math/single"
+export { Sphere }     from "./math/sphere"
+export { Triangle }   from "./math/triangle"
+export { Vector2 }    from "./math/vector2"
+export { Vector3 }    from "./math/vector3"
+export { Vector4 }    from "./math/vector4"
+export { VectorN }    from "./math/vectorN"
 
 //----------------------------------------------
 // graphics
 //----------------------------------------------
 
-import { Attribute }                 from "./graphics/attribute"
-import { Camera, PerspectiveCamera, OrthoCamera } from "./graphics/camera"
-import { Geometry }                  from "./graphics/geometry"
-import { Light }                     from "./graphics/light"
-import { Material }                  from "./graphics/material"
-import { Mesh }                      from "./graphics/mesh"
-import { Object3D }                  from "./graphics/object"
-import { Renderer }                  from "./graphics/renderer"
-import { RenderTarget }              from "./graphics/rendertarget"
-import { Scene }                     from "./graphics/scene"
-import { Shader }                    from "./graphics/shader"
-import { Texture2D }                 from "./graphics/texture2D"
-import { TextureCube }               from "./graphics/textureCube"
-
-export {
-  // math
-  Box,
-  Frustum,
-  Matrix,
-  Plane,
-  Quaternion,
-  Radian,
-  Ray,
-  Single,
-  Sphere,
-  Triangle,
-  Vector2,
-  Vector3,
-  Vector4,
-  VectorN,
-
-  // graphics
-  Attribute,
-  Camera, PerspectiveCamera, OrthoCamera,
-  Geometry,
-  Light,
-  Material,
-  Mesh,
-  Object3D,
-  Renderer,
-  RenderTarget,
-  Scene,
-  Shader,
-  Texture2D,
-  TextureCube
-}
+export { Attribute }         from "./graphics/attribute"
+export { Camera }            from "./graphics/camera"
+export { PerspectiveCamera } from "./graphics/camera"
+export { OrthoCamera }       from "./graphics/camera"
+export { Geometry }          from "./graphics/geometry"
+export { Light }             from "./graphics/light"
+export { Material }          from "./graphics/material"
+export { Mesh }              from "./graphics/mesh"
+export { Object3D }          from "./graphics/object"
+export { Renderer }          from "./graphics/renderer"
+export { RenderTarget }      from "./graphics/rendertarget"
+export { Scene }             from "./graphics/scene"
+export { Shader }            from "./graphics/shader"
+export { Texture2D }         from "./graphics/texture2D"
+export { TextureCube }       from "./graphics/textureCube"

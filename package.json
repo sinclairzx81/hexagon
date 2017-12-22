@@ -1,0 +1,35 @@
+{
+  "name": "hexagon",
+  "version": "1.0.0",
+  "description": "webgl 2.0 graphics renderer written in typescript",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "scripts": {
+    "clean": "node tasks clean",
+    "build": "node tasks build",
+    "start": "node tasks start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sinclairzx81/hexagon.git"
+  },
+  "keywords": [
+    "webgl",
+    "typescript",
+    "graphics",
+    "rendering"
+  ],
+  "author": "sinclairzx81",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sinclairzx81/hexagon/issues"
+  },
+  "homepage": "https://github.com/sinclairzx81/hexagon#readme",
+  "devDependencies": {
+    "shx": "^0.2.2",
+    "typescript-bundle": "^0.8.8"
+  }
+}

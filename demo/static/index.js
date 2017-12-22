@@ -1,4 +1,4 @@
-var hexagon = (function () {
+(function () {
   var main = null;
   var modules = {
       "require": {
@@ -27,7 +27,13 @@ var hexagon = (function () {
                   if(modules[id] !== undefined) {
                     resolve(modules[id]);
                     return modules[id].exports;
-                  } else return require(id)
+                  } else {
+                    try {
+                      return require(id);
+                    } catch(e) {
+                      throw Error("module '" + id + "' not found.");
+                    }
+                  }
               })();
       });
       definition.factory.apply(null, dependencies);
@@ -3632,7 +3638,7 @@ var hexagon = (function () {
       }());
       exports.RenderTarget = RenderTarget;
   });
-  define("src/index", ["require", "exports", "src/math/box", "src/math/frustum", "src/math/matrix", "src/math/plane", "src/math/quaternion", "src/math/radian", "src/math/ray", "src/math/single", "src/math/sphere", "src/math/triangle", "src/math/vector2", "src/math/vector3", "src/math/vector4", "src/math/vectorN", "src/graphics/attribute", "src/graphics/camera", "src/graphics/geometry", "src/graphics/light", "src/graphics/material", "src/graphics/mesh", "src/graphics/object", "src/graphics/renderer", "src/graphics/rendertarget", "src/graphics/scene", "src/graphics/shader", "src/graphics/texture2D", "src/graphics/textureCube"], function (require, exports, box_2, frustum_2, matrix_6, plane_5, quaternion_2, radian_2, ray_4, single_4, sphere_2, triangle_2, vector2_2, vector3_10, vector4_3, vectorN_2, attribute_2, camera_1, geometry_1, light_1, material_1, mesh_1, object_4, renderer_1, rendertarget_1, scene_1, shader_1, texture2D_2, textureCube_1) {
+  define("src/index", ["require", "exports", "src/math/box", "src/math/frustum", "src/math/matrix", "src/math/plane", "src/math/quaternion", "src/math/radian", "src/math/ray", "src/math/single", "src/math/sphere", "src/math/triangle", "src/math/vector2", "src/math/vector3", "src/math/vector4", "src/math/vectorN", "src/graphics/attribute", "src/graphics/camera", "src/graphics/camera", "src/graphics/camera", "src/graphics/geometry", "src/graphics/light", "src/graphics/material", "src/graphics/mesh", "src/graphics/object", "src/graphics/renderer", "src/graphics/rendertarget", "src/graphics/scene", "src/graphics/shader", "src/graphics/texture2D", "src/graphics/textureCube"], function (require, exports, box_2, frustum_2, matrix_6, plane_5, quaternion_2, radian_2, ray_4, single_4, sphere_2, triangle_2, vector2_2, vector3_10, vector4_3, vectorN_2, attribute_2, camera_1, camera_2, camera_3, geometry_1, light_1, material_1, mesh_1, object_4, renderer_1, rendertarget_1, scene_1, shader_1, texture2D_2, textureCube_1) {
       "use strict";
       exports.__esModule = true;
       exports.Box = box_2.Box;
@@ -3651,8 +3657,8 @@ var hexagon = (function () {
       exports.VectorN = vectorN_2.VectorN;
       exports.Attribute = attribute_2.Attribute;
       exports.Camera = camera_1.Camera;
-      exports.PerspectiveCamera = camera_1.PerspectiveCamera;
-      exports.OrthoCamera = camera_1.OrthoCamera;
+      exports.PerspectiveCamera = camera_2.PerspectiveCamera;
+      exports.OrthoCamera = camera_3.OrthoCamera;
       exports.Geometry = geometry_1.Geometry;
       exports.Light = light_1.Light;
       exports.Material = material_1.Material;
@@ -3665,7 +3671,7 @@ var hexagon = (function () {
       exports.Texture2D = texture2D_2.Texture2D;
       exports.TextureCube = textureCube_1.TextureCube;
   });
-  define("test/meshes/hexagon", ["require", "exports", "src/index"], function (require, exports, hexagon) {
+  define("demo/meshes/hexagon", ["require", "exports", "src/index"], function (require, exports, hexagon) {
       "use strict";
       exports.__esModule = true;
       function toRadian(angle) {
@@ -3774,38 +3780,36 @@ var hexagon = (function () {
       }
       exports.createHexagonMesh = createHexagonMesh;
   });
-  define("test/index", ["require", "exports", "src/index", "test/meshes/hexagon"], function (require, exports, hexagon, hexagon_1) {
+  define("demo/index", ["require", "exports", "src/index", "demo/meshes/hexagon"], function (require, exports, hexagon, hexagon_1) {
       "use strict";
       exports.__esModule = true;
-      window.addEventListener("load", function () {
-          var renderer = new hexagon.Renderer(document.querySelector("#canvas"));
-          var camera = new hexagon.PerspectiveCamera(45, 800 / 480, 0.1, 4000);
-          var scene = new hexagon.Scene();
-          var mesh = hexagon_1.createHexagonMesh();
-          var light = new hexagon.Light();
-          light.position = new hexagon.Vector3(0, 20, 0);
-          light.intensity = new hexagon.Single(1.4);
-          light.attenuation = new hexagon.Single(0.0001);
-          scene.objects.push(mesh);
-          scene.lights.push(light);
-          var t = 0.1;
-          (function loop() {
-              requestAnimationFrame(function () {
-                  var array = mesh.instances["instance_height"].array;
-                  for (var i = 0; i < array.length; i++) {
-                      array[i] = (Math.cos((i * 0.16) + (t * 0.1)) * 1) + 3;
-                  }
-                  mesh.needsupdate = true;
-                  mesh.matrix = mesh.matrix.rotateY(0.0025);
-                  camera.lookAt(new hexagon.Vector3((t * 0.14) % 30, 10, (t * 0.04) % 30), new hexagon.Vector3(0, 0, 0), new hexagon.Vector3(-0.5, 1, 0));
-                  renderer.render(camera, scene);
-                  renderer.clear(0.11, 0.11, 0.11, 1);
-                  renderer.render(camera, scene);
-                  t += 1.0;
-                  loop();
-              });
-          })();
-      });
+      var renderer = new hexagon.Renderer(document.querySelector("#canvas"));
+      var camera = new hexagon.PerspectiveCamera(45, 800 / 480, 0.1, 4000);
+      var scene = new hexagon.Scene();
+      var mesh = hexagon_1.createHexagonMesh();
+      var light = new hexagon.Light();
+      light.position = new hexagon.Vector3(0, 20, 0);
+      light.intensity = new hexagon.Single(1.4);
+      light.attenuation = new hexagon.Single(0.0001);
+      scene.objects.push(mesh);
+      scene.lights.push(light);
+      var t = 0.1;
+      (function loop() {
+          requestAnimationFrame(function () {
+              var array = mesh.instances["instance_height"].array;
+              for (var i = 0; i < array.length; i++) {
+                  array[i] = (Math.cos((i * 0.16) + (t * 0.1)) * 1) + 3;
+              }
+              mesh.needsupdate = true;
+              mesh.matrix = mesh.matrix.rotateY(0.0025);
+              camera.lookAt(new hexagon.Vector3((t * 0.14) % 30, 10, (t * 0.04) % 30), new hexagon.Vector3(0, 0, 0), new hexagon.Vector3(-0.5, 1, 0));
+              renderer.render(camera, scene);
+              renderer.clear(0.11, 0.11, 0.11, 1);
+              renderer.render(camera, scene);
+              t += 1.0;
+              loop();
+          });
+      })();
   });
   
   return collect(); 
