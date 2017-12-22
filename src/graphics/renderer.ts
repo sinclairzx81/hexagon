@@ -26,25 +26,22 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {Matrix}                from "../math/matrix"
-import {Single}                from "../math/single"
-import {Vector2}               from "../math/vector2"
-import {Vector3}               from "../math/vector3"
-import {Vector4}               from "../math/vector4"
-import {Plane}                 from "../math/plane"
-import {Quaternion}            from "../math/quaternion"
-import {TypeName, TypeInfo}    from "./typeinfo"
-import {Extensions}            from "./extensions"
-import {Shader}                from "./shader"
-import {Camera}                from "./camera"
-import {Scene}                 from "./scene"
-import {Light}                 from "./light"
-import {Mesh}                  from "./mesh"
-import {Object3D}              from "./object"
-import {Texture2D}             from "./texture2D"
-import {TextureCube}           from "./textureCube"
-
-
+import { Matrix }                from "../math/matrix"
+import { Single }                from "../math/single"
+import { Vector2 }               from "../math/vector2"
+import { Vector3 }               from "../math/vector3"
+import { Vector4 }               from "../math/vector4"
+import { Plane }                 from "../math/plane"
+import { Quaternion }            from "../math/quaternion"
+import { TypeName, TypeInfo }    from "./typeinfo"
+import { Shader }                from "./shader"
+import { Camera }                from "./camera"
+import { Scene }                 from "./scene"
+import { Light }                 from "./light"
+import { Mesh }                  from "./mesh"
+import { Object3D }              from "./object"
+import { Texture2D }             from "./texture2D"
+import { TextureCube }           from "./textureCube"
 
 /**
  * Renderer:
@@ -52,8 +49,7 @@ import {TextureCube}           from "./textureCube"
  * WebGL 1.0 based scene graph renderer.
  */
 export class Renderer implements TypeInfo {
-  private context    : WebGLRenderingContext
-  private extensions : Extensions
+  private context    : WebGL2RenderingContext
   private lights     : Array<Light>
 
   /**
@@ -62,8 +58,7 @@ export class Renderer implements TypeInfo {
    * @returns {Device}
    */
   constructor(public canvas: HTMLCanvasElement) {
-    this.context    = (this.canvas.getContext("webgl") || this.canvas.getContext("experimental-webgl")) as WebGLRenderingContext
-    this.extensions = new Extensions(this.context)
+    this.context    = this.canvas.getContext("webgl2")
     this.lights     = new Array<Light>()
   }
 
@@ -183,7 +178,6 @@ export class Renderer implements TypeInfo {
 
     // bind instances.
     if(Object.keys(mesh.instances).length > 0) {
-      let ext  = this.extensions.get("ANGLE_instanced_arrays")
       Object.keys(mesh.instances).forEach(key => {
         let instance = mesh.instances[key]
         let location = this.context.getAttribLocation(mesh.material.shader.program, key)
@@ -196,7 +190,7 @@ export class Renderer implements TypeInfo {
           this.context.FLOAT, 
           false,
           0, 0)
-        ext.vertexAttribDivisorANGLE(location, 1)
+        this.context.vertexAttribDivisor(location, 1)
       })
     }
 
@@ -229,7 +223,6 @@ export class Renderer implements TypeInfo {
             : this.context.UNSIGNED_SHORT;
         this.context.drawElements (mode, count, type, offset)
       } else {
-        let ext    = this.extensions.get("ANGLE_instanced_arrays")
         let mode   = this.context.LINES
         let length = mesh.geometry.indices_wireframe.array.length
         let offset = 0
@@ -237,7 +230,7 @@ export class Renderer implements TypeInfo {
         let type   = (mesh.geometry.indices_wireframe.array instanceof Uint8Array) 
             ? this.context.UNSIGNED_BYTE
             : this.context.UNSIGNED_SHORT
-        ext.drawElementsInstancedANGLE (mode, length, type, offset, iterations)
+        this.context.drawElementsInstanced(mode, length, type, offset, iterations)
       }
     }
     // standard path.
@@ -254,7 +247,6 @@ export class Renderer implements TypeInfo {
           : this.context.UNSIGNED_SHORT
         this.context.drawElements (mode, count, type, offset)
       } else {
-        let ext        = this.extensions.get("ANGLE_instanced_arrays")
         let mode       = this.context.TRIANGLES
         let count      = mesh.geometry.indices.array.length
         let offset     = 0
@@ -262,7 +254,7 @@ export class Renderer implements TypeInfo {
         let type   = (mesh.geometry.indices.array instanceof Uint8Array) 
           ? this.context.UNSIGNED_BYTE
           : this.context.UNSIGNED_SHORT
-        ext.drawElementsInstancedANGLE(mode, count, type, offset, iterations)
+        this.context.drawElementsInstanced(mode, count, type, offset, iterations)
       }
     }
     // next

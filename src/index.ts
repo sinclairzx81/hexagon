@@ -26,10 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-//----------------------------------------------
-// mathematics
-//----------------------------------------------
+/// <reference path="./typings/index.d.ts" />
 
+// mathematics
 export { Box }        from "./math/box"
 export { Frustum }    from "./math/frustum"
 export { Matrix }     from "./math/matrix"
@@ -45,10 +44,7 @@ export { Vector3 }    from "./math/vector3"
 export { Vector4 }    from "./math/vector4"
 export { VectorN }    from "./math/vectorN"
 
-//----------------------------------------------
 // graphics
-//----------------------------------------------
-
 export { Attribute }         from "./graphics/attribute"
 export { Camera }            from "./graphics/camera"
 export { PerspectiveCamera } from "./graphics/camera"

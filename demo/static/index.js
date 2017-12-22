@@ -3380,33 +3380,6 @@
       }(object_2.Object3D));
       exports.Mesh = Mesh;
   });
-  define("src/graphics/extensions", ["require", "exports"], function (require, exports) {
-      "use strict";
-      exports.__esModule = true;
-      var Extensions = (function () {
-          function Extensions(context) {
-              this.context = context;
-              this.cache = {};
-          }
-          Extensions.prototype.get = function () {
-              var args = [];
-              for (var _i = 0; _i < arguments.length; _i++) {
-                  args[_i] = arguments[_i];
-              }
-              var extension = args[0];
-              if (this.cache[extension] !== undefined) {
-                  return this.cache[extension];
-              }
-              var ext = this.context.getExtension(extension);
-              if (ext !== undefined) {
-                  this.cache[extension] = ext;
-              }
-              return ext;
-          };
-          return Extensions;
-      }());
-      exports.Extensions = Extensions;
-  });
   define("src/graphics/scene", ["require", "exports", "src/graphics/object"], function (require, exports, object_3) {
       "use strict";
       exports.__esModule = true;
@@ -3424,14 +3397,13 @@
       }(object_3.Object3D));
       exports.Scene = Scene;
   });
-  define("src/graphics/renderer", ["require", "exports", "src/math/matrix", "src/graphics/extensions"], function (require, exports, matrix_5, extensions_1) {
+  define("src/graphics/renderer", ["require", "exports", "src/math/matrix"], function (require, exports, matrix_5) {
       "use strict";
       exports.__esModule = true;
       var Renderer = (function () {
           function Renderer(canvas) {
               this.canvas = canvas;
-              this.context = (this.canvas.getContext("webgl") || this.canvas.getContext("experimental-webgl"));
-              this.extensions = new extensions_1.Extensions(this.context);
+              this.context = this.canvas.getContext("webgl2");
               this.lights = new Array();
           }
           Renderer.prototype.typeinfo = function () {
@@ -3517,7 +3489,6 @@
                   }
               });
               if (Object.keys(mesh.instances).length > 0) {
-                  var ext_1 = this.extensions.get("ANGLE_instanced_arrays");
                   Object.keys(mesh.instances).forEach(function (key) {
                       var instance = mesh.instances[key];
                       var location = _this.context.getAttribLocation(mesh.material.shader.program, key);
@@ -3526,7 +3497,7 @@
                       _this.context.bindBuffer(_this.context.ARRAY_BUFFER, instance.buffer);
                       _this.context.enableVertexAttribArray(location);
                       _this.context.vertexAttribPointer(location, instance.size, _this.context.FLOAT, false, 0, 0);
-                      ext_1.vertexAttribDivisorANGLE(location, 1);
+                      _this.context.vertexAttribDivisor(location, 1);
                   });
               }
               Object.keys(mesh.geometry.attributes).forEach(function (key) {
@@ -3552,7 +3523,6 @@
                       this.context.drawElements(mode, count, type, offset);
                   }
                   else {
-                      var ext = this.extensions.get("ANGLE_instanced_arrays");
                       var mode = this.context.LINES;
                       var length_1 = mesh.geometry.indices_wireframe.array.length;
                       var offset = 0;
@@ -3560,7 +3530,7 @@
                       var type = (mesh.geometry.indices_wireframe.array instanceof Uint8Array)
                           ? this.context.UNSIGNED_BYTE
                           : this.context.UNSIGNED_SHORT;
-                      ext.drawElementsInstancedANGLE(mode, length_1, type, offset, iterations);
+                      this.context.drawElementsInstanced(mode, length_1, type, offset, iterations);
                   }
               }
               else {
@@ -3577,7 +3547,6 @@
                       this.context.drawElements(mode, count, type, offset);
                   }
                   else {
-                      var ext = this.extensions.get("ANGLE_instanced_arrays");
                       var mode = this.context.TRIANGLES;
                       var count = mesh.geometry.indices.array.length;
                       var offset = 0;
@@ -3585,7 +3554,7 @@
                       var type = (mesh.geometry.indices.array instanceof Uint8Array)
                           ? this.context.UNSIGNED_BYTE
                           : this.context.UNSIGNED_SHORT;
-                      ext.drawElementsInstancedANGLE(mode, count, type, offset, iterations);
+                      this.context.drawElementsInstanced(mode, count, type, offset, iterations);
                   }
               }
               this.renderObjects(camera, transform, mesh.objects);

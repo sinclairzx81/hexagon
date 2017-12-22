@@ -30,6 +30,7 @@
   "homepage": "https://github.com/sinclairzx81/hexagon#readme",
   "devDependencies": {
     "shx": "^0.2.2",
+    "typescript": "^2.6.2",
     "typescript-bundle": "^0.8.8"
   }
 }

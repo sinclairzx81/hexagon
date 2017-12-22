@@ -1,0 +1,1 @@
+/// <reference path="./webgl2/index.d.ts" />
