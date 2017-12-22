@@ -26,33 +26,16 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-
-import {Attribute}                              from "./attribute"
-import {Camera, PerspectiveCamera, OrthoCamera} from "./camera"
-import {Geometry}                               from "./geometry"
-import {Light}                                  from "./light"
-import {Material}                               from "./material"
-import {Mesh}                                   from "./mesh"
-import {Object3D}                               from "./object"
-import {Renderer}                               from "./renderer"
-import {RenderTarget}                           from "./rendertarget"
-import {Scene}                                  from "./scene"
-import {Shader}                                 from "./shader"
-import {Texture2D}                              from "./texture2D"
-import {TextureCube}                            from "./textureCube"
-
-export {
-  Attribute,
-  Camera, PerspectiveCamera, OrthoCamera,
-  Geometry,
-  Light,
-  Material,
-  Mesh,
-  Object3D,
-  Renderer,
-  RenderTarget,
-  Scene,
-  Shader,
-  Texture2D,
-  TextureCube
-}
+export { Attribute }                              from "./attribute"
+export { Camera, PerspectiveCamera, OrthoCamera } from "./camera"
+export { Geometry }                               from "./geometry"
+export { Light }                                  from "./light"
+export { Material }                               from "./material"
+export { Mesh }                                   from "./mesh"
+export { Object3D }                               from "./object"
+export { Renderer }                               from "./renderer"
+export { RenderTarget }                           from "./render-target"
+export { Scene }                                  from "./scene"
+export { Shader }                                 from "./shader"
+export { Texture2D }                              from "./texture2D"
+export { TextureCube }                            from "./textureCube"

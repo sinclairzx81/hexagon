@@ -55,15 +55,31 @@
           d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
       };
   })();
+  define("src/math/radian", ["require", "exports"], function (require, exports) {
+      "use strict";
+      exports.__esModule = true;
+      var Radian = (function () {
+          function Radian() {
+          }
+          Radian.toAngle = function (radian) {
+              return (radian * 57.29578);
+          };
+          Radian.toRadian = function (angle) {
+              return (angle * 0.01745329);
+          };
+          return Radian;
+      }());
+      exports.Radian = Radian;
+  });
   define("src/math/typeinfo", ["require", "exports"], function (require, exports) {
       "use strict";
       exports.__esModule = true;
   });
-  define("src/math/vector4", ["require", "exports"], function (require, exports) {
+  define("src/math/vector3", ["require", "exports"], function (require, exports) {
       "use strict";
       exports.__esModule = true;
       var f32 = { max: 2147483647, min: -2147483647 };
-      var v4i = { x: 0, y: 1, z: 2, w: 3 };
+      var v3i = { x: 0, y: 1, z: 2 };
       var qi = { x: 0, y: 1, z: 2, w: 3 };
       var mi = {
           m11: 0, m12: 1, m13: 2, m14: 3,
@@ -71,216 +87,221 @@
           m31: 8, m32: 9, m33: 10, m34: 11,
           m41: 12, m42: 13, m43: 14, m44: 15
       };
-      var Vector4 = (function () {
-          function Vector4(x, y, z, w) {
-              this.v = new Float32Array(4);
-              this.v[v4i.x] = x === undefined ? 0.0 : x;
-              this.v[v4i.y] = y === undefined ? 0.0 : y;
-              this.v[v4i.z] = z === undefined ? 0.0 : z;
-              this.v[v4i.w] = w === undefined ? 0.0 : w;
+      var Vector3 = (function () {
+          function Vector3(x, y, z) {
+              this.v = new Float32Array(3);
+              this.v[v3i.x] = x === undefined ? 0.0 : x;
+              this.v[v3i.y] = y === undefined ? 0.0 : y;
+              this.v[v3i.z] = z === undefined ? 0.0 : z;
           }
-          Vector4.prototype.toString = function () {
-              return "[" + this.v[v4i.x] + ", " + this.v[v4i.y] + ", " + this.v[v4i.z] + ", " + this.v[v4i.w] + "]";
+          Vector3.prototype.toString = function () {
+              return "[" + this.v[v3i.x] + ", " + this.v[v3i.y] + ", " + this.v[v3i.z] + "]";
           };
-          Vector4.prototype.typeinfo = function () {
-              return "Vector4";
+          Vector3.prototype.typeinfo = function () {
+              return "Vector3";
           };
-          Vector4.prototype.clone = function () {
-              return Vector4.clone(this);
+          Vector3.prototype.clone = function () {
+              return Vector3.clone(this);
           };
-          Vector4.prototype.x = function (value) {
+          Vector3.prototype.x = function (value) {
               if (value !== undefined) {
-                  this.v[v4i.x] = value;
+                  this.v[v3i.x] = value;
               }
-              return this.v[v4i.x];
+              return this.v[v3i.x];
           };
-          Vector4.prototype.y = function (value) {
+          Vector3.prototype.y = function (value) {
               if (value !== undefined) {
-                  this.v[v4i.y] = value;
+                  this.v[v3i.y] = value;
               }
-              return this.v[v4i.y];
+              return this.v[v3i.y];
           };
-          Vector4.prototype.z = function (value) {
+          Vector3.prototype.z = function (value) {
               if (value !== undefined) {
-                  this.v[v4i.z] = value;
+                  this.v[v3i.z] = value;
               }
-              return this.v[v4i.z];
+              return this.v[v3i.z];
           };
-          Vector4.prototype.w = function (value) {
-              if (value !== undefined) {
-                  this.v[v4i.w] = value;
-              }
-              return this.v[v4i.w];
+          Vector3.prototype.length = function () {
+              return Vector3.getLength(this);
           };
-          Vector4.prototype.length = function () {
-              return Vector4.getLength(this);
+          Vector3.prototype.lengthSq = function () {
+              return Vector3.getLengthSq(this);
           };
-          Vector4.prototype.lengthSq = function () {
-              return Vector4.getLengthSq(this);
+          Vector3.prototype.normalize = function () {
+              return Vector3.normalize(this);
           };
-          Vector4.prototype.normalize = function () {
-              return Vector4.normalize(this);
+          Vector3.prototype.dot = function (v0) {
+              return Vector3.dot(this, v0);
           };
-          Vector4.prototype.dot = function (v0) {
-              return Vector4.dot(this, v0);
+          Vector3.prototype.cross = function (v0) {
+              return Vector3.cross(this, v0);
           };
-          Vector4.prototype.add = function (v0) {
-              return Vector4.add(this, v0);
+          Vector3.prototype.add = function (v0) {
+              return Vector3.add(this, v0);
           };
-          Vector4.prototype.sub = function (v0) {
-              return Vector4.sub(this, v0);
+          Vector3.prototype.sub = function (v0) {
+              return Vector3.sub(this, v0);
           };
-          Vector4.prototype.mul = function (v0) {
-              return Vector4.mul(this, v0);
+          Vector3.prototype.mul = function (v0) {
+              return Vector3.mul(this, v0);
           };
-          Vector4.prototype.div = function (v0) {
-              return Vector4.div(this, v0);
+          Vector3.prototype.div = function (v0) {
+              return Vector3.div(this, v0);
           };
-          Vector4.prototype.scale = function (s0) {
-              return Vector4.scale(this, s0);
+          Vector3.prototype.scale = function (s0) {
+              return Vector3.scale(this, s0);
           };
-          Vector4.prototype.negate = function () {
-              return Vector4.negate(this);
+          Vector3.prototype.negate = function () {
+              return Vector3.negate(this);
           };
-          Vector4.zero = function () {
-              return new Vector4(0.0, 0.0, 0.0, 0.0);
+          Vector3.zero = function () {
+              return new Vector3(0.0, 0.0, 0.0);
           };
-          Vector4.one = function () {
-              return new Vector4(1.0, 1.0, 1.0, 1.0);
+          Vector3.one = function () {
+              return new Vector3(1.0, 1.0, 1.0);
           };
-          Vector4.left = function () {
-              return new Vector4(-1.0, 0.0, 0.0);
+          Vector3.unitX = function () {
+              return new Vector3(1.0, 0.0, 0.0);
           };
-          Vector4.unitX = function () {
-              return new Vector4(1.0, 0.0, 0.0, 0.0);
+          Vector3.unitY = function () {
+              return new Vector3(0.0, 1.0, 0.0);
           };
-          Vector4.unitY = function () {
-              return new Vector4(0.0, 1.0, 0.0, 0.0);
+          Vector3.unitZ = function () {
+              return new Vector3(0.0, 0.0, 1.0);
           };
-          Vector4.unitZ = function () {
-              return new Vector4(0.0, 0.0, 1.0, 0.0);
+          Vector3.left = function () {
+              return new Vector3(-1.0, 0.0, 0.0);
           };
-          Vector4.unitW = function () {
-              return new Vector4(0.0, 0.0, 0.0, 1.0);
+          Vector3.right = function () {
+              return new Vector3(1.0, 0.0, 0.0);
           };
-          Vector4.equals = function (v0, v1) {
-              return (v0.v[v4i.x] === v1.v[v4i.x] &&
-                  v0.v[v4i.y] === v1.v[v4i.y] &&
-                  v0.v[v4i.z] === v1.v[v4i.z] &&
-                  v0.v[v4i.w] === v1.v[v4i.w]);
+          Vector3.up = function () {
+              return new Vector3(0.0, 1.0, 0.0);
           };
-          Vector4.getLength = function (v0) {
-              return Math.sqrt((v0.v[v4i.x] * v0.v[v4i.x]) +
-                  (v0.v[v4i.y] * v0.v[v4i.y]) +
-                  (v0.v[v4i.z] * v0.v[v4i.z]) +
-                  (v0.v[v4i.w] * v0.v[v4i.w]));
+          Vector3.down = function () {
+              return new Vector3(0.0, -1.0, 0.0);
           };
-          Vector4.getLengthSq = function (v0) {
-              return ((v0.v[v4i.x] * v0.v[v4i.x]) +
-                  (v0.v[v4i.y] * v0.v[v4i.y]) +
-                  (v0.v[v4i.z] * v0.v[v4i.z]) +
-                  (v0.v[v4i.w] * v0.v[v4i.w]));
+          Vector3.forward = function () {
+              return new Vector3(0.0, 0.0, 1.0);
           };
-          Vector4.distance = function (v0, v1) {
-              var x = v0.v[v4i.x] - v1.v[v4i.x];
-              var y = v0.v[v4i.y] - v1.v[v4i.y];
-              var z = v0.v[v4i.z] - v1.v[v4i.z];
-              var w = v0.v[v4i.w] - v1.v[v4i.w];
-              return Math.sqrt((x * x) + (y * y) + (z * z) + (w * w));
+          Vector3.backward = function () {
+              return new Vector3(0.0, 0.0, -1.0);
           };
-          Vector4.distanceSq = function (v0, v1) {
-              var x = v0.v[v4i.x] - v1.v[v4i.x];
-              var y = v0.v[v4i.y] - v1.v[v4i.y];
-              var z = v0.v[v4i.z] - v1.v[v4i.z];
-              var w = v0.v[v4i.w] - v1.v[v4i.w];
-              return ((x * x) + (y * y) + (z * z) + (w * w));
+          Vector3.equals = function (v0, v1) {
+              return (v0.v[v3i.x] === v1.v[v3i.x] &&
+                  v0.v[v3i.y] === v1.v[v3i.y] &&
+                  v0.v[v3i.z] === v1.v[v3i.z]);
           };
-          Vector4.dot = function (v0, v1) {
-              return ((v0.v[v4i.x] * v1.v[v4i.x]) +
-                  (v0.v[v4i.y] * v1.v[v4i.y]) +
-                  (v0.v[v4i.z] * v1.v[v4i.z]) +
-                  (v0.v[v4i.w] * v1.v[v4i.w]));
+          Vector3.getLength = function (v0) {
+              return Math.sqrt((v0.v[v3i.x] * v0.v[v3i.x]) +
+                  (v0.v[v3i.y] * v0.v[v3i.y]) +
+                  (v0.v[v3i.z] * v0.v[v3i.z]));
           };
-          Vector4.normalize = function (v0) {
-              var len = 1.0 / Math.sqrt((v0.v[v4i.x] * v0.v[v4i.x]) +
-                  (v0.v[v4i.y] * v0.v[v4i.y]) +
-                  (v0.v[v4i.z] * v0.v[v4i.z]) +
-                  (v0.v[v4i.w] * v0.v[v4i.w]));
-              return new Vector4(v0.v[v4i.x] * len, v0.v[v4i.y] * len, v0.v[v4i.z] * len, v0.v[v4i.w] * len);
+          Vector3.getLengthSq = function (v0) {
+              return ((v0.v[v3i.x] * v0.v[v3i.x]) +
+                  (v0.v[v3i.y] * v0.v[v3i.y]) +
+                  (v0.v[v3i.z] * v0.v[v3i.z]));
           };
-          Vector4.abs = function (v0) {
-              return new Vector4(Math.abs(v0.v[v4i.x]), Math.abs(v0.v[v4i.y]), Math.abs(v0.v[v4i.z]), Math.abs(v0.v[v4i.w]));
+          Vector3.distance = function (v0, v1) {
+              var x = v0.v[v3i.x] - v1.v[v3i.x];
+              var y = v0.v[v3i.y] - v1.v[v3i.y];
+              var z = v0.v[v3i.z] - v1.v[v3i.z];
+              return Math.sqrt((x * x) + (y * y) + (z * z));
           };
-          Vector4.min = function (v0, v1) {
-              return new Vector4((v0.v[v4i.x] < v1.v[v4i.x]) ? v0.v[v4i.x] : v1.v[v4i.x], (v0.v[v4i.y] < v1.v[v4i.y]) ? v0.v[v4i.y] : v1.v[v4i.y], (v0.v[v4i.z] < v1.v[v4i.z]) ? v0.v[v4i.z] : v1.v[v4i.z], (v0.v[v4i.w] < v1.v[v4i.w]) ? v0.v[v4i.w] : v1.v[v4i.w]);
+          Vector3.distanceSq = function (v0, v1) {
+              var x = v0.v[v3i.x] - v1.v[v3i.x];
+              var y = v0.v[v3i.y] - v1.v[v3i.y];
+              var z = v0.v[v3i.z] - v1.v[v3i.z];
+              return ((x * x) + (y * y) + (z * z));
           };
-          Vector4.max = function (v0, v1) {
-              return new Vector4((v0.v[v4i.x] > v1.v[v4i.x]) ? v0.v[v4i.x] : v1.v[v4i.x], (v0.v[v4i.y] > v1.v[v4i.y]) ? v0.v[v4i.y] : v1.v[v4i.y], (v0.v[v4i.z] > v1.v[v4i.z]) ? v0.v[v4i.z] : v1.v[v4i.z], (v0.v[v4i.w] > v1.v[v4i.w]) ? v0.v[v4i.w] : v1.v[v4i.w]);
+          Vector3.dot = function (v0, v1) {
+              return ((v0.v[v3i.x] * v1.v[v3i.x]) +
+                  (v0.v[v3i.y] * v1.v[v3i.y]) +
+                  (v0.v[v3i.z] * v1.v[v3i.z]));
           };
-          Vector4.clamp = function (v0, min, max) {
-              var x = v0.v[v4i.x];
-              var y = v0.v[v4i.y];
-              var z = v0.v[v4i.z];
-              var w = v0.v[v4i.w];
-              x = (x > max.v[v4i.x]) ? max.v[v4i.x] : x;
-              x = (x < min.v[v4i.x]) ? min.v[v4i.x] : x;
-              y = (y > max.v[v4i.y]) ? max.v[v4i.y] : y;
-              y = (y < min.v[v4i.y]) ? min.v[v4i.y] : y;
-              z = (z > max.v[v4i.z]) ? max.v[v4i.z] : z;
-              z = (z < min.v[v4i.z]) ? min.v[v4i.z] : z;
-              w = (w > max.v[v4i.w]) ? max.v[v4i.w] : w;
-              w = (w < min.v[v4i.w]) ? min.v[v4i.w] : w;
-              return new Vector4(x, y, z, w);
+          Vector3.normalize = function (v0) {
+              var len = 1.0 / Math.sqrt((v0.v[v3i.x] * v0.v[v3i.x]) +
+                  (v0.v[v3i.y] * v0.v[v3i.y]) +
+                  (v0.v[v3i.z] * v0.v[v3i.z]));
+              return new Vector3(v0.v[v3i.x] * len, v0.v[v3i.y] * len, v0.v[v3i.z] * len);
           };
-          Vector4.lerp = function (v0, v1, amount) {
-              return new Vector4(v0.v[v4i.x] + ((v1.v[v4i.x] - v0.v[v4i.x]) * amount), v0.v[v4i.y] + ((v1.v[v4i.y] - v0.v[v4i.y]) * amount), v0.v[v4i.z] + ((v1.v[v4i.z] - v0.v[v4i.z]) * amount), v0.v[v4i.w] + ((v1.v[v4i.w] - v0.v[v4i.w]) * amount));
+          Vector3.cross = function (v0, v1) {
+              return new Vector3((v0.v[v3i.y] * v1.v[v3i.z]) - (v0.v[v3i.z] * v1.v[v3i.y]), (v0.v[v3i.z] * v1.v[v3i.x]) - (v0.v[v3i.x] * v1.v[v3i.z]), (v0.v[v3i.x] * v1.v[v3i.y]) - (v0.v[v3i.y] * v1.v[v3i.x]));
           };
-          Vector4.barycentric = function (v0, v1, v2, amount0, amount1) {
-              return new Vector4((v0.v[v4i.x] + (amount0 * (v1.v[v4i.x] - v0.v[v4i.x]))) + (amount1 * (v2.v[v4i.x] - v0.v[v4i.x])), (v0.v[v4i.y] + (amount0 * (v1.v[v4i.y] - v0.v[v4i.y]))) + (amount1 * (v2.v[v4i.y] - v0.v[v4i.y])), (v0.v[v4i.z] + (amount0 * (v1.v[v4i.z] - v0.v[v4i.z]))) + (amount1 * (v2.v[v4i.z] - v0.v[v4i.z])), (v0.v[v4i.w] + (amount0 * (v1.v[v4i.w] - v0.v[v4i.w]))) + (amount1 * (v2.v[v4i.w] - v0.v[v4i.w])));
+          Vector3.reflect = function (v0, n0) {
+              var dot = ((v0.v[v3i.x] * n0.v[v3i.x]) +
+                  (v0.v[v3i.y] * n0.v[v3i.y]) +
+                  (v0.v[v3i.z] * n0.v[v3i.z]));
+              return new Vector3(v0.v[v3i.x] - ((2.0 * dot) * n0.v[v3i.x]), v0.v[v3i.y] - ((2.0 * dot) * n0.v[v3i.y]), v0.v[v3i.z] - ((2.0 * dot) * n0.v[v3i.z]));
           };
-          Vector4.smoothstep = function (v0, v1, amount) {
+          Vector3.abs = function (v0) {
+              return new Vector3(Math.abs(v0.v[v3i.x]), Math.abs(v0.v[v3i.y]), Math.abs(v0.v[v3i.z]));
+          };
+          Vector3.min = function (v0, v1) {
+              return new Vector3((v0.v[v3i.x] < v1.v[v3i.x]) ? v0.v[v3i.x] : v1.v[v3i.x], (v0.v[v3i.y] < v1.v[v3i.y]) ? v0.v[v3i.y] : v1.v[v3i.y], (v0.v[v3i.z] < v1.v[v3i.z]) ? v0.v[v3i.z] : v1.v[v3i.z]);
+          };
+          Vector3.max = function (v0, v1) {
+              return new Vector3((v0.v[v3i.x] > v1.v[v3i.x]) ? v0.v[v3i.x] : v1.v[v3i.x], (v0.v[v3i.y] > v1.v[v3i.y]) ? v0.v[v3i.y] : v1.v[v3i.y], (v0.v[v3i.z] > v1.v[v3i.z]) ? v0.v[v3i.z] : v1.v[v3i.z]);
+          };
+          Vector3.clamp = function (v0, min, max) {
+              var x = v0.v[v3i.x];
+              var y = v0.v[v3i.y];
+              var z = v0.v[v3i.z];
+              x = (x > max.v[v3i.x]) ? max.v[v3i.x] : x;
+              x = (x < min.v[v3i.x]) ? min.v[v3i.x] : x;
+              y = (y > max.v[v3i.y]) ? max.v[v3i.y] : y;
+              y = (y < min.v[v3i.y]) ? min.v[v3i.y] : y;
+              z = (z > max.v[v3i.z]) ? max.v[v3i.z] : z;
+              z = (z < min.v[v3i.z]) ? min.v[v3i.z] : z;
+              return new Vector3(x, y, z);
+          };
+          Vector3.lerp = function (v0, v1, amount) {
+              return new Vector3(v0.v[v3i.x] + ((v1.v[v3i.x] - v0.v[v3i.x]) * amount), v0.v[v3i.y] + ((v1.v[v3i.y] - v0.v[v3i.y]) * amount), v0.v[v3i.z] + ((v1.v[v3i.z] - v0.v[v3i.z]) * amount));
+          };
+          Vector3.barycentric = function (v0, v1, v2, amount0, amount1) {
+              return new Vector3((v0.v[v3i.x] + (amount0 * (v1.v[v3i.x] - v0.v[v3i.x]))) + (amount1 * (v2.v[v3i.x] - v0.v[v3i.x])), (v0.v[v3i.y] + (amount0 * (v1.v[v3i.y] - v0.v[v3i.y]))) + (amount1 * (v2.v[v3i.y] - v0.v[v3i.y])), (v0.v[v3i.z] + (amount0 * (v1.v[v3i.z] - v0.v[v3i.z]))) + (amount1 * (v2.v[v3i.z] - v0.v[v3i.z])));
+          };
+          Vector3.smoothstep = function (v0, v1, amount) {
               amount = (amount > 1.0) ? 1.0 : ((amount < 0.0) ? 0.0 : amount);
               amount = (amount * amount) * (3.0 - (2.0 * amount));
-              return new Vector4(v0.v[v4i.x] + ((v1.v[v4i.x] - v0.v[v4i.x]) * amount), v0.v[v4i.y] + ((v1.v[v4i.y] - v0.v[v4i.y]) * amount), v0.v[v4i.z] + ((v1.v[v4i.z] - v0.v[v4i.z]) * amount), v0.v[v4i.w] + ((v1.v[v4i.w] - v0.v[v4i.w]) * amount));
+              return new Vector3(v0.v[v3i.x] + ((v1.v[v3i.x] - v0.v[v3i.x]) * amount), v0.v[v3i.y] + ((v1.v[v3i.y] - v0.v[v3i.y]) * amount), v0.v[v3i.z] + ((v1.v[v3i.z] - v0.v[v3i.z]) * amount));
           };
-          Vector4.catmullrom = function (v0, v1, v2, v3, amount) {
+          Vector3.catmullrom = function (v0, v1, v2, v3, amount) {
               var n0 = amount * amount;
               var n1 = amount * n0;
-              return new Vector4(0.5 * ((((2.0 * v1.v[v4i.x])
-                  + ((-v0.v[v4i.x] + v2.v[v4i.x]) * amount))
-                  + (((((2.0 * v0.v[v4i.x]) - (5.0 * v1.v[v4i.x]))
-                      + (4.0 * v2.v[v4i.x])) - v3.v[v4i.x]) * n0))
-                  + ((((-v0.v[v4i.x] + (3.0 * v1.v[v4i.x]))
-                      - (3.0 * v2.v[v4i.x])) + v3.v[v4i.x]) * n1)), 0.5 * ((((2.0 * v1.v[v4i.y])
-                  + ((-v0.v[v4i.y] + v2.v[v4i.y]) * amount))
-                  + (((((2.0 * v0.v[v4i.y]) - (5.0 * v1.v[v4i.y]))
-                      + (4.0 * v2.v[v4i.y])) - v3.v[v4i.y]) * n0))
-                  + ((((-v0.v[v4i.y] + (3.0 * v1.v[v4i.y]))
-                      - (3.0 * v2.v[v4i.y])) + v3.v[v4i.y]) * n1)), 0.5 * ((((2.0 * v1.v[v4i.z])
-                  + ((-v0.v[v4i.z] + v2.v[v4i.z]) * amount))
-                  + (((((2.0 * v0.v[v4i.z]) - (5.0 * v1.v[v4i.z]))
-                      + (4.0 * v2.v[v4i.z])) - v3.v[v4i.z]) * n0))
-                  + ((((-v0.v[v4i.z] + (3.0 * v1.v[v4i.z]))
-                      - (3.0 * v2.v[v4i.z])) + v3.v[v4i.z]) * n1)), 0.5 * ((((2.0 * v1.v[v4i.w])
-                  + ((-v0.v[v4i.w] + v2.v[v4i.w]) * amount))
-                  + (((((2.0 * v0.v[v4i.w]) - (5.0 * v1.v[v4i.w]))
-                      + (4.0 * v2.v[v4i.w])) - v3.v[v4i.w]) * n0))
-                  + ((((-v0.v[v4i.w] + (3.0 * v1.v[v4i.w]))
-                      - (3.0 * v2.v[v4i.w])) + v3.v[v4i.w]) * n1)));
+              return new Vector3(0.5 * ((((2.0 * v1.v[v3i.x])
+                  + ((-v0.v[v3i.x] + v2.v[v3i.x]) * amount))
+                  + (((((2.0 * v0.v[v3i.x]) - (5.0 * v1.v[v3i.x]))
+                      + (4.0 * v2.v[v3i.x])) - v3.v[v3i.x]) * n0))
+                  + ((((-v0.v[v3i.x] + (3.0 * v1.v[v3i.x]))
+                      - (3.0 * v2.v[v3i.x])) + v3.v[v3i.x]) * n1)), 0.5 * ((((2.0 * v1.v[v3i.y])
+                  + ((-v0.v[v3i.y] + v2.v[v3i.y]) * amount))
+                  + (((((2.0 * v0.v[v3i.y]) - (5.0 * v1.v[v3i.y]))
+                      + (4.0 * v2.v[v3i.y])) - v3.v[v3i.y]) * n0))
+                  + ((((-v0.v[v3i.y] + (3.0 * v1.v[v3i.y]))
+                      - (3.0 * v2.v[v3i.y])) + v3.v[v3i.y]) * n1)), 0.5 * ((((2.0 * v1.v[v3i.z])
+                  + ((-v0.v[v3i.z] + v2.v[v3i.z]) * amount))
+                  + (((((2.0 * v0.v[v3i.z]) - (5.0 * v1.v[v3i.z]))
+                      + (4.0 * v2.v[v3i.z])) - v3.v[v3i.z]) * n0))
+                  + ((((-v0.v[v3i.z] + (3.0 * v1.v[v3i.z]))
+                      - (3.0 * v2.v[v3i.z])) + v3.v[v3i.z]) * n1)));
           };
-          Vector4.hermite = function (v0, t0, v1, t1, amount) {
+          Vector3.hermite = function (v0, t0, v1, t1, amount) {
               var n0 = amount * amount;
               var n1 = amount * n0;
               var n2 = ((2.0 * n1) - (3.0 * n0)) + 1.0;
               var n3 = (-2.0 * n1) + (3.0 * n0);
               var n4 = (n1 - (2.0 * n0)) + amount;
               var n5 = n1 - n0;
-              return new Vector4((((v0.v[v4i.x] * n2) + (v1.v[v4i.x] * n3)) + (t0.v[v4i.x] * n4)) + (t1.v[v4i.x] * n5), (((v0.v[v4i.y] * n2) + (v1.v[v4i.y] * n3)) + (t0.v[v4i.y] * n4)) + (t1.v[v4i.y] * n5), (((v0.v[v4i.z] * n2) + (v1.v[v4i.z] * n3)) + (t0.v[v4i.z] * n4)) + (t1.v[v4i.z] * n5), (((v0.v[v4i.w] * n2) + (v1.v[v4i.w] * n3)) + (t0.v[v4i.w] * n4)) + (t1.v[v4i.w] * n5));
+              return new Vector3((((v0.v[v3i.x] * n2) + (v1.v[v3i.x] * n3)) + (t0.v[v3i.x] * n4)) + (t1.v[v3i.x] * n5), (((v0.v[v3i.y] * n2) + (v1.v[v3i.y] * n3)) + (t0.v[v3i.y] * n4)) + (t1.v[v3i.y] * n5), (((v0.v[v3i.z] * n2) + (v1.v[v3i.z] * n3)) + (t0.v[v3i.z] * n4)) + (t1.v[v3i.z] * n5));
           };
-          Vector4.transform = function (v0, m0) {
-              return new Vector4((((v0.v[v4i.x] * m0.v[mi.m11]) + (v0.v[v4i.y] * m0.v[mi.m21])) + (v0.v[v4i.z] * m0.v[mi.m31])) + (v0.v[v4i.w] * m0.v[mi.m41]), (((v0.v[v4i.x] * m0.v[mi.m12]) + (v0.v[v4i.y] * m0.v[mi.m22])) + (v0.v[v4i.z] * m0.v[mi.m32])) + (v0.v[v4i.w] * m0.v[mi.m42]), (((v0.v[v4i.x] * m0.v[mi.m13]) + (v0.v[v4i.y] * m0.v[mi.m23])) + (v0.v[v4i.z] * m0.v[mi.m33])) + (v0.v[v4i.w] * m0.v[mi.m43]), (((v0.v[v4i.x] * m0.v[mi.m14]) + (v0.v[v4i.y] * m0.v[mi.m24])) + (v0.v[v4i.z] * m0.v[mi.m34])) + (v0.v[v4i.w] * m0.v[mi.m44]));
+          Vector3.transform = function (v0, m0) {
+              return new Vector3((((v0.v[v3i.x] * m0.v[mi.m11]) + (v0.v[v3i.y] * m0.v[mi.m21])) + (v0.v[v3i.z] * m0.v[mi.m31])) + m0.v[mi.m41], (((v0.v[v3i.x] * m0.v[mi.m12]) + (v0.v[v3i.y] * m0.v[mi.m22])) + (v0.v[v3i.z] * m0.v[mi.m32])) + m0.v[mi.m42], (((v0.v[v3i.x] * m0.v[mi.m13]) + (v0.v[v3i.y] * m0.v[mi.m23])) + (v0.v[v3i.z] * m0.v[mi.m33])) + m0.v[mi.m43]);
           };
-          Vector4.transformQuaternion = function (v0, q0) {
+          Vector3.transformNormal = function (n0, m0) {
+              return new Vector3(((n0.v[v3i.x] * m0.v[mi.m11]) + (n0.v[v3i.y] * m0.v[mi.m21])) + (n0.v[v3i.z] * m0.v[mi.m31]), ((n0.v[v3i.x] * m0.v[mi.m12]) + (n0.v[v3i.y] * m0.v[mi.m22])) + (n0.v[v3i.z] * m0.v[mi.m32]), ((n0.v[v3i.x] * m0.v[mi.m13]) + (n0.v[v3i.y] * m0.v[mi.m23])) + (n0.v[v3i.z] * m0.v[mi.m33]));
+          };
+          Vector3.transformQuaternion = function (v0, q0) {
               var n0 = q0.v[qi.x] + q0.v[qi.x];
               var n1 = q0.v[qi.y] + q0.v[qi.y];
               var n2 = q0.v[qi.z] + q0.v[qi.z];
@@ -293,777 +314,37 @@
               var n9 = q0.v[qi.y] * n1;
               var n10 = q0.v[qi.y] * n2;
               var n11 = q0.v[qi.z] * n2;
-              return new Vector4((v0.v[v4i.x] * ((1.0 - n9) - n11)) + (v0.v[v4i.y] * (n7 - n5)), (v0.v[v4i.x] * (n7 + n5)) + (v0.v[v4i.y] * ((1.0 - n6) - n11)), (v0.v[v4i.x] * (n8 - n4)) + (v0.v[v4i.y] * (n10 + n3)));
+              return new Vector3(((v0.v[v3i.x] * ((1.0 - n9) - n11)) + (v0.v[v3i.y] * (n7 - n5))) + (v0.v[v3i.z] * (n8 + n4)), ((v0.v[v3i.x] * (n7 + n5)) + (v0.v[v3i.y] * ((1.0 - n6) - n11))) + (v0.v[v3i.z] * (n10 - n3)), ((v0.v[v3i.x] * (n8 - n4)) + (v0.v[v3i.y] * (n10 + n3))) + (v0.v[v3i.z] * ((1.0 - n6) - n9)));
           };
-          Vector4.add = function (v0, v1) {
-              return new Vector4(v0.v[v4i.x] + v1.v[v4i.x], v0.v[v4i.y] + v1.v[v4i.y], v0.v[v4i.z] + v1.v[v4i.z], v0.v[v4i.w] + v1.v[v4i.w]);
+          Vector3.add = function (v0, v1) {
+              return new Vector3(v0.v[v3i.x] + v1.v[v3i.x], v0.v[v3i.y] + v1.v[v3i.y], v0.v[v3i.z] + v1.v[v3i.z]);
           };
-          Vector4.sub = function (v0, v1) {
-              return new Vector4(v0.v[v4i.x] - v1.v[v4i.x], v0.v[v4i.y] - v1.v[v4i.y], v0.v[v4i.z] - v1.v[v4i.z], v0.v[v4i.w] - v1.v[v4i.w]);
+          Vector3.sub = function (v0, v1) {
+              return new Vector3(v0.v[v3i.x] - v1.v[v3i.x], v0.v[v3i.y] - v1.v[v3i.y], v0.v[v3i.z] - v1.v[v3i.z]);
           };
-          Vector4.mul = function (v0, v1) {
-              return new Vector4(v0.v[v4i.x] - v1.v[v4i.x], v0.v[v4i.y] - v1.v[v4i.y], v0.v[v4i.z] - v1.v[v4i.z], v0.v[v4i.w] - v1.v[v4i.w]);
+          Vector3.mul = function (v0, v1) {
+              return new Vector3(v0.v[v3i.x] - v1.v[v3i.x], v0.v[v3i.y] - v1.v[v3i.y], v0.v[v3i.z] - v1.v[v3i.z]);
           };
-          Vector4.div = function (v0, v1) {
-              return new Vector4(v0.v[v4i.x] / v1.v[v4i.x], v0.v[v4i.y] / v1.v[v4i.y], v0.v[v4i.z] / v1.v[v4i.z], v0.v[v4i.w] / v1.v[v4i.w]);
+          Vector3.div = function (v0, v1) {
+              return new Vector3(v0.v[v3i.x] / v1.v[v3i.x], v0.v[v3i.y] / v1.v[v3i.y], v0.v[v3i.z] / v1.v[v3i.z]);
           };
-          Vector4.scale = function (v0, scalar) {
-              return new Vector4(v0.v[v4i.x] * scalar, v0.v[v4i.y] * scalar, v0.v[v4i.z] * scalar, v0.v[v4i.w] * scalar);
+          Vector3.scale = function (v0, scalar) {
+              return new Vector3(v0.v[v3i.x] * scalar, v0.v[v3i.y] * scalar, v0.v[v3i.z] * scalar);
           };
-          Vector4.negate = function (v0) {
-              return new Vector4(-v0.v[v4i.x], -v0.v[v4i.y], -v0.v[v4i.z], -v0.v[v4i.w]);
+          Vector3.negate = function (v0) {
+              return new Vector3(-v0.v[v3i.x], -v0.v[v3i.y], -v0.v[v3i.z]);
           };
-          Vector4.clone = function (v0) {
-              return new Vector4(v0.v[v4i.x], v0.v[v4i.y], v0.v[v4i.z], v0.v[v4i.w]);
+          Vector3.clone = function (v0) {
+              return new Vector3(v0.v[v3i.x], v0.v[v3i.y], v0.v[v3i.z]);
           };
-          Vector4.create = function (x, y, z, w) {
-              return new Vector4(x, y, z, w);
+          Vector3.create = function (x, y, z) {
+              return new Vector3(x, y, z);
           };
-          Vector4.MAX_VALUE = new Vector4(f32.max, f32.max, f32.max, f32.max);
-          Vector4.MIN_VALUE = new Vector4(f32.min, f32.min, f32.min, f32.min);
-          return Vector4;
+          Vector3.MAX_VALUE = new Vector3(f32.max, f32.max, f32.max);
+          Vector3.MIN_VALUE = new Vector3(f32.min, f32.min, f32.min);
+          return Vector3;
       }());
-      exports.Vector4 = Vector4;
-  });
-  define("src/math/matrix", ["require", "exports", "src/math/plane", "src/math/vector3", "src/math/vector4"], function (require, exports, plane_1, vector3_1, vector4_1) {
-      "use strict";
-      exports.__esModule = true;
-      var qui = { x: 0, y: 1, z: 2, w: 3 };
-      var pli = { x: 0, y: 1, z: 2, w: 3 };
-      var v3i = { x: 0, y: 1, z: 2 };
-      var mi = {
-          m11: 0, m12: 1, m13: 2, m14: 3,
-          m21: 4, m22: 5, m23: 6, m24: 7,
-          m31: 8, m32: 9, m33: 10, m34: 11,
-          m41: 12, m42: 13, m43: 14, m44: 15
-      };
-      var Matrix = (function () {
-          function Matrix(array) {
-              this.v = new Float32Array(16);
-              if (array !== undefined) {
-                  for (var i = 0; i < array.length; i++) {
-                      this.v[i] = array[i];
-                  }
-              }
-              else {
-                  this.v[mi.m11] = 1;
-                  this.v[mi.m12] = 0;
-                  this.v[mi.m13] = 0;
-                  this.v[mi.m14] = 0;
-                  this.v[mi.m21] = 0;
-                  this.v[mi.m22] = 1;
-                  this.v[mi.m23] = 0;
-                  this.v[mi.m24] = 0;
-                  this.v[mi.m31] = 0;
-                  this.v[mi.m32] = 0;
-                  this.v[mi.m33] = 1;
-                  this.v[mi.m34] = 0;
-                  this.v[mi.m41] = 0;
-                  this.v[mi.m42] = 0;
-                  this.v[mi.m43] = 0;
-                  this.v[mi.m44] = 1;
-              }
-          }
-          Matrix.prototype.m11 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m11] = value;
-              }
-              return this.v[mi.m11];
-          };
-          Matrix.prototype.m12 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m12] = value;
-              }
-              return this.v[mi.m12];
-          };
-          Matrix.prototype.m13 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m13] = value;
-              }
-              return this.v[mi.m13];
-          };
-          Matrix.prototype.m14 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m14] = value;
-              }
-              return this.v[mi.m14];
-          };
-          Matrix.prototype.m21 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m21] = value;
-              }
-              return this.v[mi.m21];
-          };
-          Matrix.prototype.m22 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m22] = value;
-              }
-              return this.v[mi.m22];
-          };
-          Matrix.prototype.m23 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m23] = value;
-              }
-              return this.v[mi.m23];
-          };
-          Matrix.prototype.m24 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m24] = value;
-              }
-              return this.v[mi.m24];
-          };
-          Matrix.prototype.m31 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m31] = value;
-              }
-              return this.v[mi.m31];
-          };
-          Matrix.prototype.m32 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m32] = value;
-              }
-              return this.v[mi.m32];
-          };
-          Matrix.prototype.m33 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m33] = value;
-              }
-              return this.v[mi.m33];
-          };
-          Matrix.prototype.m34 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m34] = value;
-              }
-              return this.v[mi.m34];
-          };
-          Matrix.prototype.m41 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m41] = value;
-              }
-              return this.v[mi.m41];
-          };
-          Matrix.prototype.m42 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m42] = value;
-              }
-              return this.v[mi.m42];
-          };
-          Matrix.prototype.m43 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m43] = value;
-              }
-              return this.v[mi.m43];
-          };
-          Matrix.prototype.m44 = function (value) {
-              if (value !== undefined) {
-                  this.v[mi.m44] = value;
-              }
-              return this.v[mi.m44];
-          };
-          Matrix.prototype.cols = function () {
-              return [
-                  new vector4_1.Vector4(this.v[mi.m11], this.v[mi.m21], this.v[mi.m31], this.v[mi.m41]),
-                  new vector4_1.Vector4(this.v[mi.m12], this.v[mi.m22], this.v[mi.m32], this.v[mi.m42]),
-                  new vector4_1.Vector4(this.v[mi.m13], this.v[mi.m23], this.v[mi.m33], this.v[mi.m43]),
-                  new vector4_1.Vector4(this.v[mi.m14], this.v[mi.m24], this.v[mi.m34], this.v[mi.m44])
-              ];
-          };
-          Matrix.prototype.rows = function () {
-              return [
-                  new vector4_1.Vector4(this.v[mi.m11], this.v[mi.m12], this.v[mi.m13], this.v[mi.m14]),
-                  new vector4_1.Vector4(this.v[mi.m21], this.v[mi.m22], this.v[mi.m23], this.v[mi.m24]),
-                  new vector4_1.Vector4(this.v[mi.m31], this.v[mi.m32], this.v[mi.m33], this.v[mi.m34]),
-                  new vector4_1.Vector4(this.v[mi.m41], this.v[mi.m42], this.v[mi.m43], this.v[mi.m44])
-              ];
-          };
-          Matrix.prototype.up = function (vector) {
-              if (vector !== undefined) {
-                  this.v[mi.m21] = vector.v[v3i.x];
-                  this.v[mi.m22] = vector.v[v3i.y];
-                  this.v[mi.m23] = vector.v[v3i.z];
-              }
-              return new vector3_1.Vector3(this.v[mi.m21], this.v[mi.m22], this.v[mi.m23]);
-          };
-          Matrix.prototype.down = function (vector) {
-              if (vector !== undefined) {
-                  this.v[mi.m21] = -vector.v[v3i.x];
-                  this.v[mi.m22] = -vector.v[v3i.y];
-                  this.v[mi.m23] = -vector.v[v3i.z];
-              }
-              return new vector3_1.Vector3(-this.v[mi.m21], -this.v[mi.m22], -this.v[mi.m23]);
-          };
-          Matrix.prototype.right = function (vector) {
-              if (vector !== undefined) {
-                  this.v[mi.m11] = vector.v[v3i.x];
-                  this.v[mi.m12] = vector.v[v3i.y];
-                  this.v[mi.m13] = vector.v[v3i.z];
-              }
-              return new vector3_1.Vector3(this.v[mi.m11], this.v[mi.m12], this.v[mi.m13]);
-          };
-          Matrix.prototype.left = function (vector) {
-              if (vector !== undefined) {
-                  this.v[mi.m11] = -vector.v[v3i.x];
-                  this.v[mi.m12] = -vector.v[v3i.y];
-                  this.v[mi.m13] = -vector.v[v3i.z];
-              }
-              return new vector3_1.Vector3(-this.v[mi.m11], -this.v[mi.m12], -this.v[mi.m13]);
-          };
-          Matrix.prototype.forward = function (vector) {
-              if (vector !== undefined) {
-                  this.v[mi.m31] = -vector.v[v3i.x];
-                  this.v[mi.m32] = -vector.v[v3i.y];
-                  this.v[mi.m33] = -vector.v[v3i.z];
-              }
-              return new vector3_1.Vector3(-this.v[mi.m31], -this.v[mi.m32], -this.v[mi.m33]);
-          };
-          Matrix.prototype.backward = function (vector) {
-              if (vector !== undefined) {
-                  this.v[mi.m31] = vector.v[v3i.x];
-                  this.v[mi.m32] = vector.v[v3i.y];
-                  this.v[mi.m33] = vector.v[v3i.z];
-              }
-              return new vector3_1.Vector3(this.v[mi.m31], this.v[mi.m32], this.v[mi.m33]);
-          };
-          Matrix.prototype.translation = function (vector) {
-              if (vector !== undefined) {
-                  this.v[mi.m41] = vector.v[v3i.x];
-                  this.v[mi.m42] = vector.v[v3i.y];
-                  this.v[mi.m43] = vector.v[v3i.z];
-              }
-              return new vector3_1.Vector3(this.v[mi.m41], this.v[mi.m42], this.v[mi.m43]);
-          };
-          Matrix.prototype.translate = function (v0) {
-              return Matrix.mul(this, Matrix.translation(v0));
-          };
-          Matrix.prototype.scale = function (v0) {
-              return Matrix.mul(this, Matrix.scale(v0));
-          };
-          Matrix.prototype.rotateX = function (radian) {
-              return Matrix.mul(this, Matrix.rotationX(radian));
-          };
-          Matrix.prototype.rotateY = function (radian) {
-              return Matrix.mul(this, Matrix.rotationY(radian));
-          };
-          Matrix.prototype.rotateZ = function (radian) {
-              return Matrix.mul(this, Matrix.rotationZ(radian));
-          };
-          Matrix.prototype.toString = function () {
-              var buf = new Array();
-              buf.push("[" + this.v[mi.m11] + ", " + this.v[mi.m12] + ", " + this.v[mi.m13] + ", " + this.v[mi.m14]);
-              buf.push(" " + this.v[mi.m21] + ", " + this.v[mi.m22] + ", " + this.v[mi.m23] + ", " + this.v[mi.m24]);
-              buf.push(" " + this.v[mi.m31] + ", " + this.v[mi.m32] + ", " + this.v[mi.m33] + ", " + this.v[mi.m34]);
-              buf.push(" " + this.v[mi.m41] + ", " + this.v[mi.m42] + ", " + this.v[mi.m43] + ", " + this.v[mi.m44] + "]");
-              return buf.join('\n');
-          };
-          Matrix.prototype.typeinfo = function () {
-              return "Matrix";
-          };
-          Matrix.prototype.clone = function () {
-              return Matrix.clone(this);
-          };
-          Matrix.identity = function () {
-              return new Matrix();
-          };
-          Matrix.translation = function (v0) {
-              return new Matrix([
-                  1, 0, 0, 0,
-                  0, 1, 0, 0,
-                  0, 0, 1, 0,
-                  v0.v[v3i.x], v0.v[v3i.y], v0.v[v3i.z], 1
-              ]);
-          };
-          Matrix.scale = function (v0) {
-              return new Matrix([
-                  v0.v[v3i.x], 0, 0, 0,
-                  0, v0.v[v3i.y], 0, 0,
-                  0, 0, v0.v[v3i.z], 0,
-                  0, 0, 0, 1
-              ]);
-          };
-          Matrix.rotationX = function (radians) {
-              var cos = Math.cos(radians);
-              var sin = Math.sin(radians);
-              return new Matrix([
-                  1, 0, 0, 0,
-                  0, cos, sin, 0,
-                  0, -sin, cos, 0,
-                  0, 0, 0, 1
-              ]);
-          };
-          Matrix.rotationY = function (radians) {
-              var cos = Math.cos(radians);
-              var sin = Math.sin(radians);
-              return new Matrix([
-                  cos, 0, -sin, 0,
-                  0, 1, 0, 0,
-                  sin, 0, cos, 0,
-                  0, 0, 0, 1
-              ]);
-          };
-          Matrix.rotationZ = function (radians) {
-              var cos = Math.cos(radians);
-              var sin = Math.sin(radians);
-              return new Matrix([
-                  cos, sin, 0, 0,
-                  -sin, cos, 0, 0,
-                  0, 0, 1, 0,
-                  0, 0, 0, 1
-              ]);
-          };
-          Matrix.fromAxisAngle = function (axis, radians) {
-              var x = axis.v[v3i.x];
-              var y = axis.v[v3i.y];
-              var z = axis.v[v3i.z];
-              var n0 = Math.sin(radians);
-              var n1 = Math.cos(radians);
-              var n2 = x * x;
-              var n3 = y * y;
-              var n4 = z * z;
-              var n5 = x * y;
-              var n6 = x * z;
-              var n7 = y * z;
-              return new Matrix([
-                  n2 + (n1 * (1.0 - n2)),
-                  (n5 - (n1 * n5)) + (n0 * z),
-                  (n6 - (n1 * n6)) - (n0 * y),
-                  0.0,
-                  (n5 - (n1 * n5)) - (n0 * z),
-                  n3 + (n1 * (1.0 - n3)),
-                  (n7 - (n1 * n7)) + (n0 * x),
-                  0.0,
-                  (n6 - (n1 * n6)) + (n0 * y),
-                  (n7 - (n1 * n7)) - (n0 * x),
-                  n4 + (n1 * (1.0 - n4)),
-                  0.0,
-                  0.0, 0.0, 0.0, 1.0
-              ]);
-          };
-          Matrix.perspectiveFov = function (fov, aspect, near, far) {
-              var n0 = 1.0 / Math.tan(fov * 0.5);
-              var n1 = n0 / aspect;
-              var m0 = new Matrix();
-              m0.v[mi.m11] = n1;
-              m0.v[mi.m12] = m0.v[mi.m13] = m0.v[mi.m14] = 0;
-              m0.v[mi.m22] = n0;
-              m0.v[mi.m21] = m0.v[mi.m23] = m0.v[mi.m24] = 0;
-              m0.v[mi.m31] = m0.v[mi.m32] = 0;
-              m0.v[mi.m33] = far / (near - far);
-              m0.v[mi.m34] = -1;
-              m0.v[mi.m41] = m0.v[mi.m42] = m0.v[mi.m44] = 0;
-              m0.v[mi.m43] = (near * far) / (near - far);
-              return m0;
-          };
-          Matrix.perspective = function (width, height, near, far) {
-              var m0 = new Matrix();
-              m0.v[mi.m11] = (2.0 * near) / width;
-              m0.v[mi.m12] = m0.v[mi.m13] = m0.v[mi.m14] = 0.0;
-              m0.v[mi.m22] = (2.0 * near) / height;
-              m0.v[mi.m21] = m0.v[mi.m23] = m0.v[mi.m24] = 0.0;
-              m0.v[mi.m33] = far / (near - far);
-              m0.v[mi.m31] = m0.v[mi.m32] = 0.0;
-              m0.v[mi.m34] = -1.0;
-              m0.v[mi.m41] = m0.v[mi.m42] = m0.v[mi.m44] = 0.0;
-              m0.v[mi.m43] = (near * far) / (near - far);
-              return m0;
-          };
-          Matrix.perspectiveOffset = function (left, right, bottom, top, near, far) {
-              var m0 = new Matrix();
-              m0.v[mi.m11] = (2.0 * near) / (right - left);
-              m0.v[mi.m12] = m0.v[mi.m13] = m0.v[mi.m14] = 0.0;
-              m0.v[mi.m22] = (2.0 * near) / (top - bottom);
-              m0.v[mi.m21] = m0.v[mi.m23] = m0.v[mi.m24] = 0.0;
-              m0.v[mi.m31] = (left + right) / (right - left);
-              m0.v[mi.m32] = (top + bottom) / (top - bottom);
-              m0.v[mi.m33] = far / (near - far);
-              m0.v[mi.m34] = -1.0;
-              m0.v[mi.m43] = (near * far) / (near - far);
-              m0.v[mi.m41] = m0.v[mi.m42] = m0.v[mi.m44] = 0.0;
-              return m0;
-          };
-          Matrix.orthographic = function (width, height, near, far) {
-              var m0 = new Matrix();
-              m0.v[mi.m11] = 2.0 / width;
-              m0.v[mi.m12] = m0.v[mi.m13] = m0.v[mi.m14] = 0.0;
-              m0.v[mi.m22] = 2.0 / height;
-              m0.v[mi.m21] = m0.v[mi.m23] = m0.v[mi.m24] = 0.0;
-              m0.v[mi.m33] = 1.0 / (near - far);
-              m0.v[mi.m31] = m0.v[mi.m32] = m0.v[mi.m34] = 0.0;
-              m0.v[mi.m41] = m0.v[mi.m42] = 0.0;
-              m0.v[mi.m43] = near / (near - far);
-              m0.v[mi.m44] = 1.0;
-              return m0;
-          };
-          Matrix.orthographicOffset = function (left, right, bottom, top, near, far) {
-              var m0 = new Matrix();
-              m0.v[mi.m11] = 2.0 / (right - left);
-              m0.v[mi.m12] = m0.v[mi.m13] = m0.v[mi.m14] = 0.0;
-              m0.v[mi.m22] = 2.0 / (top - bottom);
-              m0.v[mi.m21] = m0.v[mi.m23] = m0.v[mi.m24] = 0.0;
-              m0.v[mi.m33] = 1.0 / (near - far);
-              m0.v[mi.m31] = m0.v[mi.m32] = m0.v[mi.m34] = 0.0;
-              m0.v[mi.m41] = (left + right) / (left - right);
-              m0.v[mi.m42] = (top + bottom) / (bottom - top);
-              m0.v[mi.m43] = near / (near - far);
-              m0.v[mi.m44] = 1.0;
-              return m0;
-          };
-          Matrix.lookAt = function (position, target, up) {
-              var m0 = new Matrix();
-              var v0 = vector3_1.Vector3.normalize(vector3_1.Vector3.sub(position, target));
-              var v1 = vector3_1.Vector3.normalize(vector3_1.Vector3.cross(up, v0));
-              var v2 = vector3_1.Vector3.cross(v0, v1);
-              m0.v[mi.m11] = v1.v[v3i.x];
-              m0.v[mi.m12] = v2.v[v3i.x];
-              m0.v[mi.m13] = v0.v[v3i.x];
-              m0.v[mi.m14] = 0.0;
-              m0.v[mi.m21] = v1.v[v3i.y];
-              m0.v[mi.m22] = v2.v[v3i.y];
-              m0.v[mi.m23] = v0.v[v3i.y];
-              m0.v[mi.m24] = 0.0;
-              m0.v[mi.m31] = v1.v[v3i.z];
-              m0.v[mi.m32] = v2.v[v3i.z];
-              m0.v[mi.m33] = v0.v[v3i.z];
-              m0.v[mi.m34] = 0.0;
-              m0.v[mi.m41] = -vector3_1.Vector3.dot(v1, position);
-              m0.v[mi.m42] = -vector3_1.Vector3.dot(v2, position);
-              m0.v[mi.m43] = -vector3_1.Vector3.dot(v0, position);
-              m0.v[mi.m44] = 1.0;
-              return m0;
-          };
-          Matrix.origin = function (m0) {
-              var r0 = m0.v[mi.m22] * m0.v[mi.m33] - m0.v[mi.m32] * m0.v[mi.m23];
-              var r1 = m0.v[mi.m32] * m0.v[mi.m13] - m0.v[mi.m12] * m0.v[mi.m33];
-              var r2 = m0.v[mi.m12] * m0.v[mi.m23] - m0.v[mi.m22] * m0.v[mi.m13];
-              var r3 = m0.v[mi.m11] * r0 + m0.v[mi.m21] * r1 + m0.v[mi.m31] * r2;
-              if (Math.abs(r3) < 0.0001)
-                  return vector3_1.Vector3.create();
-              var r4 = m0.v[mi.m31] * m0.v[mi.m23] - m0.v[mi.m21] * m0.v[mi.m33];
-              var r5 = m0.v[mi.m11] * m0.v[mi.m33] - m0.v[mi.m31] * m0.v[mi.m13];
-              var r6 = m0.v[mi.m21] * m0.v[mi.m13] - m0.v[mi.m11] * m0.v[mi.m23];
-              var r7 = m0.v[mi.m21] * m0.v[mi.m32] - m0.v[mi.m31] * m0.v[mi.m22];
-              var r8 = m0.v[mi.m31] * m0.v[mi.m12] - m0.v[mi.m11] * m0.v[mi.m32];
-              var r9 = m0.v[mi.m11] * m0.v[mi.m22] - m0.v[mi.m21] * m0.v[mi.m12];
-              return new vector3_1.Vector3(-((r0 * m0.v[mi.m41] + r4 * m0.v[mi.m42] + r7 * m0.v[mi.m43]) / r3), -((r1 * m0.v[mi.m41] + r5 * m0.v[mi.m42] + r8 * m0.v[mi.m43]) / r3), -((r2 * m0.v[mi.m41] + r6 * m0.v[mi.m42] + r9 * m0.v[mi.m43]) / r3));
-          };
-          Matrix.world = function (position, forward, up) {
-              var m0 = new Matrix();
-              var v0 = vector3_1.Vector3.normalize(vector3_1.Vector3.sub(position, forward));
-              var v1 = vector3_1.Vector3.normalize(vector3_1.Vector3.cross(up, v0));
-              var v2 = vector3_1.Vector3.cross(v0, v1);
-              m0.v[mi.m11] = v1.v[v3i.x];
-              m0.v[mi.m12] = v1.v[v3i.y];
-              m0.v[mi.m13] = v1.v[v3i.z];
-              m0.v[mi.m21] = v2.v[v3i.x];
-              m0.v[mi.m22] = v2.v[v3i.y];
-              m0.v[mi.m23] = v2.v[v3i.z];
-              m0.v[mi.m31] = v0.v[v3i.x];
-              m0.v[mi.m32] = v0.v[v3i.y];
-              m0.v[mi.m33] = v0.v[v3i.z];
-              m0.v[mi.m41] = 0.0;
-              m0.v[mi.m42] = 0.0;
-              m0.v[mi.m43] = 0.0;
-              m0.v[mi.m44] = 1.0;
-              m0.v[mi.m14] = -vector3_1.Vector3.dot(v1, position);
-              m0.v[mi.m24] = -vector3_1.Vector3.dot(v2, position);
-              m0.v[mi.m34] = -vector3_1.Vector3.dot(v0, position);
-              return m0;
-          };
-          Matrix.fromQuaternion = function (q0) {
-              var m0 = new Matrix();
-              var n0 = q0.v[qui.x] * q0.v[qui.x];
-              var n1 = q0.v[qui.y] * q0.v[qui.y];
-              var n2 = q0.v[qui.z] * q0.v[qui.z];
-              var n3 = q0.v[qui.x] * q0.v[qui.y];
-              var n4 = q0.v[qui.z] * q0.v[qui.w];
-              var n5 = q0.v[qui.z] * q0.v[qui.x];
-              var n6 = q0.v[qui.y] * q0.v[qui.w];
-              var n7 = q0.v[qui.y] * q0.v[qui.z];
-              var n8 = q0.v[qui.x] * q0.v[qui.w];
-              m0.v[mi.m11] = 1.0 - (2.0 * (n1 + n2));
-              m0.v[mi.m12] = 2.0 * (n3 + n4);
-              m0.v[mi.m13] = 2.0 * (n5 - n6);
-              m0.v[mi.m14] = 0.0;
-              m0.v[mi.m21] = 2.0 * (n3 - n4);
-              m0.v[mi.m22] = 1.0 - (2.0 * (n2 + n0));
-              m0.v[mi.m23] = 2.0 * (n7 + n8);
-              m0.v[mi.m24] = 0.0;
-              m0.v[mi.m31] = 2.0 * (n5 + n6);
-              m0.v[mi.m32] = 2.0 * (n7 - n8);
-              m0.v[mi.m33] = 1.0 - (2.0 * (n1 + n0));
-              m0.v[mi.m34] = 0.0;
-              m0.v[mi.m41] = 0.0;
-              m0.v[mi.m42] = 0.0;
-              m0.v[mi.m43] = 0.0;
-              m0.v[mi.m44] = 1.0;
-              return m0;
-          };
-          Matrix.reflection = function (p0) {
-              var m0 = new Matrix();
-              var p1 = plane_1.Plane.normalize(p0);
-              var x = p1.v[pli.x];
-              var y = p1.v[pli.y];
-              var z = p1.v[pli.z];
-              var n0 = -2.0 * x;
-              var n1 = -2.0 * y;
-              var n2 = -2.0 * z;
-              m0.v[mi.m11] = (n0 * x) + 1.0;
-              m0.v[mi.m12] = n1 * x;
-              m0.v[mi.m13] = n2 * x;
-              m0.v[mi.m14] = 0.0;
-              m0.v[mi.m21] = n0 * y;
-              m0.v[mi.m22] = (n1 * y) + 1.0;
-              m0.v[mi.m23] = n2 * y;
-              m0.v[mi.m24] = 0.0;
-              m0.v[mi.m31] = n0 * z;
-              m0.v[mi.m32] = n1 * z;
-              m0.v[mi.m33] = (n2 * z) + 1.0;
-              m0.v[mi.m34] = 0.0;
-              m0.v[mi.m41] = n0 * p1.v[pli.w];
-              m0.v[mi.m42] = n1 * p1.v[pli.w];
-              m0.v[mi.m43] = n2 * p1.v[pli.w];
-              m0.v[mi.m44] = 1.0;
-              return m0;
-          };
-          Matrix.invert = function (m0) {
-              var m1 = new Matrix();
-              var n0 = m0.v[mi.m11];
-              var n1 = m0.v[mi.m12];
-              var n2 = m0.v[mi.m13];
-              var n3 = m0.v[mi.m14];
-              var n4 = m0.v[mi.m21];
-              var n5 = m0.v[mi.m22];
-              var n6 = m0.v[mi.m23];
-              var n7 = m0.v[mi.m24];
-              var n8 = m0.v[mi.m31];
-              var n9 = m0.v[mi.m32];
-              var n10 = m0.v[mi.m33];
-              var n11 = m0.v[mi.m34];
-              var n12 = m0.v[mi.m41];
-              var n13 = m0.v[mi.m42];
-              var n14 = m0.v[mi.m43];
-              var n15 = m0.v[mi.m44];
-              var n16 = (n10 * n15) - (n11 * n14);
-              var n17 = (n9 * n15) - (n11 * n13);
-              var n18 = (n9 * n14) - (n10 * n13);
-              var n19 = (n8 * n15) - (n11 * n12);
-              var n20 = (n8 * n14) - (n10 * n12);
-              var n21 = (n8 * n13) - (n9 * n12);
-              var n22 = ((n5 * n16) - (n6 * n17)) + (n7 * n18);
-              var n23 = -(((n4 * n16) - (n6 * n19)) + (n7 * n20));
-              var n24 = ((n4 * n17) - (n5 * n19)) + (n7 * n21);
-              var n25 = -(((n4 * n18) - (n5 * n20)) + (n6 * n21));
-              var n26 = 1.0 / ((((n0 * n22) + (n1 * n23)) + (n2 * n24)) + (n3 * n25));
-              m1.v[mi.m11] = n22 * n26;
-              m1.v[mi.m21] = n23 * n26;
-              m1.v[mi.m31] = n24 * n26;
-              m1.v[mi.m41] = n25 * n26;
-              m1.v[mi.m12] = -(((n1 * n16) - (n2 * n17)) + (n3 * n18)) * n26;
-              m1.v[mi.m22] = (((n0 * n16) - (n2 * n19)) + (n3 * n20)) * n26;
-              m1.v[mi.m32] = -(((n0 * n17) - (n1 * n19)) + (n3 * n21)) * n26;
-              m1.v[mi.m42] = (((n0 * n18) - (n1 * n20)) + (n2 * n21)) * n26;
-              var n27 = (n6 * n15) - (n7 * n14);
-              var n28 = (n5 * n15) - (n7 * n13);
-              var n29 = (n5 * n14) - (n6 * n13);
-              var n30 = (n4 * n15) - (n7 * n12);
-              var n32 = (n4 * n14) - (n6 * n12);
-              var n33 = (n4 * n13) - (n5 * n12);
-              m1.v[mi.m13] = (((n1 * n27) - (n2 * n28)) + (n3 * n29)) * n26;
-              m1.v[mi.m23] = -(((n0 * n27) - (n2 * n30)) + (n3 * n32)) * n26;
-              m1.v[mi.m33] = (((n0 * n28) - (n1 * n30)) + (n3 * n33)) * n26;
-              m1.v[mi.m43] = -(((n0 * n29) - (n1 * n32)) + (n2 * n33)) * n26;
-              var n34 = (n6 * n11) - (n7 * n10);
-              var n35 = (n5 * n11) - (n7 * n9);
-              var n36 = (n5 * n10) - (n6 * n9);
-              var n37 = (n4 * n11) - (n7 * n8);
-              var n38 = (n4 * n10) - (n6 * n8);
-              var n39 = (n4 * n9) - (n5 * n8);
-              m1.v[mi.m14] = -(((n1 * n34) - (n2 * n35)) + (n3 * n36)) * n26;
-              m1.v[mi.m24] = (((n0 * n34) - (n2 * n37)) + (n3 * n38)) * n26;
-              m1.v[mi.m34] = -(((n0 * n35) - (n1 * n37)) + (n3 * n39)) * n26;
-              m1.v[mi.m44] = (((n0 * n36) - (n1 * n38)) + (n2 * n39)) * n26;
-              return m1;
-          };
-          Matrix.transpose = function (m0) {
-              var m1 = new Matrix();
-              m1.v[mi.m11] = m0.v[mi.m11];
-              m1.v[mi.m12] = m0.v[mi.m21];
-              m1.v[mi.m13] = m0.v[mi.m31];
-              m1.v[mi.m14] = m0.v[mi.m41];
-              m1.v[mi.m21] = m0.v[mi.m12];
-              m1.v[mi.m22] = m0.v[mi.m22];
-              m1.v[mi.m23] = m0.v[mi.m32];
-              m1.v[mi.m24] = m0.v[mi.m42];
-              m1.v[mi.m31] = m0.v[mi.m13];
-              m1.v[mi.m32] = m0.v[mi.m23];
-              m1.v[mi.m33] = m0.v[mi.m33];
-              m1.v[mi.m34] = m0.v[mi.m43];
-              m1.v[mi.m41] = m0.v[mi.m14];
-              m1.v[mi.m42] = m0.v[mi.m24];
-              m1.v[mi.m43] = m0.v[mi.m34];
-              m1.v[mi.m44] = m0.v[mi.m44];
-              return m1;
-          };
-          Matrix.determinant = function (m0) {
-              var n0 = m0.v[mi.m11];
-              var n1 = m0.v[mi.m12];
-              var n2 = m0.v[mi.m13];
-              var n3 = m0.v[mi.m14];
-              var n4 = m0.v[mi.m21];
-              var n5 = m0.v[mi.m22];
-              var n6 = m0.v[mi.m23];
-              var n7 = m0.v[mi.m24];
-              var n8 = m0.v[mi.m31];
-              var n9 = m0.v[mi.m32];
-              var n10 = m0.v[mi.m33];
-              var n11 = m0.v[mi.m34];
-              var n12 = m0.v[mi.m41];
-              var n13 = m0.v[mi.m42];
-              var n14 = m0.v[mi.m43];
-              var n15 = m0.v[mi.m44];
-              var n16 = (n10 * n15) - (n11 * n14);
-              var n17 = (n9 * n15) - (n11 * n13);
-              var n18 = (n9 * n14) - (n10 * n13);
-              var n19 = (n8 * n15) - (n11 * n12);
-              var n20 = (n8 * n14) - (n10 * n12);
-              var n21 = (n8 * n13) - (n9 * n12);
-              return ((((n0 * (((n5 * n16) - (n6 * n17)) + (n7 * n18))) -
-                  (n1 * (((n4 * n16) - (n6 * n19)) + (n7 * n20)))) + (n2 * (((n4 * n17) -
-                  (n5 * n19)) + (n7 * n21)))) - (n3 * (((n4 * n18) - (n5 * n20)) + (n6 * n21))));
-          };
-          Matrix.lerp = function (m0, m1, amount) {
-              var m2 = new Matrix();
-              m2.v[mi.m11] = m0.v[mi.m11] + ((m1.v[mi.m11] - m0.v[mi.m11]) * amount);
-              m2.v[mi.m12] = m0.v[mi.m12] + ((m1.v[mi.m12] - m0.v[mi.m12]) * amount);
-              m2.v[mi.m13] = m0.v[mi.m13] + ((m1.v[mi.m13] - m0.v[mi.m13]) * amount);
-              m2.v[mi.m14] = m0.v[mi.m14] + ((m1.v[mi.m14] - m0.v[mi.m14]) * amount);
-              m2.v[mi.m21] = m0.v[mi.m21] + ((m1.v[mi.m21] - m0.v[mi.m21]) * amount);
-              m2.v[mi.m22] = m0.v[mi.m22] + ((m1.v[mi.m22] - m0.v[mi.m22]) * amount);
-              m2.v[mi.m23] = m0.v[mi.m23] + ((m1.v[mi.m23] - m0.v[mi.m23]) * amount);
-              m2.v[mi.m24] = m0.v[mi.m24] + ((m1.v[mi.m24] - m0.v[mi.m24]) * amount);
-              m2.v[mi.m31] = m0.v[mi.m31] + ((m1.v[mi.m31] - m0.v[mi.m31]) * amount);
-              m2.v[mi.m32] = m0.v[mi.m32] + ((m1.v[mi.m32] - m0.v[mi.m32]) * amount);
-              m2.v[mi.m33] = m0.v[mi.m33] + ((m1.v[mi.m33] - m0.v[mi.m33]) * amount);
-              m2.v[mi.m34] = m0.v[mi.m34] + ((m1.v[mi.m34] - m0.v[mi.m34]) * amount);
-              m2.v[mi.m41] = m0.v[mi.m41] + ((m1.v[mi.m41] - m0.v[mi.m41]) * amount);
-              m2.v[mi.m42] = m0.v[mi.m42] + ((m1.v[mi.m42] - m0.v[mi.m42]) * amount);
-              m2.v[mi.m43] = m0.v[mi.m43] + ((m1.v[mi.m43] - m0.v[mi.m43]) * amount);
-              m2.v[mi.m44] = m0.v[mi.m44] + ((m1.v[mi.m44] - m0.v[mi.m44]) * amount);
-              return m2;
-          };
-          Matrix.negate = function (m0) {
-              var m1 = new Matrix();
-              m1.v[mi.m11] = -m0.v[mi.m11];
-              m1.v[mi.m12] = -m0.v[mi.m12];
-              m1.v[mi.m13] = -m0.v[mi.m13];
-              m1.v[mi.m14] = -m0.v[mi.m14];
-              m1.v[mi.m21] = -m0.v[mi.m21];
-              m1.v[mi.m22] = -m0.v[mi.m22];
-              m1.v[mi.m23] = -m0.v[mi.m23];
-              m1.v[mi.m24] = -m0.v[mi.m24];
-              m1.v[mi.m31] = -m0.v[mi.m31];
-              m1.v[mi.m32] = -m0.v[mi.m32];
-              m1.v[mi.m33] = -m0.v[mi.m33];
-              m1.v[mi.m34] = -m0.v[mi.m34];
-              m1.v[mi.m41] = -m0.v[mi.m41];
-              m1.v[mi.m42] = -m0.v[mi.m42];
-              m1.v[mi.m43] = -m0.v[mi.m43];
-              m1.v[mi.m44] = -m0.v[mi.m44];
-              return m1;
-          };
-          Matrix.add = function (m0, m1) {
-              var m2 = new Matrix();
-              m2.v[mi.m11] = m0.v[mi.m11] + m1.v[mi.m11];
-              m2.v[mi.m12] = m0.v[mi.m12] + m1.v[mi.m12];
-              m2.v[mi.m13] = m0.v[mi.m13] + m1.v[mi.m13];
-              m2.v[mi.m14] = m0.v[mi.m14] + m1.v[mi.m14];
-              m2.v[mi.m21] = m0.v[mi.m21] + m1.v[mi.m21];
-              m2.v[mi.m22] = m0.v[mi.m22] + m1.v[mi.m22];
-              m2.v[mi.m23] = m0.v[mi.m23] + m1.v[mi.m23];
-              m2.v[mi.m24] = m0.v[mi.m24] + m1.v[mi.m24];
-              m2.v[mi.m31] = m0.v[mi.m31] + m1.v[mi.m31];
-              m2.v[mi.m32] = m0.v[mi.m32] + m1.v[mi.m32];
-              m2.v[mi.m33] = m0.v[mi.m33] + m1.v[mi.m33];
-              m2.v[mi.m34] = m0.v[mi.m34] + m1.v[mi.m34];
-              m2.v[mi.m41] = m0.v[mi.m41] + m1.v[mi.m41];
-              m2.v[mi.m42] = m0.v[mi.m42] + m1.v[mi.m42];
-              m2.v[mi.m43] = m0.v[mi.m43] + m1.v[mi.m43];
-              m2.v[mi.m44] = m0.v[mi.m44] + m1.v[mi.m44];
-              return m2;
-          };
-          Matrix.sub = function (m0, m1) {
-              var m2 = new Matrix();
-              m2.v[mi.m11] = m0.v[mi.m11] - m1.v[mi.m11];
-              m2.v[mi.m12] = m0.v[mi.m12] - m1.v[mi.m12];
-              m2.v[mi.m13] = m0.v[mi.m13] - m1.v[mi.m13];
-              m2.v[mi.m14] = m0.v[mi.m14] - m1.v[mi.m14];
-              m2.v[mi.m21] = m0.v[mi.m21] - m1.v[mi.m21];
-              m2.v[mi.m22] = m0.v[mi.m22] - m1.v[mi.m22];
-              m2.v[mi.m23] = m0.v[mi.m23] - m1.v[mi.m23];
-              m2.v[mi.m24] = m0.v[mi.m24] - m1.v[mi.m24];
-              m2.v[mi.m31] = m0.v[mi.m31] - m1.v[mi.m31];
-              m2.v[mi.m32] = m0.v[mi.m32] - m1.v[mi.m32];
-              m2.v[mi.m33] = m0.v[mi.m33] - m1.v[mi.m33];
-              m2.v[mi.m34] = m0.v[mi.m34] - m1.v[mi.m34];
-              m2.v[mi.m41] = m0.v[mi.m41] - m1.v[mi.m41];
-              m2.v[mi.m42] = m0.v[mi.m42] - m1.v[mi.m42];
-              m2.v[mi.m43] = m0.v[mi.m43] - m1.v[mi.m43];
-              m2.v[mi.m44] = m0.v[mi.m44] - m1.v[mi.m44];
-              return m2;
-          };
-          Matrix.mul = function (m0, m1) {
-              var m2 = new Matrix();
-              m2.v[mi.m11] = (((m0.v[mi.m11] * m1.v[mi.m11]) + (m0.v[mi.m12] * m1.v[mi.m21])) + (m0.v[mi.m13] * m1.v[mi.m31])) + (m0.v[mi.m14] * m1.v[mi.m41]);
-              m2.v[mi.m12] = (((m0.v[mi.m11] * m1.v[mi.m12]) + (m0.v[mi.m12] * m1.v[mi.m22])) + (m0.v[mi.m13] * m1.v[mi.m32])) + (m0.v[mi.m14] * m1.v[mi.m42]);
-              m2.v[mi.m13] = (((m0.v[mi.m11] * m1.v[mi.m13]) + (m0.v[mi.m12] * m1.v[mi.m23])) + (m0.v[mi.m13] * m1.v[mi.m33])) + (m0.v[mi.m14] * m1.v[mi.m43]);
-              m2.v[mi.m14] = (((m0.v[mi.m11] * m1.v[mi.m14]) + (m0.v[mi.m12] * m1.v[mi.m24])) + (m0.v[mi.m13] * m1.v[mi.m34])) + (m0.v[mi.m14] * m1.v[mi.m44]);
-              m2.v[mi.m21] = (((m0.v[mi.m21] * m1.v[mi.m11]) + (m0.v[mi.m22] * m1.v[mi.m21])) + (m0.v[mi.m23] * m1.v[mi.m31])) + (m0.v[mi.m24] * m1.v[mi.m41]);
-              m2.v[mi.m22] = (((m0.v[mi.m21] * m1.v[mi.m12]) + (m0.v[mi.m22] * m1.v[mi.m22])) + (m0.v[mi.m23] * m1.v[mi.m32])) + (m0.v[mi.m24] * m1.v[mi.m42]);
-              m2.v[mi.m23] = (((m0.v[mi.m21] * m1.v[mi.m13]) + (m0.v[mi.m22] * m1.v[mi.m23])) + (m0.v[mi.m23] * m1.v[mi.m33])) + (m0.v[mi.m24] * m1.v[mi.m43]);
-              m2.v[mi.m24] = (((m0.v[mi.m21] * m1.v[mi.m14]) + (m0.v[mi.m22] * m1.v[mi.m24])) + (m0.v[mi.m23] * m1.v[mi.m34])) + (m0.v[mi.m24] * m1.v[mi.m44]);
-              m2.v[mi.m31] = (((m0.v[mi.m31] * m1.v[mi.m11]) + (m0.v[mi.m32] * m1.v[mi.m21])) + (m0.v[mi.m33] * m1.v[mi.m31])) + (m0.v[mi.m34] * m1.v[mi.m41]);
-              m2.v[mi.m32] = (((m0.v[mi.m31] * m1.v[mi.m12]) + (m0.v[mi.m32] * m1.v[mi.m22])) + (m0.v[mi.m33] * m1.v[mi.m32])) + (m0.v[mi.m34] * m1.v[mi.m42]);
-              m2.v[mi.m33] = (((m0.v[mi.m31] * m1.v[mi.m13]) + (m0.v[mi.m32] * m1.v[mi.m23])) + (m0.v[mi.m33] * m1.v[mi.m33])) + (m0.v[mi.m34] * m1.v[mi.m43]);
-              m2.v[mi.m34] = (((m0.v[mi.m31] * m1.v[mi.m14]) + (m0.v[mi.m32] * m1.v[mi.m24])) + (m0.v[mi.m33] * m1.v[mi.m34])) + (m0.v[mi.m34] * m1.v[mi.m44]);
-              m2.v[mi.m41] = (((m0.v[mi.m41] * m1.v[mi.m11]) + (m0.v[mi.m42] * m1.v[mi.m21])) + (m0.v[mi.m43] * m1.v[mi.m31])) + (m0.v[mi.m44] * m1.v[mi.m41]);
-              m2.v[mi.m42] = (((m0.v[mi.m41] * m1.v[mi.m12]) + (m0.v[mi.m42] * m1.v[mi.m22])) + (m0.v[mi.m43] * m1.v[mi.m32])) + (m0.v[mi.m44] * m1.v[mi.m42]);
-              m2.v[mi.m43] = (((m0.v[mi.m41] * m1.v[mi.m13]) + (m0.v[mi.m42] * m1.v[mi.m23])) + (m0.v[mi.m43] * m1.v[mi.m33])) + (m0.v[mi.m44] * m1.v[mi.m43]);
-              m2.v[mi.m44] = (((m0.v[mi.m41] * m1.v[mi.m14]) + (m0.v[mi.m42] * m1.v[mi.m24])) + (m0.v[mi.m43] * m1.v[mi.m34])) + (m0.v[mi.m44] * m1.v[mi.m44]);
-              return m2;
-          };
-          Matrix.div = function (m0, m1) {
-              var m2 = new Matrix();
-              m2.v[mi.m11] = m0.v[mi.m11] / m1.v[mi.m11];
-              m2.v[mi.m12] = m0.v[mi.m12] / m1.v[mi.m12];
-              m2.v[mi.m13] = m0.v[mi.m13] / m1.v[mi.m13];
-              m2.v[mi.m14] = m0.v[mi.m14] / m1.v[mi.m14];
-              m2.v[mi.m21] = m0.v[mi.m21] / m1.v[mi.m21];
-              m2.v[mi.m22] = m0.v[mi.m22] / m1.v[mi.m22];
-              m2.v[mi.m23] = m0.v[mi.m23] / m1.v[mi.m23];
-              m2.v[mi.m24] = m0.v[mi.m24] / m1.v[mi.m24];
-              m2.v[mi.m31] = m0.v[mi.m31] / m1.v[mi.m31];
-              m2.v[mi.m32] = m0.v[mi.m32] / m1.v[mi.m32];
-              m2.v[mi.m33] = m0.v[mi.m33] / m1.v[mi.m33];
-              m2.v[mi.m34] = m0.v[mi.m34] / m1.v[mi.m34];
-              m2.v[mi.m41] = m0.v[mi.m41] / m1.v[mi.m41];
-              m2.v[mi.m42] = m0.v[mi.m42] / m1.v[mi.m42];
-              m2.v[mi.m43] = m0.v[mi.m43] / m1.v[mi.m43];
-              m2.v[mi.m44] = m0.v[mi.m44] / m1.v[mi.m44];
-              return m2;
-          };
-          Matrix.clone = function (m0) {
-              return new Matrix([
-                  m0.v[mi.m11], m0.v[mi.m12], m0.v[mi.m13], m0.v[mi.m14],
-                  m0.v[mi.m21], m0.v[mi.m22], m0.v[mi.m23], m0.v[mi.m24],
-                  m0.v[mi.m31], m0.v[mi.m32], m0.v[mi.m33], m0.v[mi.m34],
-                  m0.v[mi.m41], m0.v[mi.m42], m0.v[mi.m43], m0.v[mi.m44]
-              ]);
-          };
-          Matrix.create = function (array) {
-              return new Matrix(array);
-          };
-          return Matrix;
-      }());
-      exports.Matrix = Matrix;
+      exports.Vector3 = Vector3;
   });
   define("src/math/quaternion", ["require", "exports"], function (require, exports) {
       "use strict";
@@ -1340,11 +621,11 @@
       }());
       exports.Quaternion = Quaternion;
   });
-  define("src/math/vector3", ["require", "exports"], function (require, exports) {
+  define("src/math/vector4", ["require", "exports"], function (require, exports) {
       "use strict";
       exports.__esModule = true;
       var f32 = { max: 2147483647, min: -2147483647 };
-      var v3i = { x: 0, y: 1, z: 2 };
+      var v4i = { x: 0, y: 1, z: 2, w: 3 };
       var qi = { x: 0, y: 1, z: 2, w: 3 };
       var mi = {
           m11: 0, m12: 1, m13: 2, m14: 3,
@@ -1352,221 +633,216 @@
           m31: 8, m32: 9, m33: 10, m34: 11,
           m41: 12, m42: 13, m43: 14, m44: 15
       };
-      var Vector3 = (function () {
-          function Vector3(x, y, z) {
-              this.v = new Float32Array(3);
-              this.v[v3i.x] = x === undefined ? 0.0 : x;
-              this.v[v3i.y] = y === undefined ? 0.0 : y;
-              this.v[v3i.z] = z === undefined ? 0.0 : z;
+      var Vector4 = (function () {
+          function Vector4(x, y, z, w) {
+              this.v = new Float32Array(4);
+              this.v[v4i.x] = x === undefined ? 0.0 : x;
+              this.v[v4i.y] = y === undefined ? 0.0 : y;
+              this.v[v4i.z] = z === undefined ? 0.0 : z;
+              this.v[v4i.w] = w === undefined ? 0.0 : w;
           }
-          Vector3.prototype.toString = function () {
-              return "[" + this.v[v3i.x] + ", " + this.v[v3i.y] + ", " + this.v[v3i.z] + "]";
+          Vector4.prototype.toString = function () {
+              return "[" + this.v[v4i.x] + ", " + this.v[v4i.y] + ", " + this.v[v4i.z] + ", " + this.v[v4i.w] + "]";
           };
-          Vector3.prototype.typeinfo = function () {
-              return "Vector3";
+          Vector4.prototype.typeinfo = function () {
+              return "Vector4";
           };
-          Vector3.prototype.clone = function () {
-              return Vector3.clone(this);
+          Vector4.prototype.clone = function () {
+              return Vector4.clone(this);
           };
-          Vector3.prototype.x = function (value) {
+          Vector4.prototype.x = function (value) {
               if (value !== undefined) {
-                  this.v[v3i.x] = value;
+                  this.v[v4i.x] = value;
               }
-              return this.v[v3i.x];
+              return this.v[v4i.x];
           };
-          Vector3.prototype.y = function (value) {
+          Vector4.prototype.y = function (value) {
               if (value !== undefined) {
-                  this.v[v3i.y] = value;
+                  this.v[v4i.y] = value;
               }
-              return this.v[v3i.y];
+              return this.v[v4i.y];
           };
-          Vector3.prototype.z = function (value) {
+          Vector4.prototype.z = function (value) {
               if (value !== undefined) {
-                  this.v[v3i.z] = value;
+                  this.v[v4i.z] = value;
               }
-              return this.v[v3i.z];
+              return this.v[v4i.z];
           };
-          Vector3.prototype.length = function () {
-              return Vector3.getLength(this);
+          Vector4.prototype.w = function (value) {
+              if (value !== undefined) {
+                  this.v[v4i.w] = value;
+              }
+              return this.v[v4i.w];
           };
-          Vector3.prototype.lengthSq = function () {
-              return Vector3.getLengthSq(this);
+          Vector4.prototype.length = function () {
+              return Vector4.getLength(this);
           };
-          Vector3.prototype.normalize = function () {
-              return Vector3.normalize(this);
+          Vector4.prototype.lengthSq = function () {
+              return Vector4.getLengthSq(this);
           };
-          Vector3.prototype.dot = function (v0) {
-              return Vector3.dot(this, v0);
+          Vector4.prototype.normalize = function () {
+              return Vector4.normalize(this);
           };
-          Vector3.prototype.cross = function (v0) {
-              return Vector3.cross(this, v0);
+          Vector4.prototype.dot = function (v0) {
+              return Vector4.dot(this, v0);
           };
-          Vector3.prototype.add = function (v0) {
-              return Vector3.add(this, v0);
+          Vector4.prototype.add = function (v0) {
+              return Vector4.add(this, v0);
           };
-          Vector3.prototype.sub = function (v0) {
-              return Vector3.sub(this, v0);
+          Vector4.prototype.sub = function (v0) {
+              return Vector4.sub(this, v0);
           };
-          Vector3.prototype.mul = function (v0) {
-              return Vector3.mul(this, v0);
+          Vector4.prototype.mul = function (v0) {
+              return Vector4.mul(this, v0);
           };
-          Vector3.prototype.div = function (v0) {
-              return Vector3.div(this, v0);
+          Vector4.prototype.div = function (v0) {
+              return Vector4.div(this, v0);
           };
-          Vector3.prototype.scale = function (s0) {
-              return Vector3.scale(this, s0);
+          Vector4.prototype.scale = function (s0) {
+              return Vector4.scale(this, s0);
           };
-          Vector3.prototype.negate = function () {
-              return Vector3.negate(this);
+          Vector4.prototype.negate = function () {
+              return Vector4.negate(this);
           };
-          Vector3.zero = function () {
-              return new Vector3(0.0, 0.0, 0.0);
+          Vector4.zero = function () {
+              return new Vector4(0.0, 0.0, 0.0, 0.0);
           };
-          Vector3.one = function () {
-              return new Vector3(1.0, 1.0, 1.0);
+          Vector4.one = function () {
+              return new Vector4(1.0, 1.0, 1.0, 1.0);
           };
-          Vector3.unitX = function () {
-              return new Vector3(1.0, 0.0, 0.0);
+          Vector4.left = function () {
+              return new Vector4(-1.0, 0.0, 0.0);
           };
-          Vector3.unitY = function () {
-              return new Vector3(0.0, 1.0, 0.0);
+          Vector4.unitX = function () {
+              return new Vector4(1.0, 0.0, 0.0, 0.0);
           };
-          Vector3.unitZ = function () {
-              return new Vector3(0.0, 0.0, 1.0);
+          Vector4.unitY = function () {
+              return new Vector4(0.0, 1.0, 0.0, 0.0);
           };
-          Vector3.left = function () {
-              return new Vector3(-1.0, 0.0, 0.0);
+          Vector4.unitZ = function () {
+              return new Vector4(0.0, 0.0, 1.0, 0.0);
           };
-          Vector3.right = function () {
-              return new Vector3(1.0, 0.0, 0.0);
+          Vector4.unitW = function () {
+              return new Vector4(0.0, 0.0, 0.0, 1.0);
           };
-          Vector3.up = function () {
-              return new Vector3(0.0, 1.0, 0.0);
+          Vector4.equals = function (v0, v1) {
+              return (v0.v[v4i.x] === v1.v[v4i.x] &&
+                  v0.v[v4i.y] === v1.v[v4i.y] &&
+                  v0.v[v4i.z] === v1.v[v4i.z] &&
+                  v0.v[v4i.w] === v1.v[v4i.w]);
           };
-          Vector3.down = function () {
-              return new Vector3(0.0, -1.0, 0.0);
+          Vector4.getLength = function (v0) {
+              return Math.sqrt((v0.v[v4i.x] * v0.v[v4i.x]) +
+                  (v0.v[v4i.y] * v0.v[v4i.y]) +
+                  (v0.v[v4i.z] * v0.v[v4i.z]) +
+                  (v0.v[v4i.w] * v0.v[v4i.w]));
           };
-          Vector3.forward = function () {
-              return new Vector3(0.0, 0.0, 1.0);
+          Vector4.getLengthSq = function (v0) {
+              return ((v0.v[v4i.x] * v0.v[v4i.x]) +
+                  (v0.v[v4i.y] * v0.v[v4i.y]) +
+                  (v0.v[v4i.z] * v0.v[v4i.z]) +
+                  (v0.v[v4i.w] * v0.v[v4i.w]));
           };
-          Vector3.backward = function () {
-              return new Vector3(0.0, 0.0, -1.0);
+          Vector4.distance = function (v0, v1) {
+              var x = v0.v[v4i.x] - v1.v[v4i.x];
+              var y = v0.v[v4i.y] - v1.v[v4i.y];
+              var z = v0.v[v4i.z] - v1.v[v4i.z];
+              var w = v0.v[v4i.w] - v1.v[v4i.w];
+              return Math.sqrt((x * x) + (y * y) + (z * z) + (w * w));
           };
-          Vector3.equals = function (v0, v1) {
-              return (v0.v[v3i.x] === v1.v[v3i.x] &&
-                  v0.v[v3i.y] === v1.v[v3i.y] &&
-                  v0.v[v3i.z] === v1.v[v3i.z]);
+          Vector4.distanceSq = function (v0, v1) {
+              var x = v0.v[v4i.x] - v1.v[v4i.x];
+              var y = v0.v[v4i.y] - v1.v[v4i.y];
+              var z = v0.v[v4i.z] - v1.v[v4i.z];
+              var w = v0.v[v4i.w] - v1.v[v4i.w];
+              return ((x * x) + (y * y) + (z * z) + (w * w));
           };
-          Vector3.getLength = function (v0) {
-              return Math.sqrt((v0.v[v3i.x] * v0.v[v3i.x]) +
-                  (v0.v[v3i.y] * v0.v[v3i.y]) +
-                  (v0.v[v3i.z] * v0.v[v3i.z]));
+          Vector4.dot = function (v0, v1) {
+              return ((v0.v[v4i.x] * v1.v[v4i.x]) +
+                  (v0.v[v4i.y] * v1.v[v4i.y]) +
+                  (v0.v[v4i.z] * v1.v[v4i.z]) +
+                  (v0.v[v4i.w] * v1.v[v4i.w]));
           };
-          Vector3.getLengthSq = function (v0) {
-              return ((v0.v[v3i.x] * v0.v[v3i.x]) +
-                  (v0.v[v3i.y] * v0.v[v3i.y]) +
-                  (v0.v[v3i.z] * v0.v[v3i.z]));
+          Vector4.normalize = function (v0) {
+              var len = 1.0 / Math.sqrt((v0.v[v4i.x] * v0.v[v4i.x]) +
+                  (v0.v[v4i.y] * v0.v[v4i.y]) +
+                  (v0.v[v4i.z] * v0.v[v4i.z]) +
+                  (v0.v[v4i.w] * v0.v[v4i.w]));
+              return new Vector4(v0.v[v4i.x] * len, v0.v[v4i.y] * len, v0.v[v4i.z] * len, v0.v[v4i.w] * len);
           };
-          Vector3.distance = function (v0, v1) {
-              var x = v0.v[v3i.x] - v1.v[v3i.x];
-              var y = v0.v[v3i.y] - v1.v[v3i.y];
-              var z = v0.v[v3i.z] - v1.v[v3i.z];
-              return Math.sqrt((x * x) + (y * y) + (z * z));
+          Vector4.abs = function (v0) {
+              return new Vector4(Math.abs(v0.v[v4i.x]), Math.abs(v0.v[v4i.y]), Math.abs(v0.v[v4i.z]), Math.abs(v0.v[v4i.w]));
           };
-          Vector3.distanceSq = function (v0, v1) {
-              var x = v0.v[v3i.x] - v1.v[v3i.x];
-              var y = v0.v[v3i.y] - v1.v[v3i.y];
-              var z = v0.v[v3i.z] - v1.v[v3i.z];
-              return ((x * x) + (y * y) + (z * z));
+          Vector4.min = function (v0, v1) {
+              return new Vector4((v0.v[v4i.x] < v1.v[v4i.x]) ? v0.v[v4i.x] : v1.v[v4i.x], (v0.v[v4i.y] < v1.v[v4i.y]) ? v0.v[v4i.y] : v1.v[v4i.y], (v0.v[v4i.z] < v1.v[v4i.z]) ? v0.v[v4i.z] : v1.v[v4i.z], (v0.v[v4i.w] < v1.v[v4i.w]) ? v0.v[v4i.w] : v1.v[v4i.w]);
           };
-          Vector3.dot = function (v0, v1) {
-              return ((v0.v[v3i.x] * v1.v[v3i.x]) +
-                  (v0.v[v3i.y] * v1.v[v3i.y]) +
-                  (v0.v[v3i.z] * v1.v[v3i.z]));
+          Vector4.max = function (v0, v1) {
+              return new Vector4((v0.v[v4i.x] > v1.v[v4i.x]) ? v0.v[v4i.x] : v1.v[v4i.x], (v0.v[v4i.y] > v1.v[v4i.y]) ? v0.v[v4i.y] : v1.v[v4i.y], (v0.v[v4i.z] > v1.v[v4i.z]) ? v0.v[v4i.z] : v1.v[v4i.z], (v0.v[v4i.w] > v1.v[v4i.w]) ? v0.v[v4i.w] : v1.v[v4i.w]);
           };
-          Vector3.normalize = function (v0) {
-              var len = 1.0 / Math.sqrt((v0.v[v3i.x] * v0.v[v3i.x]) +
-                  (v0.v[v3i.y] * v0.v[v3i.y]) +
-                  (v0.v[v3i.z] * v0.v[v3i.z]));
-              return new Vector3(v0.v[v3i.x] * len, v0.v[v3i.y] * len, v0.v[v3i.z] * len);
+          Vector4.clamp = function (v0, min, max) {
+              var x = v0.v[v4i.x];
+              var y = v0.v[v4i.y];
+              var z = v0.v[v4i.z];
+              var w = v0.v[v4i.w];
+              x = (x > max.v[v4i.x]) ? max.v[v4i.x] : x;
+              x = (x < min.v[v4i.x]) ? min.v[v4i.x] : x;
+              y = (y > max.v[v4i.y]) ? max.v[v4i.y] : y;
+              y = (y < min.v[v4i.y]) ? min.v[v4i.y] : y;
+              z = (z > max.v[v4i.z]) ? max.v[v4i.z] : z;
+              z = (z < min.v[v4i.z]) ? min.v[v4i.z] : z;
+              w = (w > max.v[v4i.w]) ? max.v[v4i.w] : w;
+              w = (w < min.v[v4i.w]) ? min.v[v4i.w] : w;
+              return new Vector4(x, y, z, w);
           };
-          Vector3.cross = function (v0, v1) {
-              return new Vector3((v0.v[v3i.y] * v1.v[v3i.z]) - (v0.v[v3i.z] * v1.v[v3i.y]), (v0.v[v3i.z] * v1.v[v3i.x]) - (v0.v[v3i.x] * v1.v[v3i.z]), (v0.v[v3i.x] * v1.v[v3i.y]) - (v0.v[v3i.y] * v1.v[v3i.x]));
+          Vector4.lerp = function (v0, v1, amount) {
+              return new Vector4(v0.v[v4i.x] + ((v1.v[v4i.x] - v0.v[v4i.x]) * amount), v0.v[v4i.y] + ((v1.v[v4i.y] - v0.v[v4i.y]) * amount), v0.v[v4i.z] + ((v1.v[v4i.z] - v0.v[v4i.z]) * amount), v0.v[v4i.w] + ((v1.v[v4i.w] - v0.v[v4i.w]) * amount));
           };
-          Vector3.reflect = function (v0, n0) {
-              var dot = ((v0.v[v3i.x] * n0.v[v3i.x]) +
-                  (v0.v[v3i.y] * n0.v[v3i.y]) +
-                  (v0.v[v3i.z] * n0.v[v3i.z]));
-              return new Vector3(v0.v[v3i.x] - ((2.0 * dot) * n0.v[v3i.x]), v0.v[v3i.y] - ((2.0 * dot) * n0.v[v3i.y]), v0.v[v3i.z] - ((2.0 * dot) * n0.v[v3i.z]));
+          Vector4.barycentric = function (v0, v1, v2, amount0, amount1) {
+              return new Vector4((v0.v[v4i.x] + (amount0 * (v1.v[v4i.x] - v0.v[v4i.x]))) + (amount1 * (v2.v[v4i.x] - v0.v[v4i.x])), (v0.v[v4i.y] + (amount0 * (v1.v[v4i.y] - v0.v[v4i.y]))) + (amount1 * (v2.v[v4i.y] - v0.v[v4i.y])), (v0.v[v4i.z] + (amount0 * (v1.v[v4i.z] - v0.v[v4i.z]))) + (amount1 * (v2.v[v4i.z] - v0.v[v4i.z])), (v0.v[v4i.w] + (amount0 * (v1.v[v4i.w] - v0.v[v4i.w]))) + (amount1 * (v2.v[v4i.w] - v0.v[v4i.w])));
           };
-          Vector3.abs = function (v0) {
-              return new Vector3(Math.abs(v0.v[v3i.x]), Math.abs(v0.v[v3i.y]), Math.abs(v0.v[v3i.z]));
-          };
-          Vector3.min = function (v0, v1) {
-              return new Vector3((v0.v[v3i.x] < v1.v[v3i.x]) ? v0.v[v3i.x] : v1.v[v3i.x], (v0.v[v3i.y] < v1.v[v3i.y]) ? v0.v[v3i.y] : v1.v[v3i.y], (v0.v[v3i.z] < v1.v[v3i.z]) ? v0.v[v3i.z] : v1.v[v3i.z]);
-          };
-          Vector3.max = function (v0, v1) {
-              return new Vector3((v0.v[v3i.x] > v1.v[v3i.x]) ? v0.v[v3i.x] : v1.v[v3i.x], (v0.v[v3i.y] > v1.v[v3i.y]) ? v0.v[v3i.y] : v1.v[v3i.y], (v0.v[v3i.z] > v1.v[v3i.z]) ? v0.v[v3i.z] : v1.v[v3i.z]);
-          };
-          Vector3.clamp = function (v0, min, max) {
-              var x = v0.v[v3i.x];
-              var y = v0.v[v3i.y];
-              var z = v0.v[v3i.z];
-              x = (x > max.v[v3i.x]) ? max.v[v3i.x] : x;
-              x = (x < min.v[v3i.x]) ? min.v[v3i.x] : x;
-              y = (y > max.v[v3i.y]) ? max.v[v3i.y] : y;
-              y = (y < min.v[v3i.y]) ? min.v[v3i.y] : y;
-              z = (z > max.v[v3i.z]) ? max.v[v3i.z] : z;
-              z = (z < min.v[v3i.z]) ? min.v[v3i.z] : z;
-              return new Vector3(x, y, z);
-          };
-          Vector3.lerp = function (v0, v1, amount) {
-              return new Vector3(v0.v[v3i.x] + ((v1.v[v3i.x] - v0.v[v3i.x]) * amount), v0.v[v3i.y] + ((v1.v[v3i.y] - v0.v[v3i.y]) * amount), v0.v[v3i.z] + ((v1.v[v3i.z] - v0.v[v3i.z]) * amount));
-          };
-          Vector3.barycentric = function (v0, v1, v2, amount0, amount1) {
-              return new Vector3((v0.v[v3i.x] + (amount0 * (v1.v[v3i.x] - v0.v[v3i.x]))) + (amount1 * (v2.v[v3i.x] - v0.v[v3i.x])), (v0.v[v3i.y] + (amount0 * (v1.v[v3i.y] - v0.v[v3i.y]))) + (amount1 * (v2.v[v3i.y] - v0.v[v3i.y])), (v0.v[v3i.z] + (amount0 * (v1.v[v3i.z] - v0.v[v3i.z]))) + (amount1 * (v2.v[v3i.z] - v0.v[v3i.z])));
-          };
-          Vector3.smoothstep = function (v0, v1, amount) {
+          Vector4.smoothstep = function (v0, v1, amount) {
               amount = (amount > 1.0) ? 1.0 : ((amount < 0.0) ? 0.0 : amount);
               amount = (amount * amount) * (3.0 - (2.0 * amount));
-              return new Vector3(v0.v[v3i.x] + ((v1.v[v3i.x] - v0.v[v3i.x]) * amount), v0.v[v3i.y] + ((v1.v[v3i.y] - v0.v[v3i.y]) * amount), v0.v[v3i.z] + ((v1.v[v3i.z] - v0.v[v3i.z]) * amount));
+              return new Vector4(v0.v[v4i.x] + ((v1.v[v4i.x] - v0.v[v4i.x]) * amount), v0.v[v4i.y] + ((v1.v[v4i.y] - v0.v[v4i.y]) * amount), v0.v[v4i.z] + ((v1.v[v4i.z] - v0.v[v4i.z]) * amount), v0.v[v4i.w] + ((v1.v[v4i.w] - v0.v[v4i.w]) * amount));
           };
-          Vector3.catmullrom = function (v0, v1, v2, v3, amount) {
+          Vector4.catmullrom = function (v0, v1, v2, v3, amount) {
               var n0 = amount * amount;
               var n1 = amount * n0;
-              return new Vector3(0.5 * ((((2.0 * v1.v[v3i.x])
-                  + ((-v0.v[v3i.x] + v2.v[v3i.x]) * amount))
-                  + (((((2.0 * v0.v[v3i.x]) - (5.0 * v1.v[v3i.x]))
-                      + (4.0 * v2.v[v3i.x])) - v3.v[v3i.x]) * n0))
-                  + ((((-v0.v[v3i.x] + (3.0 * v1.v[v3i.x]))
-                      - (3.0 * v2.v[v3i.x])) + v3.v[v3i.x]) * n1)), 0.5 * ((((2.0 * v1.v[v3i.y])
-                  + ((-v0.v[v3i.y] + v2.v[v3i.y]) * amount))
-                  + (((((2.0 * v0.v[v3i.y]) - (5.0 * v1.v[v3i.y]))
-                      + (4.0 * v2.v[v3i.y])) - v3.v[v3i.y]) * n0))
-                  + ((((-v0.v[v3i.y] + (3.0 * v1.v[v3i.y]))
-                      - (3.0 * v2.v[v3i.y])) + v3.v[v3i.y]) * n1)), 0.5 * ((((2.0 * v1.v[v3i.z])
-                  + ((-v0.v[v3i.z] + v2.v[v3i.z]) * amount))
-                  + (((((2.0 * v0.v[v3i.z]) - (5.0 * v1.v[v3i.z]))
-                      + (4.0 * v2.v[v3i.z])) - v3.v[v3i.z]) * n0))
-                  + ((((-v0.v[v3i.z] + (3.0 * v1.v[v3i.z]))
-                      - (3.0 * v2.v[v3i.z])) + v3.v[v3i.z]) * n1)));
+              return new Vector4(0.5 * ((((2.0 * v1.v[v4i.x])
+                  + ((-v0.v[v4i.x] + v2.v[v4i.x]) * amount))
+                  + (((((2.0 * v0.v[v4i.x]) - (5.0 * v1.v[v4i.x]))
+                      + (4.0 * v2.v[v4i.x])) - v3.v[v4i.x]) * n0))
+                  + ((((-v0.v[v4i.x] + (3.0 * v1.v[v4i.x]))
+                      - (3.0 * v2.v[v4i.x])) + v3.v[v4i.x]) * n1)), 0.5 * ((((2.0 * v1.v[v4i.y])
+                  + ((-v0.v[v4i.y] + v2.v[v4i.y]) * amount))
+                  + (((((2.0 * v0.v[v4i.y]) - (5.0 * v1.v[v4i.y]))
+                      + (4.0 * v2.v[v4i.y])) - v3.v[v4i.y]) * n0))
+                  + ((((-v0.v[v4i.y] + (3.0 * v1.v[v4i.y]))
+                      - (3.0 * v2.v[v4i.y])) + v3.v[v4i.y]) * n1)), 0.5 * ((((2.0 * v1.v[v4i.z])
+                  + ((-v0.v[v4i.z] + v2.v[v4i.z]) * amount))
+                  + (((((2.0 * v0.v[v4i.z]) - (5.0 * v1.v[v4i.z]))
+                      + (4.0 * v2.v[v4i.z])) - v3.v[v4i.z]) * n0))
+                  + ((((-v0.v[v4i.z] + (3.0 * v1.v[v4i.z]))
+                      - (3.0 * v2.v[v4i.z])) + v3.v[v4i.z]) * n1)), 0.5 * ((((2.0 * v1.v[v4i.w])
+                  + ((-v0.v[v4i.w] + v2.v[v4i.w]) * amount))
+                  + (((((2.0 * v0.v[v4i.w]) - (5.0 * v1.v[v4i.w]))
+                      + (4.0 * v2.v[v4i.w])) - v3.v[v4i.w]) * n0))
+                  + ((((-v0.v[v4i.w] + (3.0 * v1.v[v4i.w]))
+                      - (3.0 * v2.v[v4i.w])) + v3.v[v4i.w]) * n1)));
           };
-          Vector3.hermite = function (v0, t0, v1, t1, amount) {
+          Vector4.hermite = function (v0, t0, v1, t1, amount) {
               var n0 = amount * amount;
               var n1 = amount * n0;
               var n2 = ((2.0 * n1) - (3.0 * n0)) + 1.0;
               var n3 = (-2.0 * n1) + (3.0 * n0);
               var n4 = (n1 - (2.0 * n0)) + amount;
               var n5 = n1 - n0;
-              return new Vector3((((v0.v[v3i.x] * n2) + (v1.v[v3i.x] * n3)) + (t0.v[v3i.x] * n4)) + (t1.v[v3i.x] * n5), (((v0.v[v3i.y] * n2) + (v1.v[v3i.y] * n3)) + (t0.v[v3i.y] * n4)) + (t1.v[v3i.y] * n5), (((v0.v[v3i.z] * n2) + (v1.v[v3i.z] * n3)) + (t0.v[v3i.z] * n4)) + (t1.v[v3i.z] * n5));
+              return new Vector4((((v0.v[v4i.x] * n2) + (v1.v[v4i.x] * n3)) + (t0.v[v4i.x] * n4)) + (t1.v[v4i.x] * n5), (((v0.v[v4i.y] * n2) + (v1.v[v4i.y] * n3)) + (t0.v[v4i.y] * n4)) + (t1.v[v4i.y] * n5), (((v0.v[v4i.z] * n2) + (v1.v[v4i.z] * n3)) + (t0.v[v4i.z] * n4)) + (t1.v[v4i.z] * n5), (((v0.v[v4i.w] * n2) + (v1.v[v4i.w] * n3)) + (t0.v[v4i.w] * n4)) + (t1.v[v4i.w] * n5));
           };
-          Vector3.transform = function (v0, m0) {
-              return new Vector3((((v0.v[v3i.x] * m0.v[mi.m11]) + (v0.v[v3i.y] * m0.v[mi.m21])) + (v0.v[v3i.z] * m0.v[mi.m31])) + m0.v[mi.m41], (((v0.v[v3i.x] * m0.v[mi.m12]) + (v0.v[v3i.y] * m0.v[mi.m22])) + (v0.v[v3i.z] * m0.v[mi.m32])) + m0.v[mi.m42], (((v0.v[v3i.x] * m0.v[mi.m13]) + (v0.v[v3i.y] * m0.v[mi.m23])) + (v0.v[v3i.z] * m0.v[mi.m33])) + m0.v[mi.m43]);
+          Vector4.transform = function (v0, m0) {
+              return new Vector4((((v0.v[v4i.x] * m0.v[mi.m11]) + (v0.v[v4i.y] * m0.v[mi.m21])) + (v0.v[v4i.z] * m0.v[mi.m31])) + (v0.v[v4i.w] * m0.v[mi.m41]), (((v0.v[v4i.x] * m0.v[mi.m12]) + (v0.v[v4i.y] * m0.v[mi.m22])) + (v0.v[v4i.z] * m0.v[mi.m32])) + (v0.v[v4i.w] * m0.v[mi.m42]), (((v0.v[v4i.x] * m0.v[mi.m13]) + (v0.v[v4i.y] * m0.v[mi.m23])) + (v0.v[v4i.z] * m0.v[mi.m33])) + (v0.v[v4i.w] * m0.v[mi.m43]), (((v0.v[v4i.x] * m0.v[mi.m14]) + (v0.v[v4i.y] * m0.v[mi.m24])) + (v0.v[v4i.z] * m0.v[mi.m34])) + (v0.v[v4i.w] * m0.v[mi.m44]));
           };
-          Vector3.transformNormal = function (n0, m0) {
-              return new Vector3(((n0.v[v3i.x] * m0.v[mi.m11]) + (n0.v[v3i.y] * m0.v[mi.m21])) + (n0.v[v3i.z] * m0.v[mi.m31]), ((n0.v[v3i.x] * m0.v[mi.m12]) + (n0.v[v3i.y] * m0.v[mi.m22])) + (n0.v[v3i.z] * m0.v[mi.m32]), ((n0.v[v3i.x] * m0.v[mi.m13]) + (n0.v[v3i.y] * m0.v[mi.m23])) + (n0.v[v3i.z] * m0.v[mi.m33]));
-          };
-          Vector3.transformQuaternion = function (v0, q0) {
+          Vector4.transformQuaternion = function (v0, q0) {
               var n0 = q0.v[qi.x] + q0.v[qi.x];
               var n1 = q0.v[qi.y] + q0.v[qi.y];
               var n2 = q0.v[qi.z] + q0.v[qi.z];
@@ -1579,37 +855,37 @@
               var n9 = q0.v[qi.y] * n1;
               var n10 = q0.v[qi.y] * n2;
               var n11 = q0.v[qi.z] * n2;
-              return new Vector3(((v0.v[v3i.x] * ((1.0 - n9) - n11)) + (v0.v[v3i.y] * (n7 - n5))) + (v0.v[v3i.z] * (n8 + n4)), ((v0.v[v3i.x] * (n7 + n5)) + (v0.v[v3i.y] * ((1.0 - n6) - n11))) + (v0.v[v3i.z] * (n10 - n3)), ((v0.v[v3i.x] * (n8 - n4)) + (v0.v[v3i.y] * (n10 + n3))) + (v0.v[v3i.z] * ((1.0 - n6) - n9)));
+              return new Vector4((v0.v[v4i.x] * ((1.0 - n9) - n11)) + (v0.v[v4i.y] * (n7 - n5)), (v0.v[v4i.x] * (n7 + n5)) + (v0.v[v4i.y] * ((1.0 - n6) - n11)), (v0.v[v4i.x] * (n8 - n4)) + (v0.v[v4i.y] * (n10 + n3)));
           };
-          Vector3.add = function (v0, v1) {
-              return new Vector3(v0.v[v3i.x] + v1.v[v3i.x], v0.v[v3i.y] + v1.v[v3i.y], v0.v[v3i.z] + v1.v[v3i.z]);
+          Vector4.add = function (v0, v1) {
+              return new Vector4(v0.v[v4i.x] + v1.v[v4i.x], v0.v[v4i.y] + v1.v[v4i.y], v0.v[v4i.z] + v1.v[v4i.z], v0.v[v4i.w] + v1.v[v4i.w]);
           };
-          Vector3.sub = function (v0, v1) {
-              return new Vector3(v0.v[v3i.x] - v1.v[v3i.x], v0.v[v3i.y] - v1.v[v3i.y], v0.v[v3i.z] - v1.v[v3i.z]);
+          Vector4.sub = function (v0, v1) {
+              return new Vector4(v0.v[v4i.x] - v1.v[v4i.x], v0.v[v4i.y] - v1.v[v4i.y], v0.v[v4i.z] - v1.v[v4i.z], v0.v[v4i.w] - v1.v[v4i.w]);
           };
-          Vector3.mul = function (v0, v1) {
-              return new Vector3(v0.v[v3i.x] - v1.v[v3i.x], v0.v[v3i.y] - v1.v[v3i.y], v0.v[v3i.z] - v1.v[v3i.z]);
+          Vector4.mul = function (v0, v1) {
+              return new Vector4(v0.v[v4i.x] - v1.v[v4i.x], v0.v[v4i.y] - v1.v[v4i.y], v0.v[v4i.z] - v1.v[v4i.z], v0.v[v4i.w] - v1.v[v4i.w]);
           };
-          Vector3.div = function (v0, v1) {
-              return new Vector3(v0.v[v3i.x] / v1.v[v3i.x], v0.v[v3i.y] / v1.v[v3i.y], v0.v[v3i.z] / v1.v[v3i.z]);
+          Vector4.div = function (v0, v1) {
+              return new Vector4(v0.v[v4i.x] / v1.v[v4i.x], v0.v[v4i.y] / v1.v[v4i.y], v0.v[v4i.z] / v1.v[v4i.z], v0.v[v4i.w] / v1.v[v4i.w]);
           };
-          Vector3.scale = function (v0, scalar) {
-              return new Vector3(v0.v[v3i.x] * scalar, v0.v[v3i.y] * scalar, v0.v[v3i.z] * scalar);
+          Vector4.scale = function (v0, scalar) {
+              return new Vector4(v0.v[v4i.x] * scalar, v0.v[v4i.y] * scalar, v0.v[v4i.z] * scalar, v0.v[v4i.w] * scalar);
           };
-          Vector3.negate = function (v0) {
-              return new Vector3(-v0.v[v3i.x], -v0.v[v3i.y], -v0.v[v3i.z]);
+          Vector4.negate = function (v0) {
+              return new Vector4(-v0.v[v4i.x], -v0.v[v4i.y], -v0.v[v4i.z], -v0.v[v4i.w]);
           };
-          Vector3.clone = function (v0) {
-              return new Vector3(v0.v[v3i.x], v0.v[v3i.y], v0.v[v3i.z]);
+          Vector4.clone = function (v0) {
+              return new Vector4(v0.v[v4i.x], v0.v[v4i.y], v0.v[v4i.z], v0.v[v4i.w]);
           };
-          Vector3.create = function (x, y, z) {
-              return new Vector3(x, y, z);
+          Vector4.create = function (x, y, z, w) {
+              return new Vector4(x, y, z, w);
           };
-          Vector3.MAX_VALUE = new Vector3(f32.max, f32.max, f32.max);
-          Vector3.MIN_VALUE = new Vector3(f32.min, f32.min, f32.min);
-          return Vector3;
+          Vector4.MAX_VALUE = new Vector4(f32.max, f32.max, f32.max, f32.max);
+          Vector4.MIN_VALUE = new Vector4(f32.min, f32.min, f32.min, f32.min);
+          return Vector4;
       }());
-      exports.Vector3 = Vector3;
+      exports.Vector4 = Vector4;
   });
   define("src/math/single", ["require", "exports"], function (require, exports) {
       "use strict";
@@ -1725,14 +1001,14 @@
       }());
       exports.Single = Single;
   });
-  define("src/math/sphere", ["require", "exports", "src/math/single", "src/math/vector3"], function (require, exports, single_1, vector3_2) {
+  define("src/math/sphere", ["require", "exports", "src/math/single", "src/math/vector3"], function (require, exports, single_1, vector3_1) {
       "use strict";
       exports.__esModule = true;
       var v3i = { x: 0, y: 1, z: 2 };
       var pli = { x: 0, y: 1, z: 2, w: 3 };
       var Sphere = (function () {
           function Sphere(position, radius) {
-              this.position = position === undefined ? new vector3_2.Vector3(0, 0, 0) : position;
+              this.position = position === undefined ? new vector3_1.Vector3(0, 0, 0) : position;
               this.radius = radius === undefined ? 0.5 : radius;
           }
           Sphere.prototype.toString = function () {
@@ -1745,11 +1021,11 @@
               return Sphere.clone(this);
           };
           Sphere.equals = function (s0, s1) {
-              return (vector3_2.Vector3.equals(s0.position, s1.position) &&
+              return (vector3_1.Vector3.equals(s0.position, s1.position) &&
                   s0.radius === s1.radius);
           };
           Sphere.merge = function (s0, s1) {
-              var n0 = vector3_2.Vector3.sub(s1.position, s0.position);
+              var n0 = vector3_1.Vector3.sub(s1.position, s0.position);
               var n1 = n0.length();
               var n2 = s0.radius;
               var n3 = s1.radius;
@@ -1768,19 +1044,19 @@
               return new Sphere(s0.position.add(n4.scale(n6.add(n5).x())), n6.x());
           };
           Sphere.fromBox = function (b0) {
-              var center = vector3_2.Vector3.lerp(b0.min, b0.max, 0.5);
-              var distance = vector3_2.Vector3.distance(b0.min, b0.max);
+              var center = vector3_1.Vector3.lerp(b0.min, b0.max, 0.5);
+              var distance = vector3_1.Vector3.distance(b0.min, b0.max);
               return new Sphere(center, distance * 0.5);
           };
           Sphere.fromPoints = function (points) {
               var radius = 0.0;
-              var center = new vector3_2.Vector3();
-              var n0 = new vector3_2.Vector3();
-              var n1 = new vector3_2.Vector3();
-              var n2 = new vector3_2.Vector3();
-              var n3 = new vector3_2.Vector3();
-              var n4 = new vector3_2.Vector3();
-              var n5 = new vector3_2.Vector3();
+              var center = new vector3_1.Vector3();
+              var n0 = new vector3_1.Vector3();
+              var n1 = new vector3_1.Vector3();
+              var n2 = new vector3_1.Vector3();
+              var n3 = new vector3_1.Vector3();
+              var n4 = new vector3_1.Vector3();
+              var n5 = new vector3_1.Vector3();
               for (var i = 0; i < points.length; i++) {
                   var p = points[i];
                   if (p.v[v3i.x] < n0.v[v3i.x]) {
@@ -1802,34 +1078,34 @@
                       n5 = p.clone();
                   }
               }
-              var n6 = vector3_2.Vector3.distance(n1, n0);
-              var n7 = vector3_2.Vector3.distance(n3, n2);
-              var n8 = vector3_2.Vector3.distance(n5, n4);
+              var n6 = vector3_1.Vector3.distance(n1, n0);
+              var n7 = vector3_1.Vector3.distance(n3, n2);
+              var n8 = vector3_1.Vector3.distance(n5, n4);
               if (n6 > n7) {
                   if (n6 > n8) {
-                      center = vector3_2.Vector3.lerp(n1, n0, 0.5);
+                      center = vector3_1.Vector3.lerp(n1, n0, 0.5);
                       radius = n6 * 0.5;
                   }
                   else {
-                      center = vector3_2.Vector3.lerp(n5, n4, 0.5);
+                      center = vector3_1.Vector3.lerp(n5, n4, 0.5);
                       radius = n8 * 0.5;
                   }
               }
               else if (n7 > n8) {
-                  center = vector3_2.Vector3.lerp(n3, n2, 0.5);
+                  center = vector3_1.Vector3.lerp(n3, n2, 0.5);
                   radius = n7 * 0.5;
               }
               else {
-                  center = vector3_2.Vector3.lerp(n5, n4, 0.5);
+                  center = vector3_1.Vector3.lerp(n5, n4, 0.5);
                   radius = n8 * 0.5;
               }
               for (var i = 0; i < points.length; i++) {
                   var v0 = points[i];
-                  var v1 = new vector3_2.Vector3(v0.v[v3i.x] - center.v[v3i.x], v0.v[v3i.y] - center.v[v3i.y], v0.v[v3i.z] - center.v[v3i.z]);
+                  var v1 = new vector3_1.Vector3(v0.v[v3i.x] - center.v[v3i.x], v0.v[v3i.y] - center.v[v3i.y], v0.v[v3i.z] - center.v[v3i.z]);
                   var num3 = v1.length();
                   if (num3 > radius) {
                       radius = (radius + num3) * 0.5;
-                      center = center.add(vector3_2.Vector3.scale(v1, 1.0 - (radius / num3)));
+                      center = center.add(vector3_1.Vector3.scale(v1, 1.0 - (radius / num3)));
                   }
               }
               return new Sphere(center, radius);
@@ -1843,6 +1119,126 @@
           return Sphere;
       }());
       exports.Sphere = Sphere;
+  });
+  define("src/math/frustum", ["require", "exports", "src/math/matrix", "src/math/vector3", "src/math/plane", "src/math/ray"], function (require, exports, matrix_1, vector3_2, plane_1, ray_1) {
+      "use strict";
+      exports.__esModule = true;
+      var pli = { x: 0, y: 1, z: 2, w: 3 };
+      var v3i = { x: 0, y: 1, z: 2 };
+      var fpi = { near: 0, far: 1, left: 2, right: 3, top: 4, bottom: 5 };
+      var mi = {
+          m11: 0, m12: 1, m13: 2, m14: 3,
+          m21: 4, m22: 5, m23: 6, m24: 7,
+          m31: 8, m32: 9, m33: 10, m34: 11,
+          m41: 12, m42: 13, m43: 14, m44: 15
+      };
+      var computeIntersectionRay = function (p0, p1) {
+          var v0 = vector3_2.Vector3.cross(p0.normal(), p1.normal());
+          var n0 = v0.lengthSq();
+          var v1 = vector3_2.Vector3.scale(p1.normal(), -p0.d());
+          var v2 = vector3_2.Vector3.scale(p0.normal(), p1.d());
+          var v3 = vector3_2.Vector3.add(v1, v2);
+          var v4 = vector3_2.Vector3.cross(v3, v0);
+          var v5 = new vector3_2.Vector3(v4.v[v3i.x] / n0, v4.v[v3i.y] / n0, v4.v[v3i.z] / n0);
+          return new ray_1.Ray(v5, v0);
+      };
+      var computeIntersectionVector = function (plane, ray) {
+          var num = (-plane.d() -
+              vector3_2.Vector3.dot(plane.normal(), ray.position)) /
+              vector3_2.Vector3.dot(plane.normal(), ray.direction);
+          return vector3_2.Vector3.add(ray.position, vector3_2.Vector3.scale(ray.direction, num));
+      };
+      var Frustum = (function () {
+          function Frustum(matrix) {
+              this.matrix = matrix === undefined ? matrix_1.Matrix.create() : matrix.clone();
+              this.planes = new Array(6);
+              this.planes[fpi.near] = new plane_1.Plane(-this.matrix.v[mi.m13], -this.matrix.v[mi.m23], -this.matrix.v[mi.m33], -this.matrix.v[mi.m43]);
+              this.planes[fpi.far] = new plane_1.Plane(-this.matrix.v[mi.m14] + this.matrix.v[mi.m13], -this.matrix.v[mi.m24] + this.matrix.v[mi.m23], -this.matrix.v[mi.m34] + this.matrix.v[mi.m33], -this.matrix.v[mi.m44] + this.matrix.v[mi.m43]);
+              this.planes[fpi.left] = new plane_1.Plane(-this.matrix.v[mi.m14] - this.matrix.v[mi.m11], -this.matrix.v[mi.m24] - this.matrix.v[mi.m21], -this.matrix.v[mi.m34] - this.matrix.v[mi.m31], -this.matrix.v[mi.m44] - this.matrix.v[mi.m41]);
+              this.planes[fpi.right] = new plane_1.Plane(-this.matrix.v[mi.m14] + this.matrix.v[mi.m11], -this.matrix.v[mi.m24] + this.matrix.v[mi.m21], -this.matrix.v[mi.m34] + this.matrix.v[mi.m31], -this.matrix.v[mi.m44] + this.matrix.v[mi.m41]);
+              this.planes[fpi.top] = new plane_1.Plane(-this.matrix.v[mi.m14] + this.matrix.v[mi.m12], -this.matrix.v[mi.m24] + this.matrix.v[mi.m22], -this.matrix.v[mi.m34] + this.matrix.v[mi.m32], -this.matrix.v[mi.m44] + this.matrix.v[mi.m42]);
+              this.planes[fpi.bottom] = new plane_1.Plane(-this.matrix.v[mi.m14] - this.matrix.v[mi.m12], -this.matrix.v[mi.m24] - this.matrix.v[mi.m22], -this.matrix.v[mi.m34] - this.matrix.v[mi.m32], -this.matrix.v[mi.m44] - this.matrix.v[mi.m42]);
+              for (var i = 0; i < this.planes.length; i++) {
+                  var len = this.planes[i].normal().length();
+                  this.planes[i].v[pli.x] = this.planes[i].v[pli.x] / len;
+                  this.planes[i].v[pli.y] = this.planes[i].v[pli.y] / len;
+                  this.planes[i].v[pli.z] = this.planes[i].v[pli.z] / len;
+                  this.planes[i].v[pli.w] = this.planes[i].v[pli.w] / len;
+              }
+              this.corners = new Array(8);
+              var ray = computeIntersectionRay(this.planes[0], this.planes[2]);
+              this.corners[0] = computeIntersectionVector(this.planes[4], ray);
+              this.corners[3] = computeIntersectionVector(this.planes[5], ray);
+              ray = computeIntersectionRay(this.planes[3], this.planes[0]);
+              this.corners[1] = computeIntersectionVector(this.planes[4], ray);
+              this.corners[2] = computeIntersectionVector(this.planes[5], ray);
+              ray = computeIntersectionRay(this.planes[2], this.planes[1]);
+              this.corners[4] = computeIntersectionVector(this.planes[4], ray);
+              this.corners[7] = computeIntersectionVector(this.planes[5], ray);
+              ray = computeIntersectionRay(this.planes[1], this.planes[3]);
+              this.corners[5] = computeIntersectionVector(this.planes[4], ray);
+              this.corners[6] = computeIntersectionVector(this.planes[5], ray);
+          }
+          Frustum.prototype.toString = function () {
+              var buf = new Array();
+              buf.push('{');
+              buf.push("  planes: {");
+              buf.push("    near  : " + this.planes[fpi.near].toString() + ",");
+              buf.push("    far   : " + this.planes[fpi.far].toString() + ",");
+              buf.push("    left  : " + this.planes[fpi.left].toString() + ",");
+              buf.push("    right : " + this.planes[fpi.right].toString() + ",");
+              buf.push("    top   : " + this.planes[fpi.top].toString() + ",");
+              buf.push("    bottom: " + this.planes[fpi.bottom].toString());
+              buf.push("  },");
+              buf.push("  corners: [");
+              buf.push("    " + this.corners[0].toString() + ",");
+              buf.push("    " + this.corners[1].toString() + ",");
+              buf.push("    " + this.corners[2].toString() + ",");
+              buf.push("    " + this.corners[3].toString() + ",");
+              buf.push("    " + this.corners[4].toString() + ",");
+              buf.push("    " + this.corners[5].toString() + ",");
+              buf.push("    " + this.corners[6].toString() + ",");
+              buf.push("    " + this.corners[7].toString());
+              buf.push("  ]");
+              buf.push("}");
+              return buf.join('\n');
+          };
+          Frustum.prototype.typeinfo = function () {
+              return "Frustum";
+          };
+          Frustum.prototype.clone = function () {
+              return Frustum.clone(this);
+          };
+          Frustum.equals = function (f0, f1) {
+              return (f0.matrix === f1.matrix);
+          };
+          Frustum.prototype.near = function () {
+              return this.planes[fpi.near];
+          };
+          Frustum.prototype.far = function () {
+              return this.planes[fpi.far];
+          };
+          Frustum.prototype.left = function () {
+              return this.planes[fpi.left];
+          };
+          Frustum.prototype.right = function () {
+              return this.planes[fpi.right];
+          };
+          Frustum.prototype.top = function () {
+              return this.planes[fpi.top];
+          };
+          Frustum.prototype.bottom = function () {
+              return this.planes[fpi.bottom];
+          };
+          Frustum.clone = function (f0) {
+              return new Frustum(f0.matrix.clone());
+          };
+          Frustum.create = function (matrix) {
+              return new Frustum(matrix);
+          };
+          return Frustum;
+      }());
+      exports.Frustum = Frustum;
   });
   define("src/math/triangle", ["require", "exports", "src/math/vector3", "src/math/plane"], function (require, exports, vector3_3, plane_2) {
       "use strict";
@@ -2048,125 +1444,102 @@
       }());
       exports.Ray = Ray;
   });
-  define("src/math/frustum", ["require", "exports", "src/math/matrix", "src/math/vector3", "src/math/plane", "src/math/ray"], function (require, exports, matrix_1, vector3_5, plane_3, ray_1) {
+  define("src/math/box", ["require", "exports", "src/math/vector3", "src/math/ray"], function (require, exports, vector3_5, ray_2) {
       "use strict";
       exports.__esModule = true;
-      var pli = { x: 0, y: 1, z: 2, w: 3 };
       var v3i = { x: 0, y: 1, z: 2 };
-      var fpi = { near: 0, far: 1, left: 2, right: 3, top: 4, bottom: 5 };
-      var mi = {
-          m11: 0, m12: 1, m13: 2, m14: 3,
-          m21: 4, m22: 5, m23: 6, m24: 7,
-          m31: 8, m32: 9, m33: 10, m34: 11,
-          m41: 12, m42: 13, m43: 14, m44: 15
-      };
-      var computeIntersectionRay = function (p0, p1) {
-          var v0 = vector3_5.Vector3.cross(p0.normal(), p1.normal());
-          var n0 = v0.lengthSq();
-          var v1 = vector3_5.Vector3.scale(p1.normal(), -p0.d());
-          var v2 = vector3_5.Vector3.scale(p0.normal(), p1.d());
-          var v3 = vector3_5.Vector3.add(v1, v2);
-          var v4 = vector3_5.Vector3.cross(v3, v0);
-          var v5 = new vector3_5.Vector3(v4.v[v3i.x] / n0, v4.v[v3i.y] / n0, v4.v[v3i.z] / n0);
-          return new ray_1.Ray(v5, v0);
-      };
-      var computeIntersectionVector = function (plane, ray) {
-          var num = (-plane.d() -
-              vector3_5.Vector3.dot(plane.normal(), ray.position)) /
-              vector3_5.Vector3.dot(plane.normal(), ray.direction);
-          return vector3_5.Vector3.add(ray.position, vector3_5.Vector3.scale(ray.direction, num));
-      };
-      var Frustum = (function () {
-          function Frustum(matrix) {
-              this.matrix = matrix === undefined ? matrix_1.Matrix.create() : matrix.clone();
-              this.planes = new Array(6);
-              this.planes[fpi.near] = new plane_3.Plane(-this.matrix.v[mi.m13], -this.matrix.v[mi.m23], -this.matrix.v[mi.m33], -this.matrix.v[mi.m43]);
-              this.planes[fpi.far] = new plane_3.Plane(-this.matrix.v[mi.m14] + this.matrix.v[mi.m13], -this.matrix.v[mi.m24] + this.matrix.v[mi.m23], -this.matrix.v[mi.m34] + this.matrix.v[mi.m33], -this.matrix.v[mi.m44] + this.matrix.v[mi.m43]);
-              this.planes[fpi.left] = new plane_3.Plane(-this.matrix.v[mi.m14] - this.matrix.v[mi.m11], -this.matrix.v[mi.m24] - this.matrix.v[mi.m21], -this.matrix.v[mi.m34] - this.matrix.v[mi.m31], -this.matrix.v[mi.m44] - this.matrix.v[mi.m41]);
-              this.planes[fpi.right] = new plane_3.Plane(-this.matrix.v[mi.m14] + this.matrix.v[mi.m11], -this.matrix.v[mi.m24] + this.matrix.v[mi.m21], -this.matrix.v[mi.m34] + this.matrix.v[mi.m31], -this.matrix.v[mi.m44] + this.matrix.v[mi.m41]);
-              this.planes[fpi.top] = new plane_3.Plane(-this.matrix.v[mi.m14] + this.matrix.v[mi.m12], -this.matrix.v[mi.m24] + this.matrix.v[mi.m22], -this.matrix.v[mi.m34] + this.matrix.v[mi.m32], -this.matrix.v[mi.m44] + this.matrix.v[mi.m42]);
-              this.planes[fpi.bottom] = new plane_3.Plane(-this.matrix.v[mi.m14] - this.matrix.v[mi.m12], -this.matrix.v[mi.m24] - this.matrix.v[mi.m22], -this.matrix.v[mi.m34] - this.matrix.v[mi.m32], -this.matrix.v[mi.m44] - this.matrix.v[mi.m42]);
-              for (var i = 0; i < this.planes.length; i++) {
-                  var len = this.planes[i].normal().length();
-                  this.planes[i].v[pli.x] = this.planes[i].v[pli.x] / len;
-                  this.planes[i].v[pli.y] = this.planes[i].v[pli.y] / len;
-                  this.planes[i].v[pli.z] = this.planes[i].v[pli.z] / len;
-                  this.planes[i].v[pli.w] = this.planes[i].v[pli.w] / len;
-              }
-              this.corners = new Array(8);
-              var ray = computeIntersectionRay(this.planes[0], this.planes[2]);
-              this.corners[0] = computeIntersectionVector(this.planes[4], ray);
-              this.corners[3] = computeIntersectionVector(this.planes[5], ray);
-              ray = computeIntersectionRay(this.planes[3], this.planes[0]);
-              this.corners[1] = computeIntersectionVector(this.planes[4], ray);
-              this.corners[2] = computeIntersectionVector(this.planes[5], ray);
-              ray = computeIntersectionRay(this.planes[2], this.planes[1]);
-              this.corners[4] = computeIntersectionVector(this.planes[4], ray);
-              this.corners[7] = computeIntersectionVector(this.planes[5], ray);
-              ray = computeIntersectionRay(this.planes[1], this.planes[3]);
-              this.corners[5] = computeIntersectionVector(this.planes[4], ray);
-              this.corners[6] = computeIntersectionVector(this.planes[5], ray);
+      var pli = { x: 0, y: 1, z: 2, w: 3 };
+      var Box = (function () {
+          function Box(min, max) {
+              this.min = min === undefined ? new vector3_5.Vector3(0, 0, 0) : min;
+              this.max = max === undefined ? new vector3_5.Vector3(1, 1, 1) : max;
           }
-          Frustum.prototype.toString = function () {
-              var buf = new Array();
-              buf.push('{');
-              buf.push("  planes: {");
-              buf.push("    near  : " + this.planes[fpi.near].toString() + ",");
-              buf.push("    far   : " + this.planes[fpi.far].toString() + ",");
-              buf.push("    left  : " + this.planes[fpi.left].toString() + ",");
-              buf.push("    right : " + this.planes[fpi.right].toString() + ",");
-              buf.push("    top   : " + this.planes[fpi.top].toString() + ",");
-              buf.push("    bottom: " + this.planes[fpi.bottom].toString());
-              buf.push("  },");
-              buf.push("  corners: [");
-              buf.push("    " + this.corners[0].toString() + ",");
-              buf.push("    " + this.corners[1].toString() + ",");
-              buf.push("    " + this.corners[2].toString() + ",");
-              buf.push("    " + this.corners[3].toString() + ",");
-              buf.push("    " + this.corners[4].toString() + ",");
-              buf.push("    " + this.corners[5].toString() + ",");
-              buf.push("    " + this.corners[6].toString() + ",");
-              buf.push("    " + this.corners[7].toString());
-              buf.push("  ]");
-              buf.push("}");
-              return buf.join('\n');
+          Box.prototype.toString = function () {
+              return "[" + this.min.toString() + ", " + this.max.toString() + "]";
           };
-          Frustum.prototype.typeinfo = function () {
-              return "Frustum";
+          Box.prototype.typeinfo = function () {
+              return "Box";
           };
-          Frustum.prototype.clone = function () {
-              return Frustum.clone(this);
+          Box.prototype.clone = function () {
+              return Box.clone(this);
           };
-          Frustum.equals = function (f0, f1) {
-              return (f0.matrix === f1.matrix);
+          Box.prototype.corners = function () {
+              return [
+                  new vector3_5.Vector3(this.min.v[v3i.x], this.max.v[v3i.y], this.max.v[v3i.z]),
+                  new vector3_5.Vector3(this.max.v[v3i.x], this.max.v[v3i.y], this.max.v[v3i.z]),
+                  new vector3_5.Vector3(this.max.v[v3i.x], this.min.v[v3i.y], this.max.v[v3i.z]),
+                  new vector3_5.Vector3(this.min.v[v3i.x], this.min.v[v3i.y], this.max.v[v3i.z]),
+                  new vector3_5.Vector3(this.min.v[v3i.x], this.max.v[v3i.y], this.min.v[v3i.z]),
+                  new vector3_5.Vector3(this.max.v[v3i.x], this.max.v[v3i.y], this.min.v[v3i.z]),
+                  new vector3_5.Vector3(this.max.v[v3i.x], this.min.v[v3i.y], this.min.v[v3i.z]),
+                  new vector3_5.Vector3(this.min.v[v3i.x], this.min.v[v3i.y], this.min.v[v3i.z])
+              ];
           };
-          Frustum.prototype.near = function () {
-              return this.planes[fpi.near];
+          Box.equals = function (b0, b1) {
+              return (vector3_5.Vector3.equals(b0.min, b1.min) &&
+                  vector3_5.Vector3.equals(b0.max, b1.max));
           };
-          Frustum.prototype.far = function () {
-              return this.planes[fpi.far];
+          Box.merge = function (b0, b1) {
+              return new Box(vector3_5.Vector3.min(b0.min, b1.min), vector3_5.Vector3.max(b0.max, b1.max));
           };
-          Frustum.prototype.left = function () {
-              return this.planes[fpi.left];
+          Box.intersectBox = function (b0, b1) {
+              if ((b0.max.v[v3i.x] < b1.min.v[v3i.x]) ||
+                  (b0.min.v[v3i.x] > b1.max.v[v3i.x])) {
+                  return false;
+              }
+              if ((b0.max.v[v3i.y] < b1.min.v[v3i.y]) ||
+                  (b0.min.v[v3i.y] > b1.max.v[v3i.y])) {
+                  return false;
+              }
+              return ((b0.max.v[v3i.z] >= b1.min.v[v3i.z]) &&
+                  (b0.min.v[v3i.z] <= b1.max.v[v3i.z]));
           };
-          Frustum.prototype.right = function () {
-              return this.planes[fpi.right];
+          Box.intersectPlane = function (b0, p0) {
+              var n1 = new vector3_5.Vector3((p0.v[pli.x] >= 0.0) ? b0.min.v[v3i.x] : b0.max.v[v3i.x], (p0.v[pli.y] >= 0.0) ? b0.min.v[v3i.y] : b0.max.v[v3i.y], (p0.v[pli.z] >= 0.0) ? b0.min.v[v3i.z] : b0.max.v[v3i.z]);
+              var n0 = new vector3_5.Vector3((p0.v[pli.x] >= 0.0) ? b0.max.v[v3i.x] : b0.min.v[v3i.x], (p0.v[pli.y] >= 0.0) ? b0.max.v[v3i.y] : b0.min.v[v3i.y], (p0.v[pli.z] >= 0.0) ? b0.max.v[v3i.z] : b0.min.v[v3i.z]);
+              var n2 = ((p0.v[pli.x] * n1.v[v3i.x]) +
+                  (p0.v[pli.y] * n1.v[v3i.y])) +
+                  (p0.v[pli.y] * n1.v[v3i.z]);
+              if ((n2 + p0.v[pli.w]) > 0.0) {
+                  return "front";
+              }
+              n2 = ((p0.v[pli.x] * n0.v[v3i.x]) +
+                  (p0.v[pli.y] * n0.v[v3i.y])) +
+                  (p0.v[pli.z] * n0.v[v3i.z]);
+              if ((n2 + p0.v[pli.w]) < 0.0) {
+                  return "back";
+              }
+              return "intersect";
           };
-          Frustum.prototype.top = function () {
-              return this.planes[fpi.top];
+          Box.intersectRay = function (b0, r0) {
+              return ray_2.Ray.intersectBox(r0, b0);
           };
-          Frustum.prototype.bottom = function () {
-              return this.planes[fpi.bottom];
+          Box.intersectSphere = function (b0, s0) {
+              var vector = vector3_5.Vector3.clamp(s0.position, b0.min, b0.max);
+              var num = vector3_5.Vector3.distanceSq(s0.position, vector);
+              return (num <= (s0.radius * s0.radius));
           };
-          Frustum.clone = function (f0) {
-              return new Frustum(f0.matrix.clone());
+          Box.fromSphere = function (s0) {
+              return new Box(new vector3_5.Vector3(s0.position.v[v3i.x] - s0.radius, s0.position.v[v3i.y] - s0.radius, s0.position.v[v3i.z] - s0.radius), new vector3_5.Vector3(s0.position.v[v3i.x] + s0.radius, s0.position.v[v3i.y] + s0.radius, s0.position.v[v3i.z] + s0.radius));
           };
-          Frustum.create = function (matrix) {
-              return new Frustum(matrix);
+          Box.fromPoints = function (points) {
+              var max = vector3_5.Vector3.MAX_VALUE;
+              var min = vector3_5.Vector3.MIN_VALUE;
+              for (var i = 0; i < points.length; i++) {
+                  max = vector3_5.Vector3.min(max, points[i]);
+                  min = vector3_5.Vector3.max(min, points[i]);
+              }
+              return new Box(min, max);
           };
-          return Frustum;
+          Box.clone = function (b0) {
+              return new Box(b0.min.clone(), b0.max.clone());
+          };
+          Box.create = function (min, max) {
+              return new Box(min, max);
+          };
+          return Box;
       }());
-      exports.Frustum = Frustum;
+      exports.Box = Box;
   });
   define("src/math/plane", ["require", "exports", "src/math/vector3", "src/math/matrix"], function (require, exports, vector3_6, matrix_2) {
       "use strict";
@@ -2361,118 +1734,745 @@
       }());
       exports.Plane = Plane;
   });
-  define("src/math/box", ["require", "exports", "src/math/vector3", "src/math/ray"], function (require, exports, vector3_7, ray_2) {
+  define("src/math/matrix", ["require", "exports", "src/math/plane", "src/math/vector3", "src/math/vector4"], function (require, exports, plane_3, vector3_7, vector4_1) {
       "use strict";
       exports.__esModule = true;
-      var v3i = { x: 0, y: 1, z: 2 };
+      var qui = { x: 0, y: 1, z: 2, w: 3 };
       var pli = { x: 0, y: 1, z: 2, w: 3 };
-      var Box = (function () {
-          function Box(min, max) {
-              this.min = min === undefined ? new vector3_7.Vector3(0, 0, 0) : min;
-              this.max = max === undefined ? new vector3_7.Vector3(1, 1, 1) : max;
+      var v3i = { x: 0, y: 1, z: 2 };
+      var mi = {
+          m11: 0, m12: 1, m13: 2, m14: 3,
+          m21: 4, m22: 5, m23: 6, m24: 7,
+          m31: 8, m32: 9, m33: 10, m34: 11,
+          m41: 12, m42: 13, m43: 14, m44: 15
+      };
+      var Matrix = (function () {
+          function Matrix(array) {
+              this.v = new Float32Array(16);
+              if (array !== undefined) {
+                  for (var i = 0; i < array.length; i++) {
+                      this.v[i] = array[i];
+                  }
+              }
+              else {
+                  this.v[mi.m11] = 1;
+                  this.v[mi.m12] = 0;
+                  this.v[mi.m13] = 0;
+                  this.v[mi.m14] = 0;
+                  this.v[mi.m21] = 0;
+                  this.v[mi.m22] = 1;
+                  this.v[mi.m23] = 0;
+                  this.v[mi.m24] = 0;
+                  this.v[mi.m31] = 0;
+                  this.v[mi.m32] = 0;
+                  this.v[mi.m33] = 1;
+                  this.v[mi.m34] = 0;
+                  this.v[mi.m41] = 0;
+                  this.v[mi.m42] = 0;
+                  this.v[mi.m43] = 0;
+                  this.v[mi.m44] = 1;
+              }
           }
-          Box.prototype.toString = function () {
-              return "[" + this.min.toString() + ", " + this.max.toString() + "]";
+          Matrix.prototype.m11 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m11] = value;
+              }
+              return this.v[mi.m11];
           };
-          Box.prototype.typeinfo = function () {
-              return "Box";
+          Matrix.prototype.m12 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m12] = value;
+              }
+              return this.v[mi.m12];
           };
-          Box.prototype.clone = function () {
-              return Box.clone(this);
+          Matrix.prototype.m13 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m13] = value;
+              }
+              return this.v[mi.m13];
           };
-          Box.prototype.corners = function () {
+          Matrix.prototype.m14 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m14] = value;
+              }
+              return this.v[mi.m14];
+          };
+          Matrix.prototype.m21 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m21] = value;
+              }
+              return this.v[mi.m21];
+          };
+          Matrix.prototype.m22 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m22] = value;
+              }
+              return this.v[mi.m22];
+          };
+          Matrix.prototype.m23 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m23] = value;
+              }
+              return this.v[mi.m23];
+          };
+          Matrix.prototype.m24 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m24] = value;
+              }
+              return this.v[mi.m24];
+          };
+          Matrix.prototype.m31 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m31] = value;
+              }
+              return this.v[mi.m31];
+          };
+          Matrix.prototype.m32 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m32] = value;
+              }
+              return this.v[mi.m32];
+          };
+          Matrix.prototype.m33 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m33] = value;
+              }
+              return this.v[mi.m33];
+          };
+          Matrix.prototype.m34 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m34] = value;
+              }
+              return this.v[mi.m34];
+          };
+          Matrix.prototype.m41 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m41] = value;
+              }
+              return this.v[mi.m41];
+          };
+          Matrix.prototype.m42 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m42] = value;
+              }
+              return this.v[mi.m42];
+          };
+          Matrix.prototype.m43 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m43] = value;
+              }
+              return this.v[mi.m43];
+          };
+          Matrix.prototype.m44 = function (value) {
+              if (value !== undefined) {
+                  this.v[mi.m44] = value;
+              }
+              return this.v[mi.m44];
+          };
+          Matrix.prototype.cols = function () {
               return [
-                  new vector3_7.Vector3(this.min.v[v3i.x], this.max.v[v3i.y], this.max.v[v3i.z]),
-                  new vector3_7.Vector3(this.max.v[v3i.x], this.max.v[v3i.y], this.max.v[v3i.z]),
-                  new vector3_7.Vector3(this.max.v[v3i.x], this.min.v[v3i.y], this.max.v[v3i.z]),
-                  new vector3_7.Vector3(this.min.v[v3i.x], this.min.v[v3i.y], this.max.v[v3i.z]),
-                  new vector3_7.Vector3(this.min.v[v3i.x], this.max.v[v3i.y], this.min.v[v3i.z]),
-                  new vector3_7.Vector3(this.max.v[v3i.x], this.max.v[v3i.y], this.min.v[v3i.z]),
-                  new vector3_7.Vector3(this.max.v[v3i.x], this.min.v[v3i.y], this.min.v[v3i.z]),
-                  new vector3_7.Vector3(this.min.v[v3i.x], this.min.v[v3i.y], this.min.v[v3i.z])
+                  new vector4_1.Vector4(this.v[mi.m11], this.v[mi.m21], this.v[mi.m31], this.v[mi.m41]),
+                  new vector4_1.Vector4(this.v[mi.m12], this.v[mi.m22], this.v[mi.m32], this.v[mi.m42]),
+                  new vector4_1.Vector4(this.v[mi.m13], this.v[mi.m23], this.v[mi.m33], this.v[mi.m43]),
+                  new vector4_1.Vector4(this.v[mi.m14], this.v[mi.m24], this.v[mi.m34], this.v[mi.m44])
               ];
           };
-          Box.equals = function (b0, b1) {
-              return (vector3_7.Vector3.equals(b0.min, b1.min) &&
-                  vector3_7.Vector3.equals(b0.max, b1.max));
+          Matrix.prototype.rows = function () {
+              return [
+                  new vector4_1.Vector4(this.v[mi.m11], this.v[mi.m12], this.v[mi.m13], this.v[mi.m14]),
+                  new vector4_1.Vector4(this.v[mi.m21], this.v[mi.m22], this.v[mi.m23], this.v[mi.m24]),
+                  new vector4_1.Vector4(this.v[mi.m31], this.v[mi.m32], this.v[mi.m33], this.v[mi.m34]),
+                  new vector4_1.Vector4(this.v[mi.m41], this.v[mi.m42], this.v[mi.m43], this.v[mi.m44])
+              ];
           };
-          Box.merge = function (b0, b1) {
-              return new Box(vector3_7.Vector3.min(b0.min, b1.min), vector3_7.Vector3.max(b0.max, b1.max));
-          };
-          Box.intersectBox = function (b0, b1) {
-              if ((b0.max.v[v3i.x] < b1.min.v[v3i.x]) ||
-                  (b0.min.v[v3i.x] > b1.max.v[v3i.x])) {
-                  return false;
+          Matrix.prototype.up = function (vector) {
+              if (vector !== undefined) {
+                  this.v[mi.m21] = vector.v[v3i.x];
+                  this.v[mi.m22] = vector.v[v3i.y];
+                  this.v[mi.m23] = vector.v[v3i.z];
               }
-              if ((b0.max.v[v3i.y] < b1.min.v[v3i.y]) ||
-                  (b0.min.v[v3i.y] > b1.max.v[v3i.y])) {
-                  return false;
+              return new vector3_7.Vector3(this.v[mi.m21], this.v[mi.m22], this.v[mi.m23]);
+          };
+          Matrix.prototype.down = function (vector) {
+              if (vector !== undefined) {
+                  this.v[mi.m21] = -vector.v[v3i.x];
+                  this.v[mi.m22] = -vector.v[v3i.y];
+                  this.v[mi.m23] = -vector.v[v3i.z];
               }
-              return ((b0.max.v[v3i.z] >= b1.min.v[v3i.z]) &&
-                  (b0.min.v[v3i.z] <= b1.max.v[v3i.z]));
+              return new vector3_7.Vector3(-this.v[mi.m21], -this.v[mi.m22], -this.v[mi.m23]);
           };
-          Box.intersectPlane = function (b0, p0) {
-              var n1 = new vector3_7.Vector3((p0.v[pli.x] >= 0.0) ? b0.min.v[v3i.x] : b0.max.v[v3i.x], (p0.v[pli.y] >= 0.0) ? b0.min.v[v3i.y] : b0.max.v[v3i.y], (p0.v[pli.z] >= 0.0) ? b0.min.v[v3i.z] : b0.max.v[v3i.z]);
-              var n0 = new vector3_7.Vector3((p0.v[pli.x] >= 0.0) ? b0.max.v[v3i.x] : b0.min.v[v3i.x], (p0.v[pli.y] >= 0.0) ? b0.max.v[v3i.y] : b0.min.v[v3i.y], (p0.v[pli.z] >= 0.0) ? b0.max.v[v3i.z] : b0.min.v[v3i.z]);
-              var n2 = ((p0.v[pli.x] * n1.v[v3i.x]) +
-                  (p0.v[pli.y] * n1.v[v3i.y])) +
-                  (p0.v[pli.y] * n1.v[v3i.z]);
-              if ((n2 + p0.v[pli.w]) > 0.0) {
-                  return "front";
+          Matrix.prototype.right = function (vector) {
+              if (vector !== undefined) {
+                  this.v[mi.m11] = vector.v[v3i.x];
+                  this.v[mi.m12] = vector.v[v3i.y];
+                  this.v[mi.m13] = vector.v[v3i.z];
               }
-              n2 = ((p0.v[pli.x] * n0.v[v3i.x]) +
-                  (p0.v[pli.y] * n0.v[v3i.y])) +
-                  (p0.v[pli.z] * n0.v[v3i.z]);
-              if ((n2 + p0.v[pli.w]) < 0.0) {
-                  return "back";
+              return new vector3_7.Vector3(this.v[mi.m11], this.v[mi.m12], this.v[mi.m13]);
+          };
+          Matrix.prototype.left = function (vector) {
+              if (vector !== undefined) {
+                  this.v[mi.m11] = -vector.v[v3i.x];
+                  this.v[mi.m12] = -vector.v[v3i.y];
+                  this.v[mi.m13] = -vector.v[v3i.z];
               }
-              return "intersect";
+              return new vector3_7.Vector3(-this.v[mi.m11], -this.v[mi.m12], -this.v[mi.m13]);
           };
-          Box.intersectRay = function (b0, r0) {
-              return ray_2.Ray.intersectBox(r0, b0);
-          };
-          Box.intersectSphere = function (b0, s0) {
-              var vector = vector3_7.Vector3.clamp(s0.position, b0.min, b0.max);
-              var num = vector3_7.Vector3.distanceSq(s0.position, vector);
-              return (num <= (s0.radius * s0.radius));
-          };
-          Box.fromSphere = function (s0) {
-              return new Box(new vector3_7.Vector3(s0.position.v[v3i.x] - s0.radius, s0.position.v[v3i.y] - s0.radius, s0.position.v[v3i.z] - s0.radius), new vector3_7.Vector3(s0.position.v[v3i.x] + s0.radius, s0.position.v[v3i.y] + s0.radius, s0.position.v[v3i.z] + s0.radius));
-          };
-          Box.fromPoints = function (points) {
-              var max = vector3_7.Vector3.MAX_VALUE;
-              var min = vector3_7.Vector3.MIN_VALUE;
-              for (var i = 0; i < points.length; i++) {
-                  max = vector3_7.Vector3.min(max, points[i]);
-                  min = vector3_7.Vector3.max(min, points[i]);
+          Matrix.prototype.forward = function (vector) {
+              if (vector !== undefined) {
+                  this.v[mi.m31] = -vector.v[v3i.x];
+                  this.v[mi.m32] = -vector.v[v3i.y];
+                  this.v[mi.m33] = -vector.v[v3i.z];
               }
-              return new Box(min, max);
+              return new vector3_7.Vector3(-this.v[mi.m31], -this.v[mi.m32], -this.v[mi.m33]);
           };
-          Box.clone = function (b0) {
-              return new Box(b0.min.clone(), b0.max.clone());
+          Matrix.prototype.backward = function (vector) {
+              if (vector !== undefined) {
+                  this.v[mi.m31] = vector.v[v3i.x];
+                  this.v[mi.m32] = vector.v[v3i.y];
+                  this.v[mi.m33] = vector.v[v3i.z];
+              }
+              return new vector3_7.Vector3(this.v[mi.m31], this.v[mi.m32], this.v[mi.m33]);
           };
-          Box.create = function (min, max) {
-              return new Box(min, max);
+          Matrix.prototype.translation = function (vector) {
+              if (vector !== undefined) {
+                  this.v[mi.m41] = vector.v[v3i.x];
+                  this.v[mi.m42] = vector.v[v3i.y];
+                  this.v[mi.m43] = vector.v[v3i.z];
+              }
+              return new vector3_7.Vector3(this.v[mi.m41], this.v[mi.m42], this.v[mi.m43]);
           };
-          return Box;
+          Matrix.prototype.translate = function (v0) {
+              return Matrix.mul(this, Matrix.translation(v0));
+          };
+          Matrix.prototype.scale = function (v0) {
+              return Matrix.mul(this, Matrix.scale(v0));
+          };
+          Matrix.prototype.rotateX = function (radian) {
+              return Matrix.mul(this, Matrix.rotationX(radian));
+          };
+          Matrix.prototype.rotateY = function (radian) {
+              return Matrix.mul(this, Matrix.rotationY(radian));
+          };
+          Matrix.prototype.rotateZ = function (radian) {
+              return Matrix.mul(this, Matrix.rotationZ(radian));
+          };
+          Matrix.prototype.toString = function () {
+              var buf = new Array();
+              buf.push("[" + this.v[mi.m11] + ", " + this.v[mi.m12] + ", " + this.v[mi.m13] + ", " + this.v[mi.m14]);
+              buf.push(" " + this.v[mi.m21] + ", " + this.v[mi.m22] + ", " + this.v[mi.m23] + ", " + this.v[mi.m24]);
+              buf.push(" " + this.v[mi.m31] + ", " + this.v[mi.m32] + ", " + this.v[mi.m33] + ", " + this.v[mi.m34]);
+              buf.push(" " + this.v[mi.m41] + ", " + this.v[mi.m42] + ", " + this.v[mi.m43] + ", " + this.v[mi.m44] + "]");
+              return buf.join('\n');
+          };
+          Matrix.prototype.typeinfo = function () {
+              return "Matrix";
+          };
+          Matrix.prototype.clone = function () {
+              return Matrix.clone(this);
+          };
+          Matrix.identity = function () {
+              return new Matrix();
+          };
+          Matrix.translation = function (v0) {
+              return new Matrix([
+                  1, 0, 0, 0,
+                  0, 1, 0, 0,
+                  0, 0, 1, 0,
+                  v0.v[v3i.x], v0.v[v3i.y], v0.v[v3i.z], 1
+              ]);
+          };
+          Matrix.scale = function (v0) {
+              return new Matrix([
+                  v0.v[v3i.x], 0, 0, 0,
+                  0, v0.v[v3i.y], 0, 0,
+                  0, 0, v0.v[v3i.z], 0,
+                  0, 0, 0, 1
+              ]);
+          };
+          Matrix.rotationX = function (radians) {
+              var cos = Math.cos(radians);
+              var sin = Math.sin(radians);
+              return new Matrix([
+                  1, 0, 0, 0,
+                  0, cos, sin, 0,
+                  0, -sin, cos, 0,
+                  0, 0, 0, 1
+              ]);
+          };
+          Matrix.rotationY = function (radians) {
+              var cos = Math.cos(radians);
+              var sin = Math.sin(radians);
+              return new Matrix([
+                  cos, 0, -sin, 0,
+                  0, 1, 0, 0,
+                  sin, 0, cos, 0,
+                  0, 0, 0, 1
+              ]);
+          };
+          Matrix.rotationZ = function (radians) {
+              var cos = Math.cos(radians);
+              var sin = Math.sin(radians);
+              return new Matrix([
+                  cos, sin, 0, 0,
+                  -sin, cos, 0, 0,
+                  0, 0, 1, 0,
+                  0, 0, 0, 1
+              ]);
+          };
+          Matrix.fromAxisAngle = function (axis, radians) {
+              var x = axis.v[v3i.x];
+              var y = axis.v[v3i.y];
+              var z = axis.v[v3i.z];
+              var n0 = Math.sin(radians);
+              var n1 = Math.cos(radians);
+              var n2 = x * x;
+              var n3 = y * y;
+              var n4 = z * z;
+              var n5 = x * y;
+              var n6 = x * z;
+              var n7 = y * z;
+              return new Matrix([
+                  n2 + (n1 * (1.0 - n2)),
+                  (n5 - (n1 * n5)) + (n0 * z),
+                  (n6 - (n1 * n6)) - (n0 * y),
+                  0.0,
+                  (n5 - (n1 * n5)) - (n0 * z),
+                  n3 + (n1 * (1.0 - n3)),
+                  (n7 - (n1 * n7)) + (n0 * x),
+                  0.0,
+                  (n6 - (n1 * n6)) + (n0 * y),
+                  (n7 - (n1 * n7)) - (n0 * x),
+                  n4 + (n1 * (1.0 - n4)),
+                  0.0,
+                  0.0, 0.0, 0.0, 1.0
+              ]);
+          };
+          Matrix.perspectiveFov = function (fov, aspect, near, far) {
+              var n0 = 1.0 / Math.tan(fov * 0.5);
+              var n1 = n0 / aspect;
+              var m0 = new Matrix();
+              m0.v[mi.m11] = n1;
+              m0.v[mi.m12] = m0.v[mi.m13] = m0.v[mi.m14] = 0;
+              m0.v[mi.m22] = n0;
+              m0.v[mi.m21] = m0.v[mi.m23] = m0.v[mi.m24] = 0;
+              m0.v[mi.m31] = m0.v[mi.m32] = 0;
+              m0.v[mi.m33] = far / (near - far);
+              m0.v[mi.m34] = -1;
+              m0.v[mi.m41] = m0.v[mi.m42] = m0.v[mi.m44] = 0;
+              m0.v[mi.m43] = (near * far) / (near - far);
+              return m0;
+          };
+          Matrix.perspective = function (width, height, near, far) {
+              var m0 = new Matrix();
+              m0.v[mi.m11] = (2.0 * near) / width;
+              m0.v[mi.m12] = m0.v[mi.m13] = m0.v[mi.m14] = 0.0;
+              m0.v[mi.m22] = (2.0 * near) / height;
+              m0.v[mi.m21] = m0.v[mi.m23] = m0.v[mi.m24] = 0.0;
+              m0.v[mi.m33] = far / (near - far);
+              m0.v[mi.m31] = m0.v[mi.m32] = 0.0;
+              m0.v[mi.m34] = -1.0;
+              m0.v[mi.m41] = m0.v[mi.m42] = m0.v[mi.m44] = 0.0;
+              m0.v[mi.m43] = (near * far) / (near - far);
+              return m0;
+          };
+          Matrix.perspectiveOffset = function (left, right, bottom, top, near, far) {
+              var m0 = new Matrix();
+              m0.v[mi.m11] = (2.0 * near) / (right - left);
+              m0.v[mi.m12] = m0.v[mi.m13] = m0.v[mi.m14] = 0.0;
+              m0.v[mi.m22] = (2.0 * near) / (top - bottom);
+              m0.v[mi.m21] = m0.v[mi.m23] = m0.v[mi.m24] = 0.0;
+              m0.v[mi.m31] = (left + right) / (right - left);
+              m0.v[mi.m32] = (top + bottom) / (top - bottom);
+              m0.v[mi.m33] = far / (near - far);
+              m0.v[mi.m34] = -1.0;
+              m0.v[mi.m43] = (near * far) / (near - far);
+              m0.v[mi.m41] = m0.v[mi.m42] = m0.v[mi.m44] = 0.0;
+              return m0;
+          };
+          Matrix.orthographic = function (width, height, near, far) {
+              var m0 = new Matrix();
+              m0.v[mi.m11] = 2.0 / width;
+              m0.v[mi.m12] = m0.v[mi.m13] = m0.v[mi.m14] = 0.0;
+              m0.v[mi.m22] = 2.0 / height;
+              m0.v[mi.m21] = m0.v[mi.m23] = m0.v[mi.m24] = 0.0;
+              m0.v[mi.m33] = 1.0 / (near - far);
+              m0.v[mi.m31] = m0.v[mi.m32] = m0.v[mi.m34] = 0.0;
+              m0.v[mi.m41] = m0.v[mi.m42] = 0.0;
+              m0.v[mi.m43] = near / (near - far);
+              m0.v[mi.m44] = 1.0;
+              return m0;
+          };
+          Matrix.orthographicOffset = function (left, right, bottom, top, near, far) {
+              var m0 = new Matrix();
+              m0.v[mi.m11] = 2.0 / (right - left);
+              m0.v[mi.m12] = m0.v[mi.m13] = m0.v[mi.m14] = 0.0;
+              m0.v[mi.m22] = 2.0 / (top - bottom);
+              m0.v[mi.m21] = m0.v[mi.m23] = m0.v[mi.m24] = 0.0;
+              m0.v[mi.m33] = 1.0 / (near - far);
+              m0.v[mi.m31] = m0.v[mi.m32] = m0.v[mi.m34] = 0.0;
+              m0.v[mi.m41] = (left + right) / (left - right);
+              m0.v[mi.m42] = (top + bottom) / (bottom - top);
+              m0.v[mi.m43] = near / (near - far);
+              m0.v[mi.m44] = 1.0;
+              return m0;
+          };
+          Matrix.lookAt = function (position, target, up) {
+              var m0 = new Matrix();
+              var v0 = vector3_7.Vector3.normalize(vector3_7.Vector3.sub(position, target));
+              var v1 = vector3_7.Vector3.normalize(vector3_7.Vector3.cross(up, v0));
+              var v2 = vector3_7.Vector3.cross(v0, v1);
+              m0.v[mi.m11] = v1.v[v3i.x];
+              m0.v[mi.m12] = v2.v[v3i.x];
+              m0.v[mi.m13] = v0.v[v3i.x];
+              m0.v[mi.m14] = 0.0;
+              m0.v[mi.m21] = v1.v[v3i.y];
+              m0.v[mi.m22] = v2.v[v3i.y];
+              m0.v[mi.m23] = v0.v[v3i.y];
+              m0.v[mi.m24] = 0.0;
+              m0.v[mi.m31] = v1.v[v3i.z];
+              m0.v[mi.m32] = v2.v[v3i.z];
+              m0.v[mi.m33] = v0.v[v3i.z];
+              m0.v[mi.m34] = 0.0;
+              m0.v[mi.m41] = -vector3_7.Vector3.dot(v1, position);
+              m0.v[mi.m42] = -vector3_7.Vector3.dot(v2, position);
+              m0.v[mi.m43] = -vector3_7.Vector3.dot(v0, position);
+              m0.v[mi.m44] = 1.0;
+              return m0;
+          };
+          Matrix.origin = function (m0) {
+              var r0 = m0.v[mi.m22] * m0.v[mi.m33] - m0.v[mi.m32] * m0.v[mi.m23];
+              var r1 = m0.v[mi.m32] * m0.v[mi.m13] - m0.v[mi.m12] * m0.v[mi.m33];
+              var r2 = m0.v[mi.m12] * m0.v[mi.m23] - m0.v[mi.m22] * m0.v[mi.m13];
+              var r3 = m0.v[mi.m11] * r0 + m0.v[mi.m21] * r1 + m0.v[mi.m31] * r2;
+              if (Math.abs(r3) < 0.0001)
+                  return vector3_7.Vector3.create();
+              var r4 = m0.v[mi.m31] * m0.v[mi.m23] - m0.v[mi.m21] * m0.v[mi.m33];
+              var r5 = m0.v[mi.m11] * m0.v[mi.m33] - m0.v[mi.m31] * m0.v[mi.m13];
+              var r6 = m0.v[mi.m21] * m0.v[mi.m13] - m0.v[mi.m11] * m0.v[mi.m23];
+              var r7 = m0.v[mi.m21] * m0.v[mi.m32] - m0.v[mi.m31] * m0.v[mi.m22];
+              var r8 = m0.v[mi.m31] * m0.v[mi.m12] - m0.v[mi.m11] * m0.v[mi.m32];
+              var r9 = m0.v[mi.m11] * m0.v[mi.m22] - m0.v[mi.m21] * m0.v[mi.m12];
+              return new vector3_7.Vector3(-((r0 * m0.v[mi.m41] + r4 * m0.v[mi.m42] + r7 * m0.v[mi.m43]) / r3), -((r1 * m0.v[mi.m41] + r5 * m0.v[mi.m42] + r8 * m0.v[mi.m43]) / r3), -((r2 * m0.v[mi.m41] + r6 * m0.v[mi.m42] + r9 * m0.v[mi.m43]) / r3));
+          };
+          Matrix.world = function (position, forward, up) {
+              var m0 = new Matrix();
+              var v0 = vector3_7.Vector3.normalize(vector3_7.Vector3.sub(position, forward));
+              var v1 = vector3_7.Vector3.normalize(vector3_7.Vector3.cross(up, v0));
+              var v2 = vector3_7.Vector3.cross(v0, v1);
+              m0.v[mi.m11] = v1.v[v3i.x];
+              m0.v[mi.m12] = v1.v[v3i.y];
+              m0.v[mi.m13] = v1.v[v3i.z];
+              m0.v[mi.m21] = v2.v[v3i.x];
+              m0.v[mi.m22] = v2.v[v3i.y];
+              m0.v[mi.m23] = v2.v[v3i.z];
+              m0.v[mi.m31] = v0.v[v3i.x];
+              m0.v[mi.m32] = v0.v[v3i.y];
+              m0.v[mi.m33] = v0.v[v3i.z];
+              m0.v[mi.m41] = 0.0;
+              m0.v[mi.m42] = 0.0;
+              m0.v[mi.m43] = 0.0;
+              m0.v[mi.m44] = 1.0;
+              m0.v[mi.m14] = -vector3_7.Vector3.dot(v1, position);
+              m0.v[mi.m24] = -vector3_7.Vector3.dot(v2, position);
+              m0.v[mi.m34] = -vector3_7.Vector3.dot(v0, position);
+              return m0;
+          };
+          Matrix.fromQuaternion = function (q0) {
+              var m0 = new Matrix();
+              var n0 = q0.v[qui.x] * q0.v[qui.x];
+              var n1 = q0.v[qui.y] * q0.v[qui.y];
+              var n2 = q0.v[qui.z] * q0.v[qui.z];
+              var n3 = q0.v[qui.x] * q0.v[qui.y];
+              var n4 = q0.v[qui.z] * q0.v[qui.w];
+              var n5 = q0.v[qui.z] * q0.v[qui.x];
+              var n6 = q0.v[qui.y] * q0.v[qui.w];
+              var n7 = q0.v[qui.y] * q0.v[qui.z];
+              var n8 = q0.v[qui.x] * q0.v[qui.w];
+              m0.v[mi.m11] = 1.0 - (2.0 * (n1 + n2));
+              m0.v[mi.m12] = 2.0 * (n3 + n4);
+              m0.v[mi.m13] = 2.0 * (n5 - n6);
+              m0.v[mi.m14] = 0.0;
+              m0.v[mi.m21] = 2.0 * (n3 - n4);
+              m0.v[mi.m22] = 1.0 - (2.0 * (n2 + n0));
+              m0.v[mi.m23] = 2.0 * (n7 + n8);
+              m0.v[mi.m24] = 0.0;
+              m0.v[mi.m31] = 2.0 * (n5 + n6);
+              m0.v[mi.m32] = 2.0 * (n7 - n8);
+              m0.v[mi.m33] = 1.0 - (2.0 * (n1 + n0));
+              m0.v[mi.m34] = 0.0;
+              m0.v[mi.m41] = 0.0;
+              m0.v[mi.m42] = 0.0;
+              m0.v[mi.m43] = 0.0;
+              m0.v[mi.m44] = 1.0;
+              return m0;
+          };
+          Matrix.reflection = function (p0) {
+              var m0 = new Matrix();
+              var p1 = plane_3.Plane.normalize(p0);
+              var x = p1.v[pli.x];
+              var y = p1.v[pli.y];
+              var z = p1.v[pli.z];
+              var n0 = -2.0 * x;
+              var n1 = -2.0 * y;
+              var n2 = -2.0 * z;
+              m0.v[mi.m11] = (n0 * x) + 1.0;
+              m0.v[mi.m12] = n1 * x;
+              m0.v[mi.m13] = n2 * x;
+              m0.v[mi.m14] = 0.0;
+              m0.v[mi.m21] = n0 * y;
+              m0.v[mi.m22] = (n1 * y) + 1.0;
+              m0.v[mi.m23] = n2 * y;
+              m0.v[mi.m24] = 0.0;
+              m0.v[mi.m31] = n0 * z;
+              m0.v[mi.m32] = n1 * z;
+              m0.v[mi.m33] = (n2 * z) + 1.0;
+              m0.v[mi.m34] = 0.0;
+              m0.v[mi.m41] = n0 * p1.v[pli.w];
+              m0.v[mi.m42] = n1 * p1.v[pli.w];
+              m0.v[mi.m43] = n2 * p1.v[pli.w];
+              m0.v[mi.m44] = 1.0;
+              return m0;
+          };
+          Matrix.invert = function (m0) {
+              var m1 = new Matrix();
+              var n0 = m0.v[mi.m11];
+              var n1 = m0.v[mi.m12];
+              var n2 = m0.v[mi.m13];
+              var n3 = m0.v[mi.m14];
+              var n4 = m0.v[mi.m21];
+              var n5 = m0.v[mi.m22];
+              var n6 = m0.v[mi.m23];
+              var n7 = m0.v[mi.m24];
+              var n8 = m0.v[mi.m31];
+              var n9 = m0.v[mi.m32];
+              var n10 = m0.v[mi.m33];
+              var n11 = m0.v[mi.m34];
+              var n12 = m0.v[mi.m41];
+              var n13 = m0.v[mi.m42];
+              var n14 = m0.v[mi.m43];
+              var n15 = m0.v[mi.m44];
+              var n16 = (n10 * n15) - (n11 * n14);
+              var n17 = (n9 * n15) - (n11 * n13);
+              var n18 = (n9 * n14) - (n10 * n13);
+              var n19 = (n8 * n15) - (n11 * n12);
+              var n20 = (n8 * n14) - (n10 * n12);
+              var n21 = (n8 * n13) - (n9 * n12);
+              var n22 = ((n5 * n16) - (n6 * n17)) + (n7 * n18);
+              var n23 = -(((n4 * n16) - (n6 * n19)) + (n7 * n20));
+              var n24 = ((n4 * n17) - (n5 * n19)) + (n7 * n21);
+              var n25 = -(((n4 * n18) - (n5 * n20)) + (n6 * n21));
+              var n26 = 1.0 / ((((n0 * n22) + (n1 * n23)) + (n2 * n24)) + (n3 * n25));
+              m1.v[mi.m11] = n22 * n26;
+              m1.v[mi.m21] = n23 * n26;
+              m1.v[mi.m31] = n24 * n26;
+              m1.v[mi.m41] = n25 * n26;
+              m1.v[mi.m12] = -(((n1 * n16) - (n2 * n17)) + (n3 * n18)) * n26;
+              m1.v[mi.m22] = (((n0 * n16) - (n2 * n19)) + (n3 * n20)) * n26;
+              m1.v[mi.m32] = -(((n0 * n17) - (n1 * n19)) + (n3 * n21)) * n26;
+              m1.v[mi.m42] = (((n0 * n18) - (n1 * n20)) + (n2 * n21)) * n26;
+              var n27 = (n6 * n15) - (n7 * n14);
+              var n28 = (n5 * n15) - (n7 * n13);
+              var n29 = (n5 * n14) - (n6 * n13);
+              var n30 = (n4 * n15) - (n7 * n12);
+              var n32 = (n4 * n14) - (n6 * n12);
+              var n33 = (n4 * n13) - (n5 * n12);
+              m1.v[mi.m13] = (((n1 * n27) - (n2 * n28)) + (n3 * n29)) * n26;
+              m1.v[mi.m23] = -(((n0 * n27) - (n2 * n30)) + (n3 * n32)) * n26;
+              m1.v[mi.m33] = (((n0 * n28) - (n1 * n30)) + (n3 * n33)) * n26;
+              m1.v[mi.m43] = -(((n0 * n29) - (n1 * n32)) + (n2 * n33)) * n26;
+              var n34 = (n6 * n11) - (n7 * n10);
+              var n35 = (n5 * n11) - (n7 * n9);
+              var n36 = (n5 * n10) - (n6 * n9);
+              var n37 = (n4 * n11) - (n7 * n8);
+              var n38 = (n4 * n10) - (n6 * n8);
+              var n39 = (n4 * n9) - (n5 * n8);
+              m1.v[mi.m14] = -(((n1 * n34) - (n2 * n35)) + (n3 * n36)) * n26;
+              m1.v[mi.m24] = (((n0 * n34) - (n2 * n37)) + (n3 * n38)) * n26;
+              m1.v[mi.m34] = -(((n0 * n35) - (n1 * n37)) + (n3 * n39)) * n26;
+              m1.v[mi.m44] = (((n0 * n36) - (n1 * n38)) + (n2 * n39)) * n26;
+              return m1;
+          };
+          Matrix.transpose = function (m0) {
+              var m1 = new Matrix();
+              m1.v[mi.m11] = m0.v[mi.m11];
+              m1.v[mi.m12] = m0.v[mi.m21];
+              m1.v[mi.m13] = m0.v[mi.m31];
+              m1.v[mi.m14] = m0.v[mi.m41];
+              m1.v[mi.m21] = m0.v[mi.m12];
+              m1.v[mi.m22] = m0.v[mi.m22];
+              m1.v[mi.m23] = m0.v[mi.m32];
+              m1.v[mi.m24] = m0.v[mi.m42];
+              m1.v[mi.m31] = m0.v[mi.m13];
+              m1.v[mi.m32] = m0.v[mi.m23];
+              m1.v[mi.m33] = m0.v[mi.m33];
+              m1.v[mi.m34] = m0.v[mi.m43];
+              m1.v[mi.m41] = m0.v[mi.m14];
+              m1.v[mi.m42] = m0.v[mi.m24];
+              m1.v[mi.m43] = m0.v[mi.m34];
+              m1.v[mi.m44] = m0.v[mi.m44];
+              return m1;
+          };
+          Matrix.determinant = function (m0) {
+              var n0 = m0.v[mi.m11];
+              var n1 = m0.v[mi.m12];
+              var n2 = m0.v[mi.m13];
+              var n3 = m0.v[mi.m14];
+              var n4 = m0.v[mi.m21];
+              var n5 = m0.v[mi.m22];
+              var n6 = m0.v[mi.m23];
+              var n7 = m0.v[mi.m24];
+              var n8 = m0.v[mi.m31];
+              var n9 = m0.v[mi.m32];
+              var n10 = m0.v[mi.m33];
+              var n11 = m0.v[mi.m34];
+              var n12 = m0.v[mi.m41];
+              var n13 = m0.v[mi.m42];
+              var n14 = m0.v[mi.m43];
+              var n15 = m0.v[mi.m44];
+              var n16 = (n10 * n15) - (n11 * n14);
+              var n17 = (n9 * n15) - (n11 * n13);
+              var n18 = (n9 * n14) - (n10 * n13);
+              var n19 = (n8 * n15) - (n11 * n12);
+              var n20 = (n8 * n14) - (n10 * n12);
+              var n21 = (n8 * n13) - (n9 * n12);
+              return ((((n0 * (((n5 * n16) - (n6 * n17)) + (n7 * n18))) -
+                  (n1 * (((n4 * n16) - (n6 * n19)) + (n7 * n20)))) + (n2 * (((n4 * n17) -
+                  (n5 * n19)) + (n7 * n21)))) - (n3 * (((n4 * n18) - (n5 * n20)) + (n6 * n21))));
+          };
+          Matrix.lerp = function (m0, m1, amount) {
+              var m2 = new Matrix();
+              m2.v[mi.m11] = m0.v[mi.m11] + ((m1.v[mi.m11] - m0.v[mi.m11]) * amount);
+              m2.v[mi.m12] = m0.v[mi.m12] + ((m1.v[mi.m12] - m0.v[mi.m12]) * amount);
+              m2.v[mi.m13] = m0.v[mi.m13] + ((m1.v[mi.m13] - m0.v[mi.m13]) * amount);
+              m2.v[mi.m14] = m0.v[mi.m14] + ((m1.v[mi.m14] - m0.v[mi.m14]) * amount);
+              m2.v[mi.m21] = m0.v[mi.m21] + ((m1.v[mi.m21] - m0.v[mi.m21]) * amount);
+              m2.v[mi.m22] = m0.v[mi.m22] + ((m1.v[mi.m22] - m0.v[mi.m22]) * amount);
+              m2.v[mi.m23] = m0.v[mi.m23] + ((m1.v[mi.m23] - m0.v[mi.m23]) * amount);
+              m2.v[mi.m24] = m0.v[mi.m24] + ((m1.v[mi.m24] - m0.v[mi.m24]) * amount);
+              m2.v[mi.m31] = m0.v[mi.m31] + ((m1.v[mi.m31] - m0.v[mi.m31]) * amount);
+              m2.v[mi.m32] = m0.v[mi.m32] + ((m1.v[mi.m32] - m0.v[mi.m32]) * amount);
+              m2.v[mi.m33] = m0.v[mi.m33] + ((m1.v[mi.m33] - m0.v[mi.m33]) * amount);
+              m2.v[mi.m34] = m0.v[mi.m34] + ((m1.v[mi.m34] - m0.v[mi.m34]) * amount);
+              m2.v[mi.m41] = m0.v[mi.m41] + ((m1.v[mi.m41] - m0.v[mi.m41]) * amount);
+              m2.v[mi.m42] = m0.v[mi.m42] + ((m1.v[mi.m42] - m0.v[mi.m42]) * amount);
+              m2.v[mi.m43] = m0.v[mi.m43] + ((m1.v[mi.m43] - m0.v[mi.m43]) * amount);
+              m2.v[mi.m44] = m0.v[mi.m44] + ((m1.v[mi.m44] - m0.v[mi.m44]) * amount);
+              return m2;
+          };
+          Matrix.negate = function (m0) {
+              var m1 = new Matrix();
+              m1.v[mi.m11] = -m0.v[mi.m11];
+              m1.v[mi.m12] = -m0.v[mi.m12];
+              m1.v[mi.m13] = -m0.v[mi.m13];
+              m1.v[mi.m14] = -m0.v[mi.m14];
+              m1.v[mi.m21] = -m0.v[mi.m21];
+              m1.v[mi.m22] = -m0.v[mi.m22];
+              m1.v[mi.m23] = -m0.v[mi.m23];
+              m1.v[mi.m24] = -m0.v[mi.m24];
+              m1.v[mi.m31] = -m0.v[mi.m31];
+              m1.v[mi.m32] = -m0.v[mi.m32];
+              m1.v[mi.m33] = -m0.v[mi.m33];
+              m1.v[mi.m34] = -m0.v[mi.m34];
+              m1.v[mi.m41] = -m0.v[mi.m41];
+              m1.v[mi.m42] = -m0.v[mi.m42];
+              m1.v[mi.m43] = -m0.v[mi.m43];
+              m1.v[mi.m44] = -m0.v[mi.m44];
+              return m1;
+          };
+          Matrix.add = function (m0, m1) {
+              var m2 = new Matrix();
+              m2.v[mi.m11] = m0.v[mi.m11] + m1.v[mi.m11];
+              m2.v[mi.m12] = m0.v[mi.m12] + m1.v[mi.m12];
+              m2.v[mi.m13] = m0.v[mi.m13] + m1.v[mi.m13];
+              m2.v[mi.m14] = m0.v[mi.m14] + m1.v[mi.m14];
+              m2.v[mi.m21] = m0.v[mi.m21] + m1.v[mi.m21];
+              m2.v[mi.m22] = m0.v[mi.m22] + m1.v[mi.m22];
+              m2.v[mi.m23] = m0.v[mi.m23] + m1.v[mi.m23];
+              m2.v[mi.m24] = m0.v[mi.m24] + m1.v[mi.m24];
+              m2.v[mi.m31] = m0.v[mi.m31] + m1.v[mi.m31];
+              m2.v[mi.m32] = m0.v[mi.m32] + m1.v[mi.m32];
+              m2.v[mi.m33] = m0.v[mi.m33] + m1.v[mi.m33];
+              m2.v[mi.m34] = m0.v[mi.m34] + m1.v[mi.m34];
+              m2.v[mi.m41] = m0.v[mi.m41] + m1.v[mi.m41];
+              m2.v[mi.m42] = m0.v[mi.m42] + m1.v[mi.m42];
+              m2.v[mi.m43] = m0.v[mi.m43] + m1.v[mi.m43];
+              m2.v[mi.m44] = m0.v[mi.m44] + m1.v[mi.m44];
+              return m2;
+          };
+          Matrix.sub = function (m0, m1) {
+              var m2 = new Matrix();
+              m2.v[mi.m11] = m0.v[mi.m11] - m1.v[mi.m11];
+              m2.v[mi.m12] = m0.v[mi.m12] - m1.v[mi.m12];
+              m2.v[mi.m13] = m0.v[mi.m13] - m1.v[mi.m13];
+              m2.v[mi.m14] = m0.v[mi.m14] - m1.v[mi.m14];
+              m2.v[mi.m21] = m0.v[mi.m21] - m1.v[mi.m21];
+              m2.v[mi.m22] = m0.v[mi.m22] - m1.v[mi.m22];
+              m2.v[mi.m23] = m0.v[mi.m23] - m1.v[mi.m23];
+              m2.v[mi.m24] = m0.v[mi.m24] - m1.v[mi.m24];
+              m2.v[mi.m31] = m0.v[mi.m31] - m1.v[mi.m31];
+              m2.v[mi.m32] = m0.v[mi.m32] - m1.v[mi.m32];
+              m2.v[mi.m33] = m0.v[mi.m33] - m1.v[mi.m33];
+              m2.v[mi.m34] = m0.v[mi.m34] - m1.v[mi.m34];
+              m2.v[mi.m41] = m0.v[mi.m41] - m1.v[mi.m41];
+              m2.v[mi.m42] = m0.v[mi.m42] - m1.v[mi.m42];
+              m2.v[mi.m43] = m0.v[mi.m43] - m1.v[mi.m43];
+              m2.v[mi.m44] = m0.v[mi.m44] - m1.v[mi.m44];
+              return m2;
+          };
+          Matrix.mul = function (m0, m1) {
+              var m2 = new Matrix();
+              m2.v[mi.m11] = (((m0.v[mi.m11] * m1.v[mi.m11]) + (m0.v[mi.m12] * m1.v[mi.m21])) + (m0.v[mi.m13] * m1.v[mi.m31])) + (m0.v[mi.m14] * m1.v[mi.m41]);
+              m2.v[mi.m12] = (((m0.v[mi.m11] * m1.v[mi.m12]) + (m0.v[mi.m12] * m1.v[mi.m22])) + (m0.v[mi.m13] * m1.v[mi.m32])) + (m0.v[mi.m14] * m1.v[mi.m42]);
+              m2.v[mi.m13] = (((m0.v[mi.m11] * m1.v[mi.m13]) + (m0.v[mi.m12] * m1.v[mi.m23])) + (m0.v[mi.m13] * m1.v[mi.m33])) + (m0.v[mi.m14] * m1.v[mi.m43]);
+              m2.v[mi.m14] = (((m0.v[mi.m11] * m1.v[mi.m14]) + (m0.v[mi.m12] * m1.v[mi.m24])) + (m0.v[mi.m13] * m1.v[mi.m34])) + (m0.v[mi.m14] * m1.v[mi.m44]);
+              m2.v[mi.m21] = (((m0.v[mi.m21] * m1.v[mi.m11]) + (m0.v[mi.m22] * m1.v[mi.m21])) + (m0.v[mi.m23] * m1.v[mi.m31])) + (m0.v[mi.m24] * m1.v[mi.m41]);
+              m2.v[mi.m22] = (((m0.v[mi.m21] * m1.v[mi.m12]) + (m0.v[mi.m22] * m1.v[mi.m22])) + (m0.v[mi.m23] * m1.v[mi.m32])) + (m0.v[mi.m24] * m1.v[mi.m42]);
+              m2.v[mi.m23] = (((m0.v[mi.m21] * m1.v[mi.m13]) + (m0.v[mi.m22] * m1.v[mi.m23])) + (m0.v[mi.m23] * m1.v[mi.m33])) + (m0.v[mi.m24] * m1.v[mi.m43]);
+              m2.v[mi.m24] = (((m0.v[mi.m21] * m1.v[mi.m14]) + (m0.v[mi.m22] * m1.v[mi.m24])) + (m0.v[mi.m23] * m1.v[mi.m34])) + (m0.v[mi.m24] * m1.v[mi.m44]);
+              m2.v[mi.m31] = (((m0.v[mi.m31] * m1.v[mi.m11]) + (m0.v[mi.m32] * m1.v[mi.m21])) + (m0.v[mi.m33] * m1.v[mi.m31])) + (m0.v[mi.m34] * m1.v[mi.m41]);
+              m2.v[mi.m32] = (((m0.v[mi.m31] * m1.v[mi.m12]) + (m0.v[mi.m32] * m1.v[mi.m22])) + (m0.v[mi.m33] * m1.v[mi.m32])) + (m0.v[mi.m34] * m1.v[mi.m42]);
+              m2.v[mi.m33] = (((m0.v[mi.m31] * m1.v[mi.m13]) + (m0.v[mi.m32] * m1.v[mi.m23])) + (m0.v[mi.m33] * m1.v[mi.m33])) + (m0.v[mi.m34] * m1.v[mi.m43]);
+              m2.v[mi.m34] = (((m0.v[mi.m31] * m1.v[mi.m14]) + (m0.v[mi.m32] * m1.v[mi.m24])) + (m0.v[mi.m33] * m1.v[mi.m34])) + (m0.v[mi.m34] * m1.v[mi.m44]);
+              m2.v[mi.m41] = (((m0.v[mi.m41] * m1.v[mi.m11]) + (m0.v[mi.m42] * m1.v[mi.m21])) + (m0.v[mi.m43] * m1.v[mi.m31])) + (m0.v[mi.m44] * m1.v[mi.m41]);
+              m2.v[mi.m42] = (((m0.v[mi.m41] * m1.v[mi.m12]) + (m0.v[mi.m42] * m1.v[mi.m22])) + (m0.v[mi.m43] * m1.v[mi.m32])) + (m0.v[mi.m44] * m1.v[mi.m42]);
+              m2.v[mi.m43] = (((m0.v[mi.m41] * m1.v[mi.m13]) + (m0.v[mi.m42] * m1.v[mi.m23])) + (m0.v[mi.m43] * m1.v[mi.m33])) + (m0.v[mi.m44] * m1.v[mi.m43]);
+              m2.v[mi.m44] = (((m0.v[mi.m41] * m1.v[mi.m14]) + (m0.v[mi.m42] * m1.v[mi.m24])) + (m0.v[mi.m43] * m1.v[mi.m34])) + (m0.v[mi.m44] * m1.v[mi.m44]);
+              return m2;
+          };
+          Matrix.div = function (m0, m1) {
+              var m2 = new Matrix();
+              m2.v[mi.m11] = m0.v[mi.m11] / m1.v[mi.m11];
+              m2.v[mi.m12] = m0.v[mi.m12] / m1.v[mi.m12];
+              m2.v[mi.m13] = m0.v[mi.m13] / m1.v[mi.m13];
+              m2.v[mi.m14] = m0.v[mi.m14] / m1.v[mi.m14];
+              m2.v[mi.m21] = m0.v[mi.m21] / m1.v[mi.m21];
+              m2.v[mi.m22] = m0.v[mi.m22] / m1.v[mi.m22];
+              m2.v[mi.m23] = m0.v[mi.m23] / m1.v[mi.m23];
+              m2.v[mi.m24] = m0.v[mi.m24] / m1.v[mi.m24];
+              m2.v[mi.m31] = m0.v[mi.m31] / m1.v[mi.m31];
+              m2.v[mi.m32] = m0.v[mi.m32] / m1.v[mi.m32];
+              m2.v[mi.m33] = m0.v[mi.m33] / m1.v[mi.m33];
+              m2.v[mi.m34] = m0.v[mi.m34] / m1.v[mi.m34];
+              m2.v[mi.m41] = m0.v[mi.m41] / m1.v[mi.m41];
+              m2.v[mi.m42] = m0.v[mi.m42] / m1.v[mi.m42];
+              m2.v[mi.m43] = m0.v[mi.m43] / m1.v[mi.m43];
+              m2.v[mi.m44] = m0.v[mi.m44] / m1.v[mi.m44];
+              return m2;
+          };
+          Matrix.clone = function (m0) {
+              return new Matrix([
+                  m0.v[mi.m11], m0.v[mi.m12], m0.v[mi.m13], m0.v[mi.m14],
+                  m0.v[mi.m21], m0.v[mi.m22], m0.v[mi.m23], m0.v[mi.m24],
+                  m0.v[mi.m31], m0.v[mi.m32], m0.v[mi.m33], m0.v[mi.m34],
+                  m0.v[mi.m41], m0.v[mi.m42], m0.v[mi.m43], m0.v[mi.m44]
+              ]);
+          };
+          Matrix.create = function (array) {
+              return new Matrix(array);
+          };
+          return Matrix;
       }());
-      exports.Box = Box;
-  });
-  define("src/math/radian", ["require", "exports"], function (require, exports) {
-      "use strict";
-      exports.__esModule = true;
-      var Radian = (function () {
-          function Radian() {
-          }
-          Radian.toAngle = function (radian) {
-              return (radian * 57.29578);
-          };
-          Radian.toRadian = function (angle) {
-              return (angle * 0.01745329);
-          };
-          return Radian;
-      }());
-      exports.Radian = Radian;
+      exports.Matrix = Matrix;
   });
   define("src/math/vector2", ["require", "exports"], function (require, exports) {
       "use strict";
@@ -2933,6 +2933,1847 @@
       }());
       exports.VectorN = VectorN;
   });
+  define("src/math/index", ["require", "exports", "src/math/radian", "src/math/matrix", "src/math/plane", "src/math/quaternion", "src/math/single", "src/math/vector2", "src/math/vector3", "src/math/vector4", "src/math/vectorN", "src/math/ray", "src/math/triangle", "src/math/box", "src/math/sphere", "src/math/frustum"], function (require, exports, radian_1, matrix_3, plane_4, quaternion_1, single_2, vector2_1, vector3_8, vector4_2, vectorN_1, ray_3, triangle_1, box_1, sphere_1, frustum_1) {
+      "use strict";
+      exports.__esModule = true;
+      exports.Radian = radian_1.Radian;
+      exports.Matrix = matrix_3.Matrix;
+      exports.Plane = plane_4.Plane;
+      exports.Quaternion = quaternion_1.Quaternion;
+      exports.Single = single_2.Single;
+      exports.Vector2 = vector2_1.Vector2;
+      exports.Vector3 = vector3_8.Vector3;
+      exports.Vector4 = vector4_2.Vector4;
+      exports.VectorN = vectorN_1.VectorN;
+      exports.Ray = ray_3.Ray;
+      exports.Triangle = triangle_1.Triangle;
+      exports.Box = box_1.Box;
+      exports.Sphere = sphere_1.Sphere;
+      exports.Frustum = frustum_1.Frustum;
+  });
+  define("src/compute/dispose", ["require", "exports"], function (require, exports) {
+      "use strict";
+      exports.__esModule = true;
+  });
+  define("src/compute/color", ["require", "exports"], function (require, exports) {
+      "use strict";
+      exports.__esModule = true;
+      exports.compute_texture_dimensions = function (length) {
+          var x = Math.ceil(Math.sqrt(length));
+          x = (x < 4) ? 4 : x;
+          return { width: x, height: x };
+      };
+      var Color1D = (function () {
+          function Color1D(context, framebuf, length) {
+              var _a = exports.compute_texture_dimensions(length), width = _a.width, height = _a.height;
+              this.type = "Color1D";
+              this.context = context;
+              this.framebuf = framebuf;
+              this.width = length;
+              this.textureWidth = width;
+              this.textureHeight = height;
+              this.textureData = new Uint8Array((width * height) * 4);
+              this.data = new Uint8Array(this.textureData.buffer, 0, (length * 4));
+              this.texture = this.context.createTexture();
+              this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.NEAREST);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.NEAREST);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
+              this.context.bindTexture(this.context.TEXTURE_2D, null);
+              this.push();
+          }
+          Color1D.prototype.get = function (x) {
+              var index = (x * 4);
+              return [
+                  this.data[index + 0],
+                  this.data[index + 1],
+                  this.data[index + 2],
+                  this.data[index + 3]
+              ];
+          };
+          Color1D.prototype.set = function (x, c) {
+              var index = (x * 4);
+              this.data[index + 0] = c[0];
+              this.data[index + 1] = c[1];
+              this.data[index + 2] = c[2];
+              this.data[index + 3] = c[3];
+              return this;
+          };
+          Color1D.prototype.map = function (func) {
+              for (var x = 0; x < this.width; x++) {
+                  this.set(x, func(x));
+              }
+              return this;
+          };
+          Color1D.prototype.push = function () {
+              this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
+              this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.textureWidth, this.textureHeight, 0, this.context.RGBA, this.context.UNSIGNED_BYTE, this.textureData);
+              this.context.bindTexture(this.context.TEXTURE_2D, null);
+              return this;
+          };
+          Color1D.prototype.pull = function () {
+              this.context.bindFramebuffer(this.context.FRAMEBUFFER, this.framebuf);
+              this.context.framebufferTexture2D(this.context.FRAMEBUFFER, this.context.COLOR_ATTACHMENT0, this.context.TEXTURE_2D, this.texture, 0);
+              if (this.context.checkFramebufferStatus(this.context.FRAMEBUFFER) != this.context.FRAMEBUFFER_COMPLETE) {
+                  console.warn("Color1D: unable to read array due to incomplete framebuffer attachement");
+              }
+              this.context.readPixels(0, 0, this.textureWidth, this.textureHeight, this.context.RGBA, this.context.UNSIGNED_BYTE, this.textureData, 0);
+              this.context.bindFramebuffer(this.context.FRAMEBUFFER, null);
+              return this;
+          };
+          Color1D.prototype.dispose = function () {
+              this.context.deleteTexture(this.texture);
+          };
+          return Color1D;
+      }());
+      exports.Color1D = Color1D;
+      var Color2D = (function () {
+          function Color2D(context, framebuf, width, height) {
+              this.type = "Color2D";
+              this.context = context;
+              this.framebuf = framebuf;
+              this.width = width;
+              this.height = height;
+              this.textureWidth = width;
+              this.textureHeight = height;
+              this.textureData = new Uint8Array(width * height * 4);
+              this.data = new Uint8Array(this.textureData.buffer);
+              this.texture = this.context.createTexture();
+              this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.NEAREST);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.NEAREST);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
+              this.context.bindTexture(this.context.TEXTURE_2D, null);
+              this.push();
+          }
+          Color2D.prototype.get = function (x, y) {
+              var index = (x + (y * this.width)) * 4;
+              return [
+                  this.data[index + 0],
+                  this.data[index + 1],
+                  this.data[index + 2],
+                  this.data[index + 3]
+              ];
+          };
+          Color2D.prototype.set = function (x, y, c) {
+              var index = (x + (y * this.width)) * 4;
+              this.data[index + 0] = c[0];
+              this.data[index + 1] = c[1];
+              this.data[index + 2] = c[2];
+              this.data[index + 3] = c[3];
+              return this;
+          };
+          Color2D.prototype.map = function (func) {
+              for (var y = 0; y < this.height; y++) {
+                  for (var x = 0; x < this.width; x++) {
+                      this.set(x, y, func(x, y));
+                  }
+              }
+              return this;
+          };
+          Color2D.prototype.push = function () {
+              this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
+              this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.textureWidth, this.textureHeight, 0, this.context.RGBA, this.context.UNSIGNED_BYTE, this.textureData);
+              this.context.bindTexture(this.context.TEXTURE_2D, null);
+              return this;
+          };
+          Color2D.prototype.pull = function () {
+              this.context.bindFramebuffer(this.context.FRAMEBUFFER, this.framebuf);
+              this.context.framebufferTexture2D(this.context.FRAMEBUFFER, this.context.COLOR_ATTACHMENT0, this.context.TEXTURE_2D, this.texture, 0);
+              if (this.context.checkFramebufferStatus(this.context.FRAMEBUFFER) != this.context.FRAMEBUFFER_COMPLETE) {
+                  console.warn("Color2D: unable to read array due to incomplete framebuffer attachement");
+              }
+              this.context.readPixels(0, 0, this.textureWidth, this.textureHeight, this.context.RGBA, this.context.UNSIGNED_BYTE, this.textureData, 0);
+              this.context.bindFramebuffer(this.context.FRAMEBUFFER, null);
+              return this;
+          };
+          Color2D.prototype.dispose = function () {
+              this.context.deleteTexture(this.texture);
+          };
+          return Color2D;
+      }());
+      exports.Color2D = Color2D;
+      var Color3D = (function () {
+          function Color3D(context, framebuf, width, height, depth) {
+              var size = exports.compute_texture_dimensions(width * height * depth);
+              this.type = "Color3D";
+              this.context = context;
+              this.framebuf = framebuf;
+              this.width = width;
+              this.height = height;
+              this.depth = depth;
+              this.textureWidth = size.width;
+              this.textureHeight = size.height;
+              this.textureData = new Uint8Array(size.width * size.height * 4);
+              this.data = new Uint8Array(this.textureData.buffer, 0, (width * height * depth) * 4);
+              this.texture = this.context.createTexture();
+              this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.NEAREST);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.NEAREST);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
+              this.context.bindTexture(this.context.TEXTURE_2D, null);
+              this.push();
+          }
+          Color3D.prototype.get = function (x, y, z) {
+              var index = (x + (y * this.width) + (z * (this.width * this.height))) * 4;
+              return [
+                  this.data[index + 0],
+                  this.data[index + 1],
+                  this.data[index + 2],
+                  this.data[index + 3]
+              ];
+          };
+          Color3D.prototype.set = function (x, y, z, c) {
+              var index = (x + (y * this.width) + (z * (this.width * this.height))) * 4;
+              this.data[index + 0] = c[0];
+              this.data[index + 1] = c[1];
+              this.data[index + 2] = c[2];
+              this.data[index + 3] = c[3];
+              return this;
+          };
+          Color3D.prototype.map = function (func) {
+              for (var z = 0; z < this.depth; z++) {
+                  for (var y = 0; y < this.height; y++) {
+                      for (var x = 0; x < this.width; x++) {
+                          this.set(x, y, z, func(x, y, z));
+                      }
+                  }
+              }
+              return this;
+          };
+          Color3D.prototype.push = function () {
+              this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
+              this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.textureWidth, this.textureHeight, 0, this.context.RGBA, this.context.UNSIGNED_BYTE, this.textureData);
+              this.context.bindTexture(this.context.TEXTURE_2D, null);
+              return this;
+          };
+          Color3D.prototype.pull = function () {
+              this.context.bindFramebuffer(this.context.FRAMEBUFFER, this.framebuf);
+              this.context.framebufferTexture2D(this.context.FRAMEBUFFER, this.context.COLOR_ATTACHMENT0, this.context.TEXTURE_2D, this.texture, 0);
+              if (this.context.checkFramebufferStatus(this.context.FRAMEBUFFER) != this.context.FRAMEBUFFER_COMPLETE) {
+                  console.warn("Color3D: unable to read array due to incomplete framebuffer attachement");
+              }
+              this.context.readPixels(0, 0, this.textureWidth, this.textureHeight, this.context.RGBA, this.context.UNSIGNED_BYTE, this.textureData, 0);
+              this.context.bindFramebuffer(this.context.FRAMEBUFFER, null);
+              return this;
+          };
+          Color3D.prototype.dispose = function () {
+              this.context.deleteTexture(this.texture);
+          };
+          return Color3D;
+      }());
+      exports.Color3D = Color3D;
+  });
+  define("src/compute/float", ["require", "exports"], function (require, exports) {
+      "use strict";
+      exports.__esModule = true;
+      exports.compute_texture_dimensions = function (length) {
+          var x = Math.ceil(Math.sqrt(length));
+          x = (x < 4) ? 4 : x;
+          return { width: x, height: x };
+      };
+      var Float1D = (function () {
+          function Float1D(context, framebuf, length) {
+              var _a = exports.compute_texture_dimensions(length), width = _a.width, height = _a.height;
+              this.type = "Float1D";
+              this.context = context;
+              this.framebuf = framebuf;
+              this.width = length;
+              this.textureWidth = width;
+              this.textureHeight = height;
+              this.textureData = new Uint8Array(width * height * 4);
+              this.data = new Float32Array(this.textureData.buffer, 0, this.width);
+              this.texture = this.context.createTexture();
+              this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.NEAREST);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.NEAREST);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
+              this.context.bindTexture(this.context.TEXTURE_2D, null);
+              this.push();
+          }
+          Float1D.prototype.get = function (x) {
+              return this.data[x];
+          };
+          Float1D.prototype.set = function (x, v) {
+              this.data[x] = v;
+              return this;
+          };
+          Float1D.prototype.map = function (func) {
+              for (var x = 0; x < this.width; x++) {
+                  this.set(x, func(x));
+              }
+              return this;
+          };
+          Float1D.prototype.push = function () {
+              this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
+              this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.textureWidth, this.textureHeight, 0, this.context.RGBA, this.context.UNSIGNED_BYTE, this.textureData);
+              this.context.bindTexture(this.context.TEXTURE_2D, null);
+              return this;
+          };
+          Float1D.prototype.pull = function () {
+              this.context.bindFramebuffer(this.context.FRAMEBUFFER, this.framebuf);
+              this.context.framebufferTexture2D(this.context.FRAMEBUFFER, this.context.COLOR_ATTACHMENT0, this.context.TEXTURE_2D, this.texture, 0);
+              if (this.context.checkFramebufferStatus(this.context.FRAMEBUFFER) != this.context.FRAMEBUFFER_COMPLETE) {
+                  console.warn("Float1D: unable to read array due to incomplete framebuffer attachement");
+              }
+              this.context.readPixels(0, 0, this.textureWidth, this.textureHeight, this.context.RGBA, this.context.UNSIGNED_BYTE, this.textureData, 0);
+              this.context.bindFramebuffer(this.context.FRAMEBUFFER, null);
+              return this;
+          };
+          Float1D.prototype.dispose = function () {
+              this.context.deleteTexture(this.texture);
+          };
+          return Float1D;
+      }());
+      exports.Float1D = Float1D;
+      var Float2D = (function () {
+          function Float2D(context, framebuf, width, height) {
+              this.type = "Float2D";
+              this.context = context;
+              this.framebuf = framebuf;
+              this.width = width;
+              this.height = height;
+              this.textureWidth = width;
+              this.textureHeight = height;
+              this.textureData = new Uint8Array(width * height * 4);
+              this.data = new Float32Array(this.textureData.buffer);
+              this.texture = this.context.createTexture();
+              this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.NEAREST);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.NEAREST);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
+              this.context.bindTexture(this.context.TEXTURE_2D, null);
+              this.push();
+          }
+          Float2D.prototype.get = function (x, y) {
+              return this.data[x + (y * this.width)];
+          };
+          Float2D.prototype.set = function (x, y, v) {
+              this.data[x + (y * this.width)] = v;
+              return this;
+          };
+          Float2D.prototype.map = function (func) {
+              for (var y = 0; y < this.height; y++) {
+                  for (var x = 0; x < this.width; x++) {
+                      this.set(x, y, func(x, y));
+                  }
+              }
+              return this;
+          };
+          Float2D.prototype.push = function () {
+              this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
+              this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.textureWidth, this.textureHeight, 0, this.context.RGBA, this.context.UNSIGNED_BYTE, this.textureData);
+              this.context.bindTexture(this.context.TEXTURE_2D, null);
+              return this;
+          };
+          Float2D.prototype.pull = function () {
+              this.context.bindFramebuffer(this.context.FRAMEBUFFER, this.framebuf);
+              this.context.framebufferTexture2D(this.context.FRAMEBUFFER, this.context.COLOR_ATTACHMENT0, this.context.TEXTURE_2D, this.texture, 0);
+              if (this.context.checkFramebufferStatus(this.context.FRAMEBUFFER) != this.context.FRAMEBUFFER_COMPLETE) {
+                  console.warn("Float2D: unable to read array due to incomplete framebuffer attachement");
+              }
+              this.context.readPixels(0, 0, this.textureWidth, this.textureHeight, this.context.RGBA, this.context.UNSIGNED_BYTE, this.textureData, 0);
+              this.context.bindFramebuffer(this.context.FRAMEBUFFER, null);
+              return this;
+          };
+          Float2D.prototype.dispose = function () {
+              this.context.deleteTexture(this.texture);
+          };
+          return Float2D;
+      }());
+      exports.Float2D = Float2D;
+      var Float3D = (function () {
+          function Float3D(context, framebuf, width, height, depth) {
+              var size = exports.compute_texture_dimensions(width * height * depth);
+              this.type = "Float3D";
+              this.context = context;
+              this.framebuf = framebuf;
+              this.width = width;
+              this.height = height;
+              this.depth = depth;
+              this.textureWidth = size.width;
+              this.textureHeight = size.height;
+              this.textureData = new Uint8Array(size.width * size.height * 4);
+              this.data = new Float32Array(this.textureData.buffer, 0, (width * height * depth));
+              this.texture = this.context.createTexture();
+              this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.NEAREST);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.NEAREST);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
+              this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
+              this.context.bindTexture(this.context.TEXTURE_2D, null);
+              this.push();
+          }
+          Float3D.prototype.get = function (x, y, z) {
+              return this.data[x + (y * this.width) + (z * (this.width * this.height))];
+          };
+          Float3D.prototype.set = function (x, y, z, v) {
+              this.data[x + (y * this.width) + (z * (this.width * this.height))] = v;
+              return this;
+          };
+          Float3D.prototype.map = function (func) {
+              for (var z = 0; z < this.depth; z++) {
+                  for (var y = 0; y < this.height; y++) {
+                      for (var x = 0; x < this.width; x++) {
+                          this.set(x, y, z, func(x, y, z));
+                      }
+                  }
+              }
+              return this;
+          };
+          Float3D.prototype.push = function () {
+              this.context.bindTexture(this.context.TEXTURE_2D, this.texture);
+              this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.textureWidth, this.textureHeight, 0, this.context.RGBA, this.context.UNSIGNED_BYTE, this.textureData);
+              this.context.bindTexture(this.context.TEXTURE_2D, null);
+              return this;
+          };
+          Float3D.prototype.pull = function () {
+              this.context.bindFramebuffer(this.context.FRAMEBUFFER, this.framebuf);
+              this.context.framebufferTexture2D(this.context.FRAMEBUFFER, this.context.COLOR_ATTACHMENT0, this.context.TEXTURE_2D, this.texture, 0);
+              if (this.context.checkFramebufferStatus(this.context.FRAMEBUFFER) != this.context.FRAMEBUFFER_COMPLETE) {
+                  console.warn("Float3D: unable to read array due to incomplete framebuffer attachement");
+              }
+              this.context.readPixels(0, 0, this.textureWidth, this.textureHeight, this.context.RGBA, this.context.UNSIGNED_BYTE, this.textureData, 0);
+              this.context.bindFramebuffer(this.context.FRAMEBUFFER, null);
+              return this;
+          };
+          Float3D.prototype.dispose = function () {
+              this.context.deleteTexture(this.texture);
+          };
+          return Float3D;
+      }());
+      exports.Float3D = Float3D;
+  });
+  define("src/compute/plane", ["require", "exports"], function (require, exports) {
+      "use strict";
+      exports.__esModule = true;
+      var Plane = (function () {
+          function Plane(context) {
+              this.context = context;
+              this.position = this.context.createBuffer();
+              this.context.bindBuffer(this.context.ARRAY_BUFFER, this.position);
+              this.context.bufferData(this.context.ARRAY_BUFFER, new Float32Array([
+                  -1.0, -1.0, 0.0,
+                  -1.0, 1.0, 0.0,
+                  1.0, 1.0, 0.0,
+                  1.0, -1.0, 0.0
+              ]), this.context.STATIC_DRAW);
+              this.texcoord = this.context.createBuffer();
+              this.context.bindBuffer(this.context.ARRAY_BUFFER, this.texcoord);
+              this.context.bufferData(this.context.ARRAY_BUFFER, new Float32Array([
+                  0.0, 0.0,
+                  0.0, 1.0,
+                  1.0, 1.0,
+                  1.0, 0.0
+              ]), this.context.STATIC_DRAW);
+              this.indices = this.context.createBuffer();
+              this.context.bindBuffer(this.context.ELEMENT_ARRAY_BUFFER, this.indices);
+              this.context.bufferData(this.context.ELEMENT_ARRAY_BUFFER, new Uint16Array([
+                  0, 1, 2, 2, 3, 0
+              ]), this.context.STATIC_DRAW);
+          }
+          Plane.prototype.dispose = function () {
+              this.context.deleteBuffer(this.position);
+              this.context.deleteBuffer(this.texcoord);
+              this.context.deleteBuffer(this.indices);
+          };
+          return Plane;
+      }());
+      exports.Plane = Plane;
+  });
+  define("src/compute/script", ["require", "exports"], function (require, exports) {
+      "use strict";
+      exports.__esModule = true;
+      var matcher = function (_expr) {
+          if (_expr === void 0) { _expr = ""; }
+          var extract = function (code, regex) {
+              var buffer = [];
+              while (true) {
+                  var match = regex.exec(code);
+                  if (!match) {
+                      return buffer;
+                  }
+                  else {
+                      if (match[0].length === 0)
+                          throw Error("zero length match.");
+                      code = code.substr(match.index + match[0].length);
+                      var literal = match.shift();
+                      var captures = match;
+                      buffer.push({ literal: literal, captures: captures });
+                  }
+              }
+          };
+          return {
+              literal: function (x) { return matcher(_expr + x); },
+              alphanumeric: function () { return matcher(_expr + "\\w+"); },
+              numberic: function () { return matcher(_expr + "[0-9]+"); },
+              anything: function () { return matcher(_expr + ".*"); },
+              codeblock: function () { return matcher(_expr + "[\\w\\s\\+\\-\\*\\/%\\(\),:;]+"); },
+              space: function () { return matcher(_expr + "\\s"); },
+              space_optional: function () { return matcher(_expr + "\\s*"); },
+              space_mandated: function () { return matcher(_expr + "\\s+"); },
+              colon: function () { return matcher(_expr + ":"); },
+              semicolon: function () { return matcher(_expr + ";"); },
+              dot: function () { return matcher(_expr + "\\."); },
+              comma: function () { return matcher(_expr + "\\,"); },
+              bracket_open: function () { return matcher(_expr + "\\["); },
+              bracket_close: function () { return matcher(_expr + "\\]"); },
+              parentheses_open: function () { return matcher(_expr + "\\("); },
+              parentheses_close: function () { return matcher(_expr + "\\)"); },
+              curly_open: function () { return matcher(_expr + "\\{"); },
+              curly_close: function () { return matcher(_expr + "\\}"); },
+              capture: function (_inner) { return matcher(_expr + "(" + _inner.expr() + ")"); },
+              upto: function (_inner) { return matcher(_expr + _inner.expr() + "?"); },
+              anyof: function (_inner) { return matcher(_expr + "[" + _inner.map(function (n) { return n.expr(); }).join("|") + "]*"); },
+              optional: function (_inner) { return matcher(_expr + "[" + _inner.expr() + "]*"); },
+              expr: function () { return _expr; },
+              match: function (s) { return extract(s, new RegExp(_expr)); }
+          };
+      };
+      exports.read_program_thread_function = function (code) {
+          var expression = matcher()
+              .bracket_open()
+              .capture(matcher().codeblock())
+              .bracket_close()
+              .space_optional()
+              .literal("thread")
+              .space_optional()
+              .parentheses_open()
+              .capture(matcher().codeblock())
+              .parentheses_close();
+          var results = expression.match(code);
+          if (results.length === 0) {
+              return {
+                  indexing: "error",
+                  outputs: []
+              };
+          }
+          var outputs = results[0].captures[0].split(",").map(function (n) { return n.trim(); });
+          for (var i = 0; i < outputs.length; i++) {
+              if (outputs[i] !== "float" && outputs[i] !== "color") {
+                  return {
+                      indexing: "error",
+                      outputs: []
+                  };
+              }
+          }
+          var argumentCount = results[0].captures[1].split(",").length;
+          var indexing = "error";
+          switch (argumentCount) {
+              case 1:
+                  indexing = "1D";
+                  break;
+              case 2:
+                  indexing = "2D";
+                  break;
+              case 3:
+                  indexing = "3D";
+                  break;
+              default:
+                  indexing = "error";
+                  break;
+          }
+          return {
+              indexing: indexing,
+              outputs: outputs
+          };
+      };
+      exports.read_program_uniforms = function (code) {
+          var expression = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .upto(matcher().semicolon());
+          return expression.match(code).map(function (match) { return ({
+              type: match.captures[0],
+              name: match.captures[1]
+          }); });
+      };
+      exports.replace_thread_output_indexer = function (code) {
+          var results = matcher()
+              .bracket_open()
+              .capture(matcher().codeblock())
+              .bracket_close()
+              .space_optional()
+              .literal("thread")
+              .space_optional()
+              .parentheses_open()
+              .codeblock()
+              .parentheses_close()
+              .space_optional()
+              .curly_open()
+              .match(code);
+          var outputs = results[0].captures[0].split(",").map(function (n) { return n.trim(); });
+          return outputs.reduce(function (code, output, index) {
+              return matcher()
+                  .literal("thread")
+                  .space_optional()
+                  .bracket_open()
+                  .space_optional()
+                  .capture(matcher().literal(index.toString()))
+                  .space_optional()
+                  .bracket_close()
+                  .match(code).reduce(function (acc, match) {
+                  switch (output) {
+                      case "float": return acc.replace(match.literal, "nc_thread_output_" + index + ".r");
+                      case "color": return acc.replace(match.literal, "nc_thread_output_" + index);
+                  }
+                  return acc;
+              }, code);
+          }, code);
+      };
+      exports.replace_thread_output_dimensions = function (code) {
+          return code.replace(/thread.width/g, "nc_thread_output_width")
+              .replace(/thread.height/g, "nc_thread_output_height")
+              .replace(/thread.depth/g, "nc_thread_output_depth");
+      };
+      exports.replace_thread_signature = function (code) {
+          var results = matcher()
+              .bracket_open()
+              .codeblock()
+              .bracket_close()
+              .space_optional()
+              .literal("thread")
+              .space_optional()
+              .parentheses_open()
+              .capture(matcher().codeblock())
+              .parentheses_close()
+              .match(code);
+          return results.reduce(function (acc, extraction) {
+              return acc.replace(extraction.literal, "void thread(" + extraction.captures[0] + ")");
+          }, code);
+      };
+      exports.replace_float1D_uniform = function (code) {
+          var results = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Float1D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code);
+          return results.reduce(function (acc, result) {
+              var replacement = ["\n"];
+              replacement.push("uniform sampler2D nc_uniform_" + result.captures[0] + "_texture;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_textureWidth;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_textureHeight;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_width;");
+              return acc.replace(result.literal, replacement.join("\n"));
+          }, code);
+      };
+      exports.replace_float1D_indexer = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Float1D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher()
+                  .literal(name)
+                  .space_optional()
+                  .bracket_open()
+                  .capture(matcher().codeblock())
+                  .bracket_close()
+                  .match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "nc_decode (\n          texture ( \n            nc_uniform_" + name + "_texture,\n            nc_select_1D (\n              nc_uniform_" + name + "_textureWidth,\n              nc_uniform_" + name + "_textureHeight,\n              nc_uniform_" + name + "_width,\n              " + result.captures[0] + "\n            )\n          )\n        )");
+              }, acc);
+          }, code);
+      };
+      exports.replace_float1D_width = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Float1D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher().literal(name).dot().literal("width").match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "nc_uniform_" + name + "_width");
+              }, acc);
+          }, code);
+      };
+      exports.replace_float2D_uniform = function (code) {
+          var results = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Float2D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code);
+          return results.reduce(function (acc, result) {
+              var replacement = ["\n"];
+              replacement.push("uniform sampler2D nc_uniform_" + result.captures[0] + "_texture;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_textureWidth;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_textureHeight;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_width;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_height;");
+              return acc.replace(result.literal, replacement.join("\n"));
+          }, code);
+      };
+      exports.replace_float2D_indexer = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Float2D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher()
+                  .literal(name)
+                  .space_optional()
+                  .bracket_open()
+                  .capture(matcher().codeblock())
+                  .bracket_close()
+                  .space_optional()
+                  .bracket_open()
+                  .capture(matcher().codeblock())
+                  .bracket_close()
+                  .match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "nc_decode (\n          texture ( \n            nc_uniform_" + name + "_texture,\n            nc_select_2D (\n              nc_uniform_" + name + "_textureWidth,\n              nc_uniform_" + name + "_textureHeight,\n              nc_uniform_" + name + "_width,\n              nc_uniform_" + name + "_height,\n              " + result.captures[0] + ",\n              " + result.captures[1] + "\n            )\n          )\n        )");
+              }, acc);
+          }, code);
+      };
+      exports.replace_float2D_width = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Float2D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher().literal(name).dot().literal("width").match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "nc_uniform_" + name + "_width");
+              }, acc);
+          }, code);
+      };
+      exports.replace_float2D_height = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Float2D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher().literal(name).dot().literal("height").match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "nc_uniform_" + name + "_height");
+              }, acc);
+          }, code);
+      };
+      exports.replace_float3D_uniform = function (code) {
+          var results = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Float3D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code);
+          return results.reduce(function (acc, result) {
+              var replacement = ["\n"];
+              replacement.push("uniform sampler2D nc_uniform_" + result.captures[0] + "_texture;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_textureWidth;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_textureHeight;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_width;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_height;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_depth;");
+              return acc.replace(result.literal, replacement.join("\n"));
+          }, code);
+      };
+      exports.replace_float3D_indexer = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Float3D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher()
+                  .literal(name)
+                  .space_optional()
+                  .bracket_open()
+                  .capture(matcher().codeblock())
+                  .bracket_close()
+                  .space_optional()
+                  .bracket_open()
+                  .capture(matcher().codeblock())
+                  .bracket_close()
+                  .space_optional()
+                  .bracket_open()
+                  .capture(matcher().codeblock())
+                  .bracket_close()
+                  .match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "nc_decode(\n          texture( \n            nc_uniform_" + name + "_texture,\n            nc_select_3D (\n              nc_uniform_" + name + "_textureWidth,\n              nc_uniform_" + name + "_textureHeight,\n              nc_uniform_" + name + "_width,\n              nc_uniform_" + name + "_height,\n              nc_uniform_" + name + "_depth,\n              " + result.captures[0] + ",\n              " + result.captures[1] + ",\n              " + result.captures[2] + "\n            )\n          )\n        )");
+              }, acc);
+          }, code);
+      };
+      exports.replace_float3D_width = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Float3D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher().literal(name).dot().literal("width").match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "nc_uniform_" + name + "_width");
+              }, acc);
+          }, code);
+      };
+      exports.replace_float3D_height = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Float3D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher().literal(name).dot().literal("height").match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "nc_uniform_" + name + "_height");
+              }, acc);
+          }, code);
+      };
+      exports.replace_float3D_depth = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Float3D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher().literal(name).dot().literal("depth").match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "nc_uniform_" + name + "_depth");
+              }, acc);
+          }, code);
+      };
+      exports.replace_color1D_uniform = function (code) {
+          var results = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Color1D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code);
+          return results.reduce(function (acc, result) {
+              var replacement = ["\n"];
+              replacement.push("uniform sampler2D nc_uniform_" + result.captures[0] + "_texture;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_textureWidth;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_textureHeight;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_width;");
+              return acc.replace(result.literal, replacement.join("\n"));
+          }, code);
+      };
+      exports.replace_color1D_indexer = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Color1D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher()
+                  .literal(name)
+                  .space_optional()
+                  .bracket_open()
+                  .capture(matcher().codeblock())
+                  .bracket_close()
+                  .match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "texture( \n        nc_uniform_" + name + "_texture,\n        nc_select_1D (\n          nc_uniform_" + name + "_textureWidth,\n          nc_uniform_" + name + "_textureHeight,\n          nc_uniform_" + name + "_width,\n          " + result.captures[0] + "\n        )\n      )");
+              }, acc);
+          }, code);
+      };
+      exports.replace_color1D_width = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Color1D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher().literal(name).dot().literal("width").match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "nc_uniform_" + name + "_width");
+              }, acc);
+          }, code);
+      };
+      exports.replace_color2D_uniform = function (code) {
+          var results = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Color2D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code);
+          return results.reduce(function (acc, result) {
+              var replacement = ["\n"];
+              replacement.push("uniform sampler2D nc_uniform_" + result.captures[0] + "_texture;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_textureWidth;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_textureHeight;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_width;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_height;");
+              return acc.replace(result.literal, replacement.join("\n"));
+          }, code);
+      };
+      exports.replace_color2D_indexer = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Color2D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher()
+                  .literal(name)
+                  .space_optional()
+                  .bracket_open()
+                  .capture(matcher().codeblock())
+                  .bracket_close()
+                  .space_optional()
+                  .bracket_open()
+                  .capture(matcher().codeblock())
+                  .bracket_close()
+                  .match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "texture( \n        nc_uniform_" + name + "_texture,\n        nc_select_2D (\n          nc_uniform_" + name + "_textureWidth,\n          nc_uniform_" + name + "_textureHeight,\n          nc_uniform_" + name + "_width,\n          nc_uniform_" + name + "_height,\n          " + result.captures[0] + ",\n          " + result.captures[1] + "\n        )\n      )");
+              }, acc);
+          }, code);
+      };
+      exports.replace_color2D_width = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Color2D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher().literal(name).dot().literal("width").match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "nc_uniform_" + name + "_width");
+              }, acc);
+          }, code);
+      };
+      exports.replace_color2D_height = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Color2D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher().literal(name).dot().literal("height").match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "nc_uniform_" + name + "_height");
+              }, acc);
+          }, code);
+      };
+      exports.replace_color3D_uniform = function (code) {
+          var results = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Color3D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code);
+          return results.reduce(function (acc, result) {
+              var replacement = ["\n"];
+              replacement.push("uniform sampler2D nc_uniform_" + result.captures[0] + "_texture;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_textureWidth;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_textureHeight;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_width;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_height;");
+              replacement.push("uniform int       nc_uniform_" + result.captures[0] + "_depth;");
+              return acc.replace(result.literal, replacement.join("\n"));
+          }, code);
+      };
+      exports.replace_color3D_indexer = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Color3D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher()
+                  .literal(name)
+                  .space_optional()
+                  .bracket_open()
+                  .capture(matcher().codeblock())
+                  .bracket_close()
+                  .space_optional()
+                  .bracket_open()
+                  .capture(matcher().codeblock())
+                  .bracket_close()
+                  .space_optional()
+                  .bracket_open()
+                  .capture(matcher().codeblock())
+                  .bracket_close()
+                  .match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "texture( \n          nc_uniform_" + name + "_texture,\n          nc_select_3D (\n            nc_uniform_" + name + "_textureWidth,\n            nc_uniform_" + name + "_textureHeight,\n            nc_uniform_" + name + "_width,\n            nc_uniform_" + name + "_height,\n            nc_uniform_" + name + "_depth,\n            " + result.captures[0] + ",\n            " + result.captures[1] + ",\n            " + result.captures[2] + "\n          )\n        )");
+              }, acc);
+          }, code);
+      };
+      exports.replace_color3D_width = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Color3D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher().literal(name).dot().literal("width").match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "nc_uniform_" + name + "_width");
+              }, acc);
+          }, code);
+      };
+      exports.replace_color3D_height = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Color3D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher().literal(name).dot().literal("height").match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "nc_uniform_" + name + "_height");
+              }, acc);
+          }, code);
+      };
+      exports.replace_color3D_depth = function (code) {
+          var names = matcher()
+              .literal("uniform")
+              .space_mandated()
+              .literal("Color3D")
+              .space_mandated()
+              .capture(matcher().alphanumeric())
+              .space_optional()
+              .semicolon()
+              .match(code)
+              .map(function (n) { return n.captures[0]; });
+          return names.reduce(function (acc, name) {
+              var results = matcher().literal(name).dot().literal("depth").match(acc);
+              return results.reduce(function (acc, result) {
+                  return acc.replace(result.literal, "nc_uniform_" + name + "_depth");
+              }, acc);
+          }, code);
+      };
+      var endianness = (function () {
+          var b = new ArrayBuffer(4);
+          var a = new Uint32Array(b);
+          var c = new Uint8Array(b);
+          a[0] = 0xdeadbeef;
+          if (c[0] === 0xef)
+              return 'LE';
+          if (c[0] === 0xde)
+              return 'BE';
+          throw new Error('unknown endianness');
+      })();
+      exports.get_thread_directives = function () { return [
+          "#version 300 es",
+          "precision highp float;",
+          ""
+      ].join("\n"); };
+      exports.get_thread_integer_mod = function () { return [
+          "vec2 nc_int_mod(vec2 x, float y) {",
+          "  vec2 res = floor(mod(x, y));",
+          "  return res * step(1.0 - floor(y), -res);",
+          "}",
+          "vec3 nc_int_mod(vec3 x, float y) {",
+          "  vec3 res = floor(mod(x, y));",
+          "  return res * step(1.0 - floor(y), -res);",
+          "}",
+          "vec4 nc_int_mod(vec4 x, vec4 y) {",
+          "  vec4 res = floor(mod(x, y));",
+          "  return res * step(1.0 - floor(y), -res);",
+          "}",
+          "highp float nc_int_mod(highp float x, highp float y) {",
+          "  highp float res = floor(mod(x, y));",
+          "  return res * (res > floor(y) - 1.0 ? 0.0 : 1.0);",
+          "}",
+          "highp int nc_int_mod(highp int x, highp int y) {",
+          "  return int(nc_int_mod(float(x), float(y)));",
+          "}",
+          ""
+      ].join("\n"); };
+      exports.get_thread_encode_functions = function () { return [
+          "const vec2 MAGIC_VEC        = vec2(1.0, -256.0);",
+          "const vec4 SCALE_FACTOR     = vec4(1.0, 256.0, 65536.0, 0.0);",
+          "const vec4 SCALE_FACTOR_INV = vec4(1.0, 0.00390625, 0.0000152587890625, 0.0); // 1, 1/256, 1/65536);",
+          "",
+          "highp float nc_decode(highp vec4 rgba) {",
+          (endianness === "BE") ? " rgba.rgba = rgba.abgr;" : "",
+          "  rgba *= 255.0;",
+          "  vec2 gte128;",
+          "  gte128.x = rgba.b >= 128.0 ? 1.0 : 0.0;",
+          "  gte128.y = rgba.a >= 128.0 ? 1.0 : 0.0;",
+          "  float exponent = 2.0 * rgba.a - 127.0 + dot(gte128, MAGIC_VEC);",
+          "  float res = exp2(round(exponent));",
+          "  rgba.b = rgba.b - 128.0 * gte128.x;",
+          "  res = dot(rgba, SCALE_FACTOR) * exp2(round(exponent-23.0)) + res;",
+          "  res *= gte128.y * -2.0 + 1.0;",
+          "  return res;",
+          "}",
+          "",
+          "highp vec4 nc_encode(highp float f) {",
+          "  highp float F = abs(f);",
+          "  highp float sign = f < 0.0 ? 1.0 : 0.0;",
+          "  highp float exponent = floor(log2(F));",
+          "  highp float mantissa = (exp2(-exponent) * F);",
+          "  // exponent += floor(log2(mantissa));",
+          "  vec4 rgba = vec4(F * exp2(23.0-exponent)) * SCALE_FACTOR_INV;",
+          "  rgba.rg = nc_int_mod(rgba.rg, 256.0);",
+          "  rgba.b = nc_int_mod(rgba.b, 128.0);",
+          "  rgba.a = exponent*0.5 + 63.5;",
+          "  rgba.ba += vec2(nc_int_mod(exponent+127.0, 2.0), sign) * 128.0;",
+          "  rgba = floor(rgba);",
+          "  rgba *= 0.003921569; // 1/255",
+          (endianness === "BE") ? " rgba.rgba = rgba.abgr;" : "",
+          "  return rgba;",
+          "}",
+          ""
+      ].join("\n"); };
+      exports.get_thread_select_functions = function () { return [
+          "vec2 nc_select_1D (int textureWidth, int textureHeight, int width, int index_x) {",
+          "  float x = float(index_x % textureWidth) + 0.5;",
+          "  float y = float(index_x / textureWidth) + 0.5;",
+          "  return vec2 (",
+          "    x / float(textureWidth),",
+          "    y / float(textureHeight)",
+          ");",
+          "}",
+          "",
+          "vec2 nc_select_2D (int textureWidth, int textureHeight, int width, int height, int index_x, int index_y) {",
+          "  float mx = (1.0 / ( float(textureWidth ) ) );",
+          "  float my = (1.0 / ( float(textureHeight) ) );",
+          "  float x  = ( float(index_x) + 0.5) * mx;",
+          "  float y  = ( float(index_y) + 0.5) * my;",
+          "  return vec2(x, y);",
+          "}",
+          "",
+          "vec2 nc_select_3D (int textureWidth, int textureHeight, int width, int height, int depth, int index_x, int index_y, int index_z) {",
+          "  int i = index_x + (index_y * width) + (index_z * (width * height));",
+          "  float x = float(i % textureWidth) + 0.5;",
+          "  float y = float(i / textureWidth) + 0.5;",
+          "  return vec2 (",
+          "    x / float(textureWidth),",
+          "    y / float(textureHeight)",
+          ");",
+          "}",
+          ""
+      ].join("\n"); };
+      exports.get_thread_uniforms = function () { return [
+          "uniform int   nc_thread_viewport_width;",
+          "uniform int   nc_thread_viewport_height;",
+          "",
+          "uniform int   nc_thread_output_width;",
+          "uniform int   nc_thread_output_height;",
+          "uniform int   nc_thread_output_depth;",
+          "",
+          "in      vec2  nc_thread_uv;",
+          ""
+      ].join("\n"); };
+      exports.get_thread_output_register = function (thread) {
+          return thread.outputs.reduce(function (acc, output, index) {
+              return acc + ("layout(location = " + index + ") out vec4 nc_thread_output_" + index + ";\n");
+          }, "") + "\n";
+      };
+      exports.get_thread_main = function (thread) {
+          var buffer = [];
+          switch (thread.indexing) {
+              case "1D":
+                  buffer.push("void main() {");
+                  buffer.push("  int x = int( nc_thread_uv.x * float( nc_thread_viewport_width  ) );");
+                  buffer.push("  int y = int( nc_thread_uv.y * float( nc_thread_viewport_height ) );");
+                  buffer.push("  int ix = x + ( y * nc_thread_viewport_width );");
+                  buffer.push("  ");
+                  buffer.push("  thread (ix);");
+                  break;
+              case "2D":
+                  buffer.push("void main() {");
+                  buffer.push("  int ix = int( nc_thread_uv.x * float ( nc_thread_viewport_width  ) );");
+                  buffer.push("  int iy = int( nc_thread_uv.y * float ( nc_thread_viewport_height ) );");
+                  buffer.push("  thread(ix, iy);");
+                  break;
+              case "3D":
+                  buffer.push("void main() {");
+                  buffer.push("  int x  = int( nc_thread_uv.x * float ( nc_thread_viewport_width  ) );");
+                  buffer.push("  int y  = int( nc_thread_uv.y * float ( nc_thread_viewport_height ) );");
+                  buffer.push("  int i  = x + ( y * nc_thread_viewport_width );");
+                  buffer.push("");
+                  buffer.push("  int ix = ( i / ( 1                                               ) ) % nc_thread_output_width;");
+                  buffer.push("  int iy = ( i / ( nc_thread_output_width                          ) ) % nc_thread_output_height;");
+                  buffer.push("  int iz = ( i / ( nc_thread_output_width * nc_thread_output_height) ) % nc_thread_output_depth;");
+                  buffer.push("  thread(ix, iy, iz);");
+                  break;
+          }
+          if (thread.indexing !== "error") {
+              thread.outputs.forEach(function (output, index) {
+                  switch (output) {
+                      case "float":
+                          buffer.push("  nc_thread_output_" + index + " = nc_encode(nc_thread_output_" + index + ".r);");
+                          break;
+                  }
+              });
+              buffer.push("}");
+          }
+          return buffer.join("\n");
+      };
+      exports.get_vertex_program = function () { return [
+          "#version 300 es",
+          "precision highp float;",
+          "",
+          "in  vec3 nc_thread_position;",
+          "in  vec2 nc_thread_texcoord;",
+          "out vec2 nc_thread_uv;",
+          "",
+          "void main() {",
+          "  nc_thread_uv  = nc_thread_texcoord;",
+          "",
+          "  gl_Position = vec4 (",
+          "    nc_thread_position.x,",
+          "    nc_thread_position.y,",
+          "    nc_thread_position.z,",
+          "    1.0);",
+          "}"
+      ].join("\n"); };
+      exports.transform = function (code) {
+          code = code.split("\n").map(function (line) {
+              var index = line.indexOf("//");
+              return (index !== -1)
+                  ? line.slice(0, index)
+                  : line;
+          }).join("\n");
+          var thread = exports.read_program_thread_function(code);
+          var uniforms = exports.read_program_uniforms(code);
+          if (thread.indexing === "error") {
+              throw Error("program is invalid.");
+          }
+          code = exports.replace_float1D_indexer(code);
+          code = exports.replace_float1D_width(code);
+          code = exports.replace_float1D_uniform(code);
+          code = exports.replace_float2D_indexer(code);
+          code = exports.replace_float2D_width(code);
+          code = exports.replace_float2D_height(code);
+          code = exports.replace_float2D_uniform(code);
+          code = exports.replace_float3D_indexer(code);
+          code = exports.replace_float3D_width(code);
+          code = exports.replace_float3D_height(code);
+          code = exports.replace_float3D_depth(code);
+          code = exports.replace_float3D_uniform(code);
+          code = exports.replace_color1D_indexer(code);
+          code = exports.replace_color1D_width(code);
+          code = exports.replace_color1D_uniform(code);
+          code = exports.replace_color2D_indexer(code);
+          code = exports.replace_color2D_width(code);
+          code = exports.replace_color2D_height(code);
+          code = exports.replace_color2D_uniform(code);
+          code = exports.replace_color3D_indexer(code);
+          code = exports.replace_color3D_width(code);
+          code = exports.replace_color3D_height(code);
+          code = exports.replace_color3D_depth(code);
+          code = exports.replace_color3D_uniform(code);
+          code = exports.replace_thread_output_indexer(code);
+          code = exports.replace_thread_output_dimensions(code);
+          code = exports.replace_thread_signature(code);
+          var fragment = [
+              exports.get_thread_directives(),
+              exports.get_thread_uniforms(),
+              exports.get_thread_output_register(thread),
+              exports.get_thread_integer_mod(),
+              exports.get_thread_encode_functions(),
+              exports.get_thread_select_functions(),
+              code,
+              exports.get_thread_main(thread)
+          ].join("\n");
+          return {
+              thread: thread,
+              uniforms: uniforms,
+              vertex: exports.get_vertex_program(),
+              fragment: fragment
+          };
+      };
+  });
+  define("src/compute/program", ["require", "exports", "src/compute/script"], function (require, exports, script_1) {
+      "use strict";
+      exports.__esModule = true;
+      var Program = (function () {
+          function Program(context, framebuf, plane, source) {
+              this.context = context;
+              this.framebuf = framebuf;
+              this.plane = plane;
+              this.script = script_1.transform(source);
+              this.compile();
+          }
+          Program.prototype.compile = function () {
+              var _this = this;
+              this.program = this.context.createProgram();
+              this.vertexshader = this.context.createShader(this.context.VERTEX_SHADER);
+              this.context.shaderSource(this.vertexshader, this.script.vertex);
+              this.context.compileShader(this.vertexshader);
+              if (this.context.getShaderParameter(this.vertexshader, this.context.COMPILE_STATUS) === false) {
+                  var error = this.context.getShaderInfoLog(this.vertexshader);
+                  this.context.deleteShader(this.vertexshader);
+                  throw new Error(error);
+              }
+              this.fragmentshader = this.context.createShader(this.context.FRAGMENT_SHADER);
+              this.context.shaderSource(this.fragmentshader, this.script.fragment);
+              this.context.compileShader(this.fragmentshader);
+              if (this.context.getShaderParameter(this.fragmentshader, this.context.COMPILE_STATUS) === false) {
+                  var error = this.context.getShaderInfoLog(this.fragmentshader);
+                  this.context.deleteShader(this.fragmentshader);
+                  throw new Error(error);
+              }
+              this.context.attachShader(this.program, this.vertexshader);
+              this.context.attachShader(this.program, this.fragmentshader);
+              this.context.linkProgram(this.program);
+              this.cache = { attributes: {}, uniforms: {} };
+              this.cache.attributes["nc_thread_position"] = this.context.getAttribLocation(this.program, "nc_thread_position");
+              this.cache.attributes["nc_thread_texcoord"] = this.context.getAttribLocation(this.program, "nc_thread_texcoord");
+              this.cache.uniforms["nc_thread_viewport_width"] = this.context.getUniformLocation(this.program, "nc_thread_viewport_width");
+              this.cache.uniforms["nc_thread_viewport_height"] = this.context.getUniformLocation(this.program, "nc_thread_viewport_height");
+              this.cache.uniforms["nc_thread_output_width"] = this.context.getUniformLocation(this.program, "nc_thread_output_width");
+              this.cache.uniforms["nc_thread_output_height"] = this.context.getUniformLocation(this.program, "nc_thread_output_height");
+              this.cache.uniforms["nc_thread_output_depth"] = this.context.getUniformLocation(this.program, "nc_thread_output_depth");
+              this.script.uniforms.forEach(function (script_uniform) {
+                  switch (script_uniform.type) {
+                      case "float":
+                      case "vec2":
+                      case "vec3":
+                      case "vec4":
+                      case "int":
+                      case "ivec2":
+                      case "ivec3":
+                      case "ivec4":
+                      case "mat3":
+                      case "mat4": {
+                          _this.cache.uniforms[script_uniform.name] = _this.context.getUniformLocation(_this.program, script_uniform.name);
+                          break;
+                      }
+                      case "Color1D":
+                      case "Float1D": {
+                          _this.cache.uniforms["nc_uniform_" + script_uniform.name + "_texture"] = _this.context.getUniformLocation(_this.program, "nc_uniform_" + script_uniform.name + "_texture");
+                          _this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureWidth"] = _this.context.getUniformLocation(_this.program, "nc_uniform_" + script_uniform.name + "_textureWidth");
+                          _this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureHeight"] = _this.context.getUniformLocation(_this.program, "nc_uniform_" + script_uniform.name + "_textureHeight");
+                          _this.cache.uniforms["nc_uniform_" + script_uniform.name + "_width"] = _this.context.getUniformLocation(_this.program, "nc_uniform_" + script_uniform.name + "_width");
+                          break;
+                      }
+                      case "Color2D":
+                      case "Float2D": {
+                          _this.cache.uniforms["nc_uniform_" + script_uniform.name + "_texture"] = _this.context.getUniformLocation(_this.program, "nc_uniform_" + script_uniform.name + "_texture");
+                          _this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureWidth"] = _this.context.getUniformLocation(_this.program, "nc_uniform_" + script_uniform.name + "_textureWidth");
+                          _this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureHeight"] = _this.context.getUniformLocation(_this.program, "nc_uniform_" + script_uniform.name + "_textureHeight");
+                          _this.cache.uniforms["nc_uniform_" + script_uniform.name + "_width"] = _this.context.getUniformLocation(_this.program, "nc_uniform_" + script_uniform.name + "_width");
+                          _this.cache.uniforms["nc_uniform_" + script_uniform.name + "_height"] = _this.context.getUniformLocation(_this.program, "nc_uniform_" + script_uniform.name + "_height");
+                          break;
+                      }
+                      case "Color3D":
+                      case "Float3D": {
+                          _this.cache.uniforms["nc_uniform_" + script_uniform.name + "_texture"] = _this.context.getUniformLocation(_this.program, "nc_uniform_" + script_uniform.name + "_texture");
+                          _this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureWidth"] = _this.context.getUniformLocation(_this.program, "nc_uniform_" + script_uniform.name + "_textureWidth");
+                          _this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureHeight"] = _this.context.getUniformLocation(_this.program, "nc_uniform_" + script_uniform.name + "_textureHeight");
+                          _this.cache.uniforms["nc_uniform_" + script_uniform.name + "_width"] = _this.context.getUniformLocation(_this.program, "nc_uniform_" + script_uniform.name + "_width");
+                          _this.cache.uniforms["nc_uniform_" + script_uniform.name + "_height"] = _this.context.getUniformLocation(_this.program, "nc_uniform_" + script_uniform.name + "_height");
+                          _this.cache.uniforms["nc_uniform_" + script_uniform.name + "_depth"] = _this.context.getUniformLocation(_this.program, "nc_uniform_" + script_uniform.name + "_depth");
+                          break;
+                      }
+                  }
+              });
+          };
+          Program.prototype.execute = function (outputs, uniforms) {
+              var _this = this;
+              var typecheck = this.typecheck(outputs, uniforms);
+              if (!typecheck.success) {
+                  console.warn(typecheck.errors.join("\n"));
+                  throw Error("unable to execute.");
+              }
+              this.context.bindFramebuffer(this.context.FRAMEBUFFER, this.framebuf);
+              this.context.drawBuffers(outputs.map(function (output, index) { return _this.context.COLOR_ATTACHMENT0 + index; }));
+              outputs.forEach(function (output, index) {
+                  _this.context.framebufferTexture2D(_this.context.FRAMEBUFFER, _this.context.COLOR_ATTACHMENT0 + index, _this.context.TEXTURE_2D, output.texture, 0);
+                  if (!(_this.context.checkFramebufferStatus(_this.context.FRAMEBUFFER) === _this.context.FRAMEBUFFER_COMPLETE)) {
+                      console.warn("unable to attach output[" + index + "] as render target.");
+                      return;
+                  }
+              });
+              this.context.useProgram(this.program);
+              var output = outputs[0];
+              switch (output.type) {
+                  case "Float1D":
+                  case "Color1D":
+                      this.context.viewport(0, 0, output.textureWidth, output.textureHeight);
+                      this.context.uniform1i(this.cache.uniforms["nc_thread_viewport_width"], output.textureWidth);
+                      this.context.uniform1i(this.cache.uniforms["nc_thread_viewport_height"], output.textureHeight);
+                      this.context.uniform1i(this.cache.uniforms["nc_thread_output_width"], output.width);
+                      break;
+                  case "Float2D":
+                  case "Color2D":
+                      this.context.viewport(0, 0, output.textureWidth, output.textureHeight);
+                      this.context.uniform1i(this.cache.uniforms["nc_thread_viewport_width"], output.textureWidth);
+                      this.context.uniform1i(this.cache.uniforms["nc_thread_viewport_height"], output.textureHeight);
+                      this.context.uniform1i(this.cache.uniforms["nc_thread_output_width"], output.width);
+                      this.context.uniform1i(this.cache.uniforms["nc_thread_output_height"], output.height);
+                      break;
+                  case "Float3D":
+                  case "Color3D":
+                      this.context.viewport(0, 0, output.textureWidth, output.textureHeight);
+                      this.context.uniform1i(this.cache.uniforms["nc_thread_viewport_width"], output.textureWidth);
+                      this.context.uniform1i(this.cache.uniforms["nc_thread_viewport_height"], output.textureHeight);
+                      this.context.uniform1i(this.cache.uniforms["nc_thread_output_width"], output.width);
+                      this.context.uniform1i(this.cache.uniforms["nc_thread_output_height"], output.height);
+                      this.context.uniform1i(this.cache.uniforms["nc_thread_output_depth"], output.depth);
+                      break;
+              }
+              var texture_index = 0;
+              this.script.uniforms.forEach(function (script_uniform) {
+                  if (uniforms[script_uniform.name] === undefined)
+                      return;
+                  switch (script_uniform.type) {
+                      case "float": {
+                          _this.context.uniform1f(_this.cache.uniforms[script_uniform.name], uniforms[script_uniform.name]);
+                          break;
+                      }
+                      case "vec2": {
+                          var v = uniforms[script_uniform.name];
+                          _this.context.uniform2f(_this.cache.uniforms[script_uniform.name], v[0], v[1]);
+                          break;
+                      }
+                      case "vec3": {
+                          var v = uniforms[script_uniform.name];
+                          _this.context.uniform3f(_this.cache.uniforms[script_uniform.name], v[0], v[1], v[2]);
+                          break;
+                      }
+                      case "vec4": {
+                          var v = uniforms[script_uniform.name];
+                          _this.context.uniform4f(_this.cache.uniforms[script_uniform.name], v[0], v[1], v[2], v[3]);
+                          break;
+                      }
+                      case "int": {
+                          _this.context.uniform1i(_this.cache.uniforms[script_uniform.name], uniforms[script_uniform.name]);
+                          break;
+                      }
+                      case "ivec2": {
+                          var v = uniforms[script_uniform.name];
+                          _this.context.uniform2i(_this.cache.uniforms[script_uniform.name], v[0], v[1]);
+                          break;
+                      }
+                      case "ivec3": {
+                          var v = uniforms[script_uniform.name];
+                          _this.context.uniform3i(_this.cache.uniforms[script_uniform.name], v[0], v[1], v[2]);
+                          break;
+                      }
+                      case "ivec4": {
+                          var v = uniforms[script_uniform.name];
+                          _this.context.uniform4i(_this.cache.uniforms[script_uniform.name], v[0], v[1], v[2], v[3]);
+                          break;
+                      }
+                      case "mat3": {
+                          var v = new Float32Array(uniforms[script_uniform.name]);
+                          _this.context.uniformMatrix3fv(_this.cache.uniforms[script_uniform.name], false, v);
+                          break;
+                      }
+                      case "mat4": {
+                          var v = new Float32Array(uniforms[script_uniform.name]);
+                          _this.context.uniformMatrix4fv(_this.cache.uniforms[script_uniform.name], false, v);
+                          break;
+                      }
+                      case "Color1D":
+                      case "Float1D": {
+                          var data = uniforms[script_uniform.name];
+                          if (_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureWidth"]) {
+                              _this.context.uniform1i(_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureWidth"], data.textureWidth);
+                          }
+                          if (_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureHeight"]) {
+                              _this.context.uniform1i(_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureHeight"], data.textureHeight);
+                          }
+                          if (_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_width"]) {
+                              _this.context.uniform1i(_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_width"], data.width);
+                          }
+                          if (_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_texture"]) {
+                              _this.context.uniform1i(_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_texture"], texture_index);
+                              _this.context.activeTexture(_this.context.TEXTURE0 + texture_index);
+                              _this.context.bindTexture(_this.context.TEXTURE_2D, data.texture);
+                              texture_index += 1;
+                          }
+                          break;
+                      }
+                      case "Color2D":
+                      case "Float2D": {
+                          var data = uniforms[script_uniform.name];
+                          if (_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureWidth"]) {
+                              _this.context.uniform1i(_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureWidth"], data.textureWidth);
+                          }
+                          if (_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureHeight"]) {
+                              _this.context.uniform1i(_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureHeight"], data.textureHeight);
+                          }
+                          if (_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_width"]) {
+                              _this.context.uniform1i(_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_width"], data.width);
+                          }
+                          if (_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_height"]) {
+                              _this.context.uniform1i(_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_height"], data.height);
+                          }
+                          if (_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_texture"]) {
+                              _this.context.uniform1i(_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_texture"], texture_index);
+                              _this.context.activeTexture(_this.context.TEXTURE0 + texture_index);
+                              _this.context.bindTexture(_this.context.TEXTURE_2D, data.texture);
+                              texture_index += 1;
+                          }
+                          break;
+                      }
+                      case "Color3D":
+                      case "Float3D": {
+                          var data = uniforms[script_uniform.name];
+                          if (_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureWidth"]) {
+                              _this.context.uniform1i(_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureWidth"], data.textureWidth);
+                          }
+                          if (_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureHeight"]) {
+                              _this.context.uniform1i(_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_textureHeight"], data.textureHeight);
+                          }
+                          if (_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_width"]) {
+                              _this.context.uniform1i(_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_width"], data.width);
+                          }
+                          if (_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_height"]) {
+                              _this.context.uniform1i(_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_height"], data.height);
+                          }
+                          if (_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_depth"]) {
+                              _this.context.uniform1i(_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_depth"], data.depth);
+                          }
+                          if (_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_texture"]) {
+                              _this.context.uniform1i(_this.cache.uniforms["nc_uniform_" + script_uniform.name + "_texture"], texture_index);
+                              _this.context.activeTexture(_this.context.TEXTURE0 + texture_index);
+                              _this.context.bindTexture(_this.context.TEXTURE_2D, data.texture);
+                              texture_index += 1;
+                          }
+                          break;
+                      }
+                  }
+              });
+              this.context.bindBuffer(this.context.ARRAY_BUFFER, this.plane.position);
+              this.context.enableVertexAttribArray(this.cache.attributes["nc_thread_position"]);
+              this.context.vertexAttribPointer(this.cache.attributes["nc_thread_position"], 3, this.context.FLOAT, false, 0, 0);
+              if (this.cache.attributes["nc_thread_texcoord"] !== -1) {
+                  this.context.bindBuffer(this.context.ARRAY_BUFFER, this.plane.texcoord);
+                  this.context.enableVertexAttribArray(this.cache.attributes["nc_thread_texcoord"]);
+                  this.context.vertexAttribPointer(this.cache.attributes["nc_thread_texcoord"], 2, this.context.FLOAT, false, 0, 0);
+              }
+              this.context.bindBuffer(this.context.ELEMENT_ARRAY_BUFFER, this.plane.indices);
+              this.context.drawElements(this.context.TRIANGLES, 6, this.context.UNSIGNED_SHORT, 0);
+              outputs.forEach(function (_, index) {
+                  _this.context.framebufferTexture2D(_this.context.FRAMEBUFFER, _this.context.COLOR_ATTACHMENT0 + index, _this.context.TEXTURE_2D, null, 0);
+              });
+              this.context.bindFramebuffer(this.context.FRAMEBUFFER, null);
+          };
+          Program.prototype.typecheck = function (outputs, uniforms) {
+              var _this = this;
+              var errors = [];
+              if (this.script.thread.outputs.length !== outputs.length) {
+                  errors.push("typecheck: expected " + this.script.thread.outputs.length + " outputs, " + outputs.length + " given.");
+              }
+              outputs.forEach(function (output, index) {
+                  if (output.type.indexOf(_this.script.thread.indexing) === -1) {
+                      errors.push("typecheck: a " + outputs[index].type + " is an invalid output for " + _this.script.thread.indexing + " indexed thread functions.");
+                  }
+              });
+              if (!outputs.every(function (output) { return outputs[0].textureWidth === output.textureWidth && outputs[0].textureHeight === output.textureHeight; })) {
+                  errors.push("typecheck: all output dimensions must be the same for all outputs.");
+              }
+              this.script.uniforms.forEach(function (script_uniform) {
+                  if (uniforms[script_uniform.name] === undefined)
+                      return;
+                  var uniform = uniforms[script_uniform.name];
+                  switch (script_uniform.type) {
+                      case "int":
+                      case "float":
+                          if (typeof uniform !== "number")
+                              errors.push("typecheck: " + script_uniform.name + " is invalid. Expected " + script_uniform.type + ".");
+                          break;
+                      case "Float1D":
+                          if (uniform.type !== "Float1D")
+                              errors.push("typecheck: uniform " + script_uniform.name + " is invalid. Expected " + script_uniform.type + ", got " + uniform.type + ".");
+                          break;
+                      case "Color1D":
+                          if (uniform.type !== "Color1D")
+                              errors.push("typecheck: uniform " + script_uniform.name + " is invalid. Expected " + script_uniform.type + ", got " + uniform.type + ".");
+                          break;
+                      case "Float2D":
+                          if (uniform.type !== "Float2D")
+                              errors.push("typecheck: uniform " + script_uniform.name + " is invalid. Expected " + script_uniform.type + ", got " + uniform.type + ".");
+                          break;
+                      case "Color2D":
+                          if (uniform.type !== "Color2D")
+                              errors.push("typecheck: uniform " + script_uniform.name + " is invalid. Expected " + script_uniform.type + ", got " + uniform.type + ".");
+                          break;
+                      case "Float3D":
+                          if (uniform.type !== "Float3D")
+                              errors.push("typecheck: uniform " + script_uniform.name + " is invalid. Expected " + script_uniform.type + ", got " + uniform.type + ".");
+                          break;
+                      case "Color3D":
+                          if (uniform.type !== "Color3D")
+                              errors.push("typecheck: uniform " + script_uniform.name + " is invalid. Expected " + script_uniform.type + ", got " + uniform.type + ".");
+                          break;
+                  }
+              });
+              return {
+                  success: errors.length === 0,
+                  errors: errors
+              };
+          };
+          Program.prototype.dispose = function () {
+              this.context.deleteShader(this.vertexshader);
+              this.context.deleteShader(this.fragmentshader);
+              this.context.deleteProgram(this.program);
+          };
+          return Program;
+      }());
+      exports.Program = Program;
+  });
+  define("src/compute/present", ["require", "exports"], function (require, exports) {
+      "use strict";
+      exports.__esModule = true;
+      var Present = (function () {
+          function Present(context, plane) {
+              this.context = context;
+              this.plane = plane;
+              this.program = this.context.createProgram();
+              this.vertexshader = this.context.createShader(this.context.VERTEX_SHADER);
+              this.context.shaderSource(this.vertexshader, [
+                  "#version 300 es",
+                  "precision highp float;",
+                  "",
+                  "in  vec3 nc_present_position;",
+                  "in  vec2 nc_present_texcoord;",
+                  "out vec2 nc_present_uv;",
+                  "",
+                  "void main() {",
+                  "  nc_present_uv  = vec2(nc_present_texcoord.x, (-nc_present_texcoord.y) + 1.0);",
+                  "",
+                  "  gl_Position = vec4 (",
+                  "    nc_present_position.x,",
+                  "    nc_present_position.y,",
+                  "    nc_present_position.z,",
+                  "    1.0);",
+                  "}"
+              ].join("\n"));
+              this.context.compileShader(this.vertexshader);
+              if (this.context.getShaderParameter(this.vertexshader, this.context.COMPILE_STATUS) === false) {
+                  console.warn(this.context.getShaderInfoLog(this.vertexshader));
+                  this.context.deleteShader(this.vertexshader);
+                  return;
+              }
+              this.fragmentshader = this.context.createShader(this.context.FRAGMENT_SHADER);
+              this.context.shaderSource(this.fragmentshader, [
+                  "#version 300 es",
+                  "precision highp   float;",
+                  "uniform sampler2D nc_present_texture;",
+                  "in      vec2      nc_present_uv;",
+                  "layout(location = 0) out vec4 nc_present_output;",
+                  "",
+                  "void main() {",
+                  "  nc_present_output = texture(nc_present_texture, nc_present_uv);",
+                  "}"
+              ].join("\n"));
+              this.context.compileShader(this.fragmentshader);
+              if (this.context.getShaderParameter(this.fragmentshader, this.context.COMPILE_STATUS) === false) {
+                  console.warn(this.context.getShaderInfoLog(this.fragmentshader));
+                  this.context.deleteShader(this.fragmentshader);
+                  return;
+              }
+              this.context.attachShader(this.program, this.vertexshader);
+              this.context.attachShader(this.program, this.fragmentshader);
+              this.context.linkProgram(this.program);
+              this.cache = { attributes: {}, uniforms: {} };
+              this.cache.attributes["nc_present_position"] = this.context.getAttribLocation(this.program, "nc_present_position");
+              this.cache.attributes["nc_present_texcoord"] = this.context.getAttribLocation(this.program, "nc_present_texcoord");
+              this.cache.uniforms["nc_present_texture"] = this.context.getUniformLocation(this.program, "nc_present_texture");
+          }
+          Present.prototype.present = function (buffer) {
+              this.context.useProgram(this.program);
+              this.context.uniform1i(this.cache.uniforms["nc_present_texture"], 0);
+              this.context.activeTexture(this.context.TEXTURE0);
+              this.context.bindTexture(this.context.TEXTURE_2D, buffer.texture);
+              this.context.bindBuffer(this.context.ARRAY_BUFFER, this.plane.position);
+              this.context.enableVertexAttribArray(this.cache.attributes["nc_present_position"]);
+              this.context.vertexAttribPointer(this.cache.attributes["nc_present_position"], 3, this.context.FLOAT, false, 0, 0);
+              if (this.cache.attributes["nc_present_texcoord"] !== -1) {
+                  this.context.bindBuffer(this.context.ARRAY_BUFFER, this.plane.texcoord);
+                  this.context.enableVertexAttribArray(this.cache.attributes["nc_present_texcoord"]);
+                  this.context.vertexAttribPointer(this.cache.attributes["nc_present_texcoord"], 2, this.context.FLOAT, false, 0, 0);
+              }
+              this.context.bindBuffer(this.context.ELEMENT_ARRAY_BUFFER, this.plane.indices);
+              this.context.drawElements(this.context.TRIANGLES, 6, this.context.UNSIGNED_SHORT, 0);
+          };
+          Present.prototype.dispose = function () {
+              this.context.deleteShader(this.vertexshader);
+              this.context.deleteShader(this.fragmentshader);
+              this.context.deleteProgram(this.program);
+          };
+          return Present;
+      }());
+      exports.Present = Present;
+  });
+  define("src/compute/context", ["require", "exports", "src/compute/color", "src/compute/float", "src/compute/program", "src/compute/plane", "src/compute/present"], function (require, exports, color_1, float_1, program_1, plane_5, present_1) {
+      "use strict";
+      exports.__esModule = true;
+      var Context = (function () {
+          function Context(context) {
+              if (context === void 0) { context = undefined; }
+              this.context = context;
+              if (context === undefined) {
+                  var canvas = document.createElement("canvas");
+                  this.context = canvas.getContext("webgl2", {
+                      alpha: false,
+                      depth: false,
+                      antialias: false
+                  });
+              }
+              this.framebuf = this.context.createFramebuffer();
+              this.plane = new plane_5.Plane(this.context);
+              this.present = new present_1.Present(this.context, this.plane);
+          }
+          Context.prototype.createProgram = function (source) {
+              return new program_1.Program(this.context, this.framebuf, this.plane, source);
+          };
+          Context.prototype.createColor1D = function (length) {
+              return new color_1.Color1D(this.context, this.framebuf, length);
+          };
+          Context.prototype.createColor2D = function (width, height) {
+              return new color_1.Color2D(this.context, this.framebuf, width, height);
+          };
+          Context.prototype.createColor3D = function (width, height, depth) {
+              return new color_1.Color3D(this.context, this.framebuf, width, height, depth);
+          };
+          Context.prototype.createFloat1D = function (length) {
+              return new float_1.Float1D(this.context, this.framebuf, length);
+          };
+          Context.prototype.createFloat2D = function (width, height) {
+              return new float_1.Float2D(this.context, this.framebuf, width, height);
+          };
+          Context.prototype.createFloat3D = function (width, height, depth) {
+              return new float_1.Float3D(this.context, this.framebuf, width, height, depth);
+          };
+          Context.prototype.render = function (buffer) {
+              this.present.present(buffer);
+          };
+          Context.prototype.dispose = function () {
+              this.context.deleteFramebuffer(this.framebuf);
+              this.present.dispose();
+              this.plane.dispose();
+          };
+          return Context;
+      }());
+      exports.Context = Context;
+  });
+  define("src/compute/index", ["require", "exports", "src/compute/context", "src/compute/program", "src/compute/script", "src/compute/float", "src/compute/color"], function (require, exports, context_1, program_2, script_2, float_2, color_2) {
+      "use strict";
+      exports.__esModule = true;
+      exports.Context = context_1.Context;
+      exports.Program = program_2.Program;
+      exports.transform = script_2.transform;
+      exports.Float1D = float_2.Float1D;
+      exports.Float2D = float_2.Float2D;
+      exports.Float3D = float_2.Float3D;
+      exports.Color1D = color_2.Color1D;
+      exports.Color2D = color_2.Color2D;
+      exports.Color3D = color_2.Color3D;
+      exports.createContext = function (webgl2) { return new Context(webgl2); };
+  });
   define("src/graphics/typeinfo", ["require", "exports"], function (require, exports) {
       "use strict";
       exports.__esModule = true;
@@ -3010,24 +4851,6 @@
           return Attribute;
       }());
       exports.Attribute = Attribute;
-  });
-  define("src/math/index", ["require", "exports", "src/math/radian", "src/math/matrix", "src/math/plane", "src/math/quaternion", "src/math/single", "src/math/vector2", "src/math/vector3", "src/math/vector4", "src/math/vectorN", "src/math/ray", "src/math/triangle", "src/math/box", "src/math/sphere", "src/math/frustum"], function (require, exports, radian_1, matrix_3, plane_4, quaternion_1, single_2, vector2_1, vector3_8, vector4_2, vectorN_1, ray_3, triangle_1, box_1, sphere_1, frustum_1) {
-      "use strict";
-      exports.__esModule = true;
-      exports.Radian = radian_1.Radian;
-      exports.Matrix = matrix_3.Matrix;
-      exports.Plane = plane_4.Plane;
-      exports.Quaternion = quaternion_1.Quaternion;
-      exports.Single = single_2.Single;
-      exports.Vector2 = vector2_1.Vector2;
-      exports.Vector3 = vector3_8.Vector3;
-      exports.Vector4 = vector4_2.Vector4;
-      exports.VectorN = vectorN_1.VectorN;
-      exports.Ray = ray_3.Ray;
-      exports.Triangle = triangle_1.Triangle;
-      exports.Box = box_1.Box;
-      exports.Sphere = sphere_1.Sphere;
-      exports.Frustum = frustum_1.Frustum;
   });
   define("src/graphics/guid", ["require", "exports"], function (require, exports) {
       "use strict";
@@ -3582,7 +5405,7 @@
       }());
       exports.Renderer = Renderer;
   });
-  define("src/graphics/rendertarget", ["require", "exports"], function (require, exports) {
+  define("src/graphics/render-target", ["require", "exports"], function (require, exports) {
       "use strict";
       exports.__esModule = true;
       var RenderTarget = (function () {
@@ -3607,38 +5430,65 @@
       }());
       exports.RenderTarget = RenderTarget;
   });
-  define("src/index", ["require", "exports", "src/math/box", "src/math/frustum", "src/math/matrix", "src/math/plane", "src/math/quaternion", "src/math/radian", "src/math/ray", "src/math/single", "src/math/sphere", "src/math/triangle", "src/math/vector2", "src/math/vector3", "src/math/vector4", "src/math/vectorN", "src/graphics/attribute", "src/graphics/camera", "src/graphics/camera", "src/graphics/camera", "src/graphics/geometry", "src/graphics/light", "src/graphics/material", "src/graphics/mesh", "src/graphics/object", "src/graphics/renderer", "src/graphics/rendertarget", "src/graphics/scene", "src/graphics/shader", "src/graphics/texture2D", "src/graphics/textureCube"], function (require, exports, box_2, frustum_2, matrix_6, plane_5, quaternion_2, radian_2, ray_4, single_4, sphere_2, triangle_2, vector2_2, vector3_10, vector4_3, vectorN_2, attribute_2, camera_1, camera_2, camera_3, geometry_1, light_1, material_1, mesh_1, object_4, renderer_1, rendertarget_1, scene_1, shader_1, texture2D_2, textureCube_1) {
+  define("src/graphics/index", ["require", "exports", "src/graphics/attribute", "src/graphics/camera", "src/graphics/geometry", "src/graphics/light", "src/graphics/material", "src/graphics/mesh", "src/graphics/object", "src/graphics/renderer", "src/graphics/render-target", "src/graphics/scene", "src/graphics/shader", "src/graphics/texture2D", "src/graphics/textureCube"], function (require, exports, attribute_2, camera_1, geometry_1, light_1, material_1, mesh_1, object_4, renderer_1, render_target_1, scene_1, shader_1, texture2D_2, textureCube_1) {
       "use strict";
       exports.__esModule = true;
-      exports.Box = box_2.Box;
-      exports.Frustum = frustum_2.Frustum;
-      exports.Matrix = matrix_6.Matrix;
-      exports.Plane = plane_5.Plane;
-      exports.Quaternion = quaternion_2.Quaternion;
-      exports.Radian = radian_2.Radian;
-      exports.Ray = ray_4.Ray;
-      exports.Single = single_4.Single;
-      exports.Sphere = sphere_2.Sphere;
-      exports.Triangle = triangle_2.Triangle;
-      exports.Vector2 = vector2_2.Vector2;
-      exports.Vector3 = vector3_10.Vector3;
-      exports.Vector4 = vector4_3.Vector4;
-      exports.VectorN = vectorN_2.VectorN;
       exports.Attribute = attribute_2.Attribute;
       exports.Camera = camera_1.Camera;
-      exports.PerspectiveCamera = camera_2.PerspectiveCamera;
-      exports.OrthoCamera = camera_3.OrthoCamera;
+      exports.PerspectiveCamera = camera_1.PerspectiveCamera;
+      exports.OrthoCamera = camera_1.OrthoCamera;
       exports.Geometry = geometry_1.Geometry;
       exports.Light = light_1.Light;
       exports.Material = material_1.Material;
       exports.Mesh = mesh_1.Mesh;
       exports.Object3D = object_4.Object3D;
       exports.Renderer = renderer_1.Renderer;
-      exports.RenderTarget = rendertarget_1.RenderTarget;
+      exports.RenderTarget = render_target_1.RenderTarget;
       exports.Scene = scene_1.Scene;
       exports.Shader = shader_1.Shader;
       exports.Texture2D = texture2D_2.Texture2D;
       exports.TextureCube = textureCube_1.TextureCube;
+  });
+  define("src/index", ["require", "exports", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/scene", "src/graphics/index", "src/graphics/index", "src/graphics/index"], function (require, exports, index_2, index_3, index_4, index_5, index_6, index_7, index_8, index_9, index_10, index_11, index_12, index_13, index_14, index_15, index_16, index_17, index_18, index_19, index_20, index_21, index_22, index_23, index_24, index_25, index_26, index_27, index_28, index_29, index_30, index_31, index_32, index_33, index_34, scene_2, index_35, index_36, index_37) {
+      "use strict";
+      exports.__esModule = true;
+      exports.Box = index_2.Box;
+      exports.Frustum = index_3.Frustum;
+      exports.Matrix = index_4.Matrix;
+      exports.Plane = index_5.Plane;
+      exports.Quaternion = index_6.Quaternion;
+      exports.Radian = index_7.Radian;
+      exports.Ray = index_8.Ray;
+      exports.Single = index_9.Single;
+      exports.Sphere = index_10.Sphere;
+      exports.Triangle = index_11.Triangle;
+      exports.Vector2 = index_12.Vector2;
+      exports.Vector3 = index_13.Vector3;
+      exports.Vector4 = index_14.Vector4;
+      exports.VectorN = index_15.VectorN;
+      exports.Context = index_16.Context;
+      exports.Program = index_17.Program;
+      exports.Float1D = index_18.Float1D;
+      exports.Float2D = index_19.Float2D;
+      exports.Float3D = index_20.Float3D;
+      exports.Color1D = index_21.Color1D;
+      exports.Color2D = index_22.Color2D;
+      exports.Color3D = index_23.Color3D;
+      exports.Attribute = index_24.Attribute;
+      exports.Camera = index_25.Camera;
+      exports.PerspectiveCamera = index_26.PerspectiveCamera;
+      exports.OrthoCamera = index_27.OrthoCamera;
+      exports.Geometry = index_28.Geometry;
+      exports.Light = index_29.Light;
+      exports.Material = index_30.Material;
+      exports.Mesh = index_31.Mesh;
+      exports.Object3D = index_32.Object3D;
+      exports.Renderer = index_33.Renderer;
+      exports.RenderTarget = index_34.RenderTarget;
+      exports.Scene = scene_2.Scene;
+      exports.Shader = index_35.Shader;
+      exports.Texture2D = index_36.Texture2D;
+      exports.TextureCube = index_37.TextureCube;
   });
   define("demo/meshes/hexagon", ["require", "exports", "src/index"], function (require, exports, hexagon) {
       "use strict";

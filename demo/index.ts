@@ -28,7 +28,6 @@ let t = 0.1;
       new hexagon.Vector3(0, 0,  0),
       new hexagon.Vector3(-0.5, 1,  0)
     )
-
     renderer.render(camera, scene)
     renderer.clear (0.11, 0.11, 0.11, 1)
     renderer.render(camera, scene)
