@@ -1,14 +1,26 @@
 import * as hex from "@hexagon/index"
+import { Geometry } from "../src/graphics/geometry";
 
-const canvas = document.getElementById("canvas") as HTMLCanvasElement
+const canvas   = document.getElementById("canvas") as HTMLCanvasElement
 const renderer = new hex.Renderer(canvas)
-const camera = new hex.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000)
+const camera   = new hex.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000)
 camera.matrix = hex.Matrix.lookAt(
-  new hex.Vector3(0, 0, -3),
+  new hex.Vector3(0, 0, -36),
   new hex.Vector3(0, 0, 0),
   new hex.Vector3(0, 1, 0)
 )
-const geometry = new hex.CubeGeometry()
+
+const cube     = new hex.CubeGeometry()
+const geometry = new hex.GeometryArray(cube, 10000)
+const data = []
+for (let i = 0; i < 10000; i++) {
+  data.push((Math.random() - 0.5) * 30)
+  data.push((Math.random() - 0.5) * 30)
+  data.push((Math.random() - 0.5) * 30)
+  data.push(1)
+}
+geometry.addAttribute("offset", new hex.Attribute(4, data))
+
 
 const shader = new hex.Shader(`#version 300 es
   
@@ -21,13 +33,15 @@ const shader = new hex.Shader(`#version 300 es
   in vec4 position;
   in vec2 texcoord;
   in vec3 normal;
+  in vec4 offset;
 
   out vec2 out_texcoord;
   out vec4 out_position;
   void main() {
+    vec4 temp = position + offset;
     out_texcoord = texcoord;
-    out_position = (model * position);
-    gl_Position  = projection * view * (model * position);
+    out_position = (model * temp);
+    gl_Position  = projection * view * (model * temp);
   }
 `, `#version 300 es
 
@@ -39,7 +53,7 @@ const shader = new hex.Shader(`#version 300 es
   out vec4 color;
   
   void main() {
-    int a = int(3.0);
+    int a = int(80.0);
     int b = int(out_position.x * 20.0);
     int c = int(out_position.y * 20.0);
     int d = int(out_position.z * 20.0);
@@ -65,6 +79,7 @@ const shader = new hex.Shader(`#version 300 es
     
   }
 `)
+
 
 
 

@@ -26,34 +26,17 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {Radian}     from "./radian"
-import {Matrix}     from "./matrix"
-import {Plane}      from "./plane"
-import {Quaternion} from "./quaternion"
-import {Single}     from "./single"
-import {Vector2}    from "./vector2"
-import {Vector3}    from "./vector3"
-import {Vector4}    from "./vector4"
-import {VectorN}    from "./vectorN"
-import {Ray}        from "./ray"
-import {Triangle}   from "./triangle"
-import {Box}        from "./box"
-import {Sphere}     from "./sphere"
-import {Frustum}    from "./frustum"
-
-export {
-  Radian,
-  Matrix,
-  Plane,
-  Quaternion,
-  Single,
-  Vector2,
-  Vector3,
-  Vector4,
-  VectorN,
-  Ray,
-  Triangle,
-  Box,
-  Sphere,
-  Frustum
-}
+export { Radian }     from "./radian"
+export { Matrix }     from "./matrix"
+export { Plane }      from "./plane"
+export { Quaternion } from "./quaternion"
+export { Single }     from "./single"
+export { Vector2 }    from "./vector2"
+export { Vector3 }    from "./vector3"
+export { Vector4 }    from "./vector4"
+export { VectorN }    from "./vectorN"
+export { Ray }        from "./ray"
+export { Triangle }   from "./triangle"
+export { Box }        from "./box"
+export { Sphere }     from "./sphere"
+export { Frustum }    from "./frustum"

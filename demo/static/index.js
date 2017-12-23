@@ -5001,6 +5001,45 @@
       }(Geometry));
       exports.CubeGeometry = CubeGeometry;
   });
+  define("src/graphics/geometry-array", ["require", "exports"], function (require, exports) {
+      "use strict";
+      exports.__esModule = true;
+      var GeometryArray = (function () {
+          function GeometryArray(instance, length) {
+              this.instance = instance;
+              this.length = length;
+              this.attributes = {};
+              this.disposed = false;
+              this.needsupdate = true;
+          }
+          GeometryArray.prototype.addAttribute = function (name, attribute) {
+              var elements = (attribute.data.length / attribute.stride);
+              if (elements !== this.length) {
+                  throw Error("invalid attribute length for " + name + ". expected " + this.length + " elements but computed " + elements + " from stride.");
+              }
+              this.attributes[name] = attribute;
+          };
+          GeometryArray.prototype.update = function (context) {
+              this.instance.update(context);
+              if (this.needsupdate) {
+                  for (var name_3 in this.attributes) {
+                      this.attributes[name_3].update(context, context.ARRAY_BUFFER);
+                  }
+                  this.needsupdate = false;
+              }
+          };
+          GeometryArray.prototype.dispose = function () {
+              if (!this.disposed) {
+                  for (var name_4 in this.attributes) {
+                      this.attributes[name_4].dispose();
+                  }
+                  this.disposed = true;
+              }
+          };
+          return GeometryArray;
+      }());
+      exports.GeometryArray = GeometryArray;
+  });
   define("src/graphics/light", ["require", "exports", "src/math/single", "src/math/vector3"], function (require, exports, single_3, vector3_9) {
       "use strict";
       exports.__esModule = true;
@@ -5145,13 +5184,15 @@
           }
           Material.prototype.update = function (context) {
               this.shader.update(context);
-              for (var key in this.uniforms) {
-                  var uniform = this.uniforms[key];
-                  if (uniform instanceof texture2D_1.Texture2D) {
-                      uniform.update(context);
+              if (this.needsupdate) {
+                  for (var key in this.uniforms) {
+                      var uniform = this.uniforms[key];
+                      if (uniform instanceof texture2D_1.Texture2D) {
+                          uniform.update(context);
+                      }
                   }
+                  this.needsupdate = false;
               }
-              this.needsupdate = false;
           };
           return Material;
       }());
@@ -5166,37 +5207,15 @@
               var _this = _super.call(this) || this;
               _this.material = material;
               _this.geometry = geometry;
-              _this.instances = {};
               _this.needsupdate = true;
               return _this;
           }
-          Mesh.prototype.instanceCount = function () {
-              var keys = Object.keys(this.instances);
-              return (keys.length > 0)
-                  ? this.instances[keys[0]].data.length /
-                      this.instances[keys[0]].stride
-                  : 0;
-          };
           Mesh.prototype.update = function (context) {
-              var _this = this;
-              if (this.needsupdate) {
-                  this.needsupdate = false;
-                  if (Object.keys(this.instances).length > 1) {
-                      var lens_1 = Object.keys(this.instances).map(function (key) {
-                          return _this.instances[key].data.length /
-                              _this.instances[key].stride;
-                      });
-                      if (lens_1.every(function (n) { return n === lens_1[0]; }) === false) {
-                          throw Error("geometry: instance length mismatch.");
-                      }
-                  }
-                  Object.keys(this.instances).forEach(function (key) {
-                      var instance = _this.instances[key];
-                      instance.update(context, context.ARRAY_BUFFER);
-                  });
-              }
               this.material.update(context);
               this.geometry.update(context);
+              if (this.needsupdate) {
+                  this.needsupdate = false;
+              }
           };
           return Mesh;
       }(object_2.Object3D));
@@ -5214,7 +5233,7 @@
       }(object_3.Object3D));
       exports.Scene = Scene;
   });
-  define("src/graphics/renderer", ["require", "exports", "src/math/matrix", "src/math/single", "src/math/vector2", "src/math/vector3", "src/math/vector4", "src/math/plane", "src/math/quaternion", "src/graphics/mesh", "src/graphics/object", "src/graphics/texture2D", "src/graphics/textureCube"], function (require, exports, matrix_5, single_4, vector2_2, vector3_10, vector4_3, plane_6, quaternion_2, mesh_1, object_4, texture2D_2, textureCube_1) {
+  define("src/graphics/renderer", ["require", "exports", "src/math/matrix", "src/math/single", "src/math/vector2", "src/math/vector3", "src/math/vector4", "src/math/plane", "src/math/quaternion", "src/graphics/geometry", "src/graphics/geometry-array", "src/graphics/mesh", "src/graphics/object", "src/graphics/texture2D", "src/graphics/textureCube"], function (require, exports, matrix_5, single_4, vector2_2, vector3_10, vector4_3, plane_6, quaternion_2, geometry_1, geometry_array_1, mesh_1, object_4, texture2D_2, textureCube_1) {
       "use strict";
       exports.__esModule = true;
       var Renderer = (function () {
@@ -5282,42 +5301,54 @@
                           texture_index += 1;
                       }
                   }
-                  for (var key in mesh.instances) {
-                      var instance = mesh.instances[key];
-                      var location_2 = this.context.getAttribLocation(mesh.material.shader.program, key);
-                      if (location_2 === -1) {
-                          continue;
+                  if (mesh.geometry instanceof geometry_array_1.GeometryArray) {
+                      for (var key in mesh.geometry.attributes) {
+                          var instance = mesh.geometry.attributes[key];
+                          var location_2 = this.context.getAttribLocation(mesh.material.shader.program, key);
+                          if (location_2 === -1) {
+                              continue;
+                          }
+                          this.context.bindBuffer(this.context.ARRAY_BUFFER, instance.buffer);
+                          this.context.enableVertexAttribArray(location_2);
+                          this.context.vertexAttribPointer(location_2, instance.stride, this.context.FLOAT, false, 0, 0);
+                          this.context.vertexAttribDivisor(location_2, 1);
                       }
-                      this.context.bindBuffer(this.context.ARRAY_BUFFER, instance.buffer);
-                      this.context.enableVertexAttribArray(location_2);
-                      this.context.vertexAttribPointer(location_2, instance.stride, this.context.FLOAT, false, 0, 0);
-                      this.context.vertexAttribDivisor(location_2, 1);
-                  }
-                  for (var key in mesh.geometry.attributes) {
-                      var attribute = mesh.geometry.attributes[key];
-                      var location_3 = this.context.getAttribLocation(mesh.material.shader.program, key);
-                      if (location_3 === -1) {
-                          continue;
+                      for (var key in mesh.geometry.instance.attributes) {
+                          var attribute = mesh.geometry.instance.attributes[key];
+                          var location_3 = this.context.getAttribLocation(mesh.material.shader.program, key);
+                          if (location_3 === -1) {
+                              continue;
+                          }
+                          this.context.bindBuffer(this.context.ARRAY_BUFFER, attribute.buffer);
+                          this.context.enableVertexAttribArray(location_3);
+                          this.context.vertexAttribPointer(location_3, attribute.stride, this.context.FLOAT, false, 0, 0);
                       }
-                      this.context.bindBuffer(this.context.ARRAY_BUFFER, attribute.buffer);
-                      this.context.enableVertexAttribArray(location_3);
-                      this.context.vertexAttribPointer(location_3, attribute.stride, this.context.FLOAT, false, 0, 0);
-                  }
-                  var target = this.context.ELEMENT_ARRAY_BUFFER;
-                  var buffer = mesh.geometry.indices.buffer;
-                  this.context.bindBuffer(target, buffer);
-                  var instanced = (Object.keys(mesh.instances).length > 0);
-                  if (instanced) {
+                      var target = this.context.ELEMENT_ARRAY_BUFFER;
+                      var buffer = mesh.geometry.instance.indices.buffer;
+                      this.context.bindBuffer(target, buffer);
                       var mode = this.context.TRIANGLES;
-                      var count = mesh.geometry.indices.data.length;
+                      var count = mesh.geometry.instance.indices.data.length;
                       var offset = 0;
-                      var iterations = mesh.instanceCount();
-                      var type = (mesh.geometry.indices.data instanceof Uint8Array)
+                      var iterations = mesh.geometry.length;
+                      var type = (mesh.geometry.instance.indices.data instanceof Uint8Array)
                           ? this.context.UNSIGNED_BYTE
                           : this.context.UNSIGNED_SHORT;
                       this.context.drawElementsInstanced(mode, count, type, offset, iterations);
                   }
-                  else {
+                  if (mesh.geometry instanceof geometry_1.Geometry) {
+                      for (var key in mesh.geometry.attributes) {
+                          var attribute = mesh.geometry.attributes[key];
+                          var location_4 = this.context.getAttribLocation(mesh.material.shader.program, key);
+                          if (location_4 === -1) {
+                              continue;
+                          }
+                          this.context.bindBuffer(this.context.ARRAY_BUFFER, attribute.buffer);
+                          this.context.enableVertexAttribArray(location_4);
+                          this.context.vertexAttribPointer(location_4, attribute.stride, this.context.FLOAT, false, 0, 0);
+                      }
+                      var target = this.context.ELEMENT_ARRAY_BUFFER;
+                      var buffer = mesh.geometry.indices.buffer;
+                      this.context.bindBuffer(target, buffer);
                       var mode = this.context.TRIANGLES;
                       var count = mesh.geometry.indices.data.length;
                       var offset = 0;
@@ -5373,15 +5404,16 @@
       }());
       exports.RenderTarget = RenderTarget;
   });
-  define("src/graphics/index", ["require", "exports", "src/graphics/attribute", "src/graphics/camera", "src/graphics/geometry", "src/graphics/geometry", "src/graphics/light", "src/graphics/material", "src/graphics/mesh", "src/graphics/object", "src/graphics/renderer", "src/graphics/render-target", "src/graphics/scene", "src/graphics/shader", "src/graphics/texture2D", "src/graphics/textureCube"], function (require, exports, attribute_2, camera_1, geometry_1, geometry_2, light_1, material_1, mesh_2, object_5, renderer_1, render_target_1, scene_1, shader_1, texture2D_3, textureCube_2) {
+  define("src/graphics/index", ["require", "exports", "src/graphics/attribute", "src/graphics/camera", "src/graphics/geometry", "src/graphics/geometry", "src/graphics/geometry-array", "src/graphics/light", "src/graphics/material", "src/graphics/mesh", "src/graphics/object", "src/graphics/renderer", "src/graphics/render-target", "src/graphics/scene", "src/graphics/shader", "src/graphics/texture2D", "src/graphics/textureCube"], function (require, exports, attribute_2, camera_1, geometry_2, geometry_3, geometry_array_2, light_1, material_1, mesh_2, object_5, renderer_1, render_target_1, scene_1, shader_1, texture2D_3, textureCube_2) {
       "use strict";
       exports.__esModule = true;
       exports.Attribute = attribute_2.Attribute;
       exports.Camera = camera_1.Camera;
       exports.PerspectiveCamera = camera_1.PerspectiveCamera;
       exports.OrthoCamera = camera_1.OrthoCamera;
-      exports.Geometry = geometry_1.Geometry;
-      exports.CubeGeometry = geometry_2.CubeGeometry;
+      exports.Geometry = geometry_2.Geometry;
+      exports.CubeGeometry = geometry_3.CubeGeometry;
+      exports.GeometryArray = geometry_array_2.GeometryArray;
       exports.Light = light_1.Light;
       exports.Material = material_1.Material;
       exports.Mesh = mesh_2.Mesh;
@@ -5393,7 +5425,7 @@
       exports.Texture2D = texture2D_3.Texture2D;
       exports.TextureCube = textureCube_2.TextureCube;
   });
-  define("src/index", ["require", "exports", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/scene", "src/graphics/index", "src/graphics/index", "src/graphics/index"], function (require, exports, index_2, index_3, index_4, index_5, index_6, index_7, index_8, index_9, index_10, index_11, index_12, index_13, index_14, index_15, index_16, index_17, index_18, index_19, index_20, index_21, index_22, index_23, index_24, index_25, index_26, index_27, index_28, index_29, index_30, index_31, index_32, index_33, index_34, index_35, scene_2, index_36, index_37, index_38) {
+  define("src/index", ["require", "exports", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/scene", "src/graphics/index", "src/graphics/index", "src/graphics/index"], function (require, exports, index_2, index_3, index_4, index_5, index_6, index_7, index_8, index_9, index_10, index_11, index_12, index_13, index_14, index_15, index_16, index_17, index_18, index_19, index_20, index_21, index_22, index_23, index_24, index_25, index_26, index_27, index_28, index_29, index_30, index_31, index_32, index_33, index_34, index_35, index_36, scene_2, index_37, index_38, index_39) {
       "use strict";
       exports.__esModule = true;
       exports.Box = index_2.Box;
@@ -5424,16 +5456,17 @@
       exports.OrthoCamera = index_27.OrthoCamera;
       exports.Geometry = index_28.Geometry;
       exports.CubeGeometry = index_29.CubeGeometry;
-      exports.Light = index_30.Light;
-      exports.Material = index_31.Material;
-      exports.Mesh = index_32.Mesh;
-      exports.Object3D = index_33.Object3D;
-      exports.Renderer = index_34.Renderer;
-      exports.RenderTarget = index_35.RenderTarget;
+      exports.GeometryArray = index_30.GeometryArray;
+      exports.Light = index_31.Light;
+      exports.Material = index_32.Material;
+      exports.Mesh = index_33.Mesh;
+      exports.Object3D = index_34.Object3D;
+      exports.Renderer = index_35.Renderer;
+      exports.RenderTarget = index_36.RenderTarget;
       exports.Scene = scene_2.Scene;
-      exports.Shader = index_36.Shader;
-      exports.Texture2D = index_37.Texture2D;
-      exports.TextureCube = index_38.TextureCube;
+      exports.Shader = index_37.Shader;
+      exports.Texture2D = index_38.Texture2D;
+      exports.TextureCube = index_39.TextureCube;
   });
   define("demo/index", ["require", "exports", "src/index"], function (require, exports, hex) {
       "use strict";
@@ -5441,9 +5474,18 @@
       var canvas = document.getElementById("canvas");
       var renderer = new hex.Renderer(canvas);
       var camera = new hex.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000);
-      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, 0, -3), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
-      var geometry = new hex.CubeGeometry();
-      var shader = new hex.Shader("#version 300 es\n  \n  precision highp float;\n  \n  uniform mat4   model;\n  uniform mat4   view;\n  uniform mat4   projection;\n\n  in vec4 position;\n  in vec2 texcoord;\n  in vec3 normal;\n\n  out vec2 out_texcoord;\n  out vec4 out_position;\n  void main() {\n    out_texcoord = texcoord;\n    out_position = (model * position);\n    gl_Position  = projection * view * (model * position);\n  }\n", "#version 300 es\n\n  precision highp float;\n\n  uniform sampler2D map;\n  in vec2 out_texcoord;\n  in vec4 out_position;\n  out vec4 color;\n  \n  void main() {\n    int a = int(3.0);\n    int b = int(out_position.x * 20.0);\n    int c = int(out_position.y * 20.0);\n    int d = int(out_position.z * 20.0);\n    \n    if (((b % a) == 0) || ((c % a) == 0) || ((d % a) == 0)) {\n      // color = vec4(0.8, 0.8, 0.8, 1.0);\n      color = texture(map, out_texcoord);\n    } else {\n      //color = texture(map, out_texcoord);\n      color = vec4(0.3, 0.3, 0.3, 0.1);\n      //discard;\n    }\n\n    // float x = 0.1;\n    // if((out_position.x > -x && out_position.x < x) || \n    //    (out_position.y > -x && out_position.y < x) || \n    //    (out_position.z > -x && out_position.z < x) ) {\n    //     color = vec4(1.0, 1.0, 1.0, 1.0);\n    // } else {\n    //   discard;\n    //   //gl_FragColor = texture2D(texture, out_texcoord);\n    // }\n    \n  }\n");
+      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, 0, -36), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
+      var cube = new hex.CubeGeometry();
+      var geometry = new hex.GeometryArray(cube, 10000);
+      var data = [];
+      for (var i = 0; i < 10000; i++) {
+          data.push((Math.random() - 0.5) * 30);
+          data.push((Math.random() - 0.5) * 30);
+          data.push((Math.random() - 0.5) * 30);
+          data.push(1);
+      }
+      geometry.addAttribute("offset", new hex.Attribute(4, data));
+      var shader = new hex.Shader("#version 300 es\n  \n  precision highp float;\n  \n  uniform mat4   model;\n  uniform mat4   view;\n  uniform mat4   projection;\n\n  in vec4 position;\n  in vec2 texcoord;\n  in vec3 normal;\n  in vec4 offset;\n\n  out vec2 out_texcoord;\n  out vec4 out_position;\n  void main() {\n    vec4 temp = position + offset;\n    out_texcoord = texcoord;\n    out_position = (model * temp);\n    gl_Position  = projection * view * (model * temp);\n  }\n", "#version 300 es\n\n  precision highp float;\n\n  uniform sampler2D map;\n  in vec2 out_texcoord;\n  in vec4 out_position;\n  out vec4 color;\n  \n  void main() {\n    int a = int(80.0);\n    int b = int(out_position.x * 20.0);\n    int c = int(out_position.y * 20.0);\n    int d = int(out_position.z * 20.0);\n    \n    if (((b % a) == 0) || ((c % a) == 0) || ((d % a) == 0)) {\n      // color = vec4(0.8, 0.8, 0.8, 1.0);\n      color = texture(map, out_texcoord);\n    } else {\n      //color = texture(map, out_texcoord);\n      color = vec4(0.3, 0.3, 0.3, 0.1);\n      //discard;\n    }\n\n    // float x = 0.1;\n    // if((out_position.x > -x && out_position.x < x) || \n    //    (out_position.y > -x && out_position.y < x) || \n    //    (out_position.z > -x && out_position.z < x) ) {\n    //     color = vec4(1.0, 1.0, 1.0, 1.0);\n    // } else {\n    //   discard;\n    //   //gl_FragColor = texture2D(texture, out_texcoord);\n    // }\n    \n  }\n");
       var material = new hex.Material(shader);
       var mesh = new hex.Mesh(material, geometry);
       var scene = new hex.Scene();

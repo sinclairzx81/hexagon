@@ -33,6 +33,8 @@ import { Vector3 }               from "../math/vector3"
 import { Vector4 }               from "../math/vector4"
 import { Plane }                 from "../math/plane"
 import { Quaternion }            from "../math/quaternion"
+import { Geometry }              from "./geometry"
+import { GeometryArray }         from "./geometry-array"
 import { Shader }                from "./shader"
 import { Camera }                from "./camera"
 import { Scene }                 from "./scene"
@@ -43,12 +45,12 @@ import { Texture2D }             from "./texture2D"
 import { TextureCube }           from "./textureCube"
 
 /**
- * Renderer:
+ * Renderer
  * 
- * WebGL 1.0 based scene graph renderer.
+ * WebGL 2.0 graphics renderer. 
  */
 export class Renderer {
-  private context    : WebGL2RenderingContext
+  private context: WebGL2RenderingContext
 
   /**
    * creates a new webgl device context.
@@ -106,7 +108,7 @@ export class Renderer {
    */
   private render_mesh(camera: Camera, transform: Matrix, mesh: Mesh): void {
     if (mesh.visible) {
-      // update: mesh data
+      // mesh: update 
       mesh.update(this.context)
 
       // bind: material shader.
@@ -151,58 +153,83 @@ export class Renderer {
         }
       }
 
-      // bind: mesh instances
-      for (const key in mesh.instances) {
-        const instance = mesh.instances[key]
-        const location = this.context.getAttribLocation(mesh.material.shader.program, key)
-        if (location === -1) { 
-          continue
+      // ------------------------------------------------------
+      // GeometryArray
+      // ------------------------------------------------------
+      if (mesh.geometry instanceof GeometryArray) {
+        // bind: geometry-array attributes
+        for (const key in mesh.geometry.attributes) {
+          const instance = mesh.geometry.attributes[key]
+          const location = this.context.getAttribLocation(mesh.material.shader.program, key)
+          if (location === -1) { 
+            continue
+          }
+          this.context.bindBuffer(this.context.ARRAY_BUFFER, instance.buffer)
+          this.context.enableVertexAttribArray(location)
+          this.context.vertexAttribPointer (
+            location, 
+            instance.stride, 
+            this.context.FLOAT, 
+            false,
+            0, 0)
+          this.context.vertexAttribDivisor(location, 1)
         }
-        this.context.bindBuffer(this.context.ARRAY_BUFFER, instance.buffer)
-        this.context.enableVertexAttribArray(location)
-        this.context.vertexAttribPointer (
-          location, 
-          instance.stride, 
-          this.context.FLOAT, 
-          false,
-          0, 0)
-        this.context.vertexAttribDivisor(location, 1)
-      }
-
-      // bind: geometry attributes
-      for (const key in mesh.geometry.attributes) {
-        const attribute = mesh.geometry.attributes[key]
-        const location  = this.context.getAttribLocation(mesh.material.shader.program, key)
-        if (location === -1) {
-          continue
+        // bind: instance attributes
+        for (const key in mesh.geometry.instance.attributes) {
+          const attribute = mesh.geometry.instance.attributes[key]
+          const location  = this.context.getAttribLocation(mesh.material.shader.program, key)
+          if (location === -1) {
+            continue
+          }
+          this.context.bindBuffer(this.context.ARRAY_BUFFER, attribute.buffer)
+          this.context.enableVertexAttribArray(location)
+          this.context.vertexAttribPointer (
+            location,
+            attribute.stride, 
+            this.context.FLOAT, 
+            false,
+            0, 0)
         }
-        this.context.bindBuffer(this.context.ARRAY_BUFFER, attribute.buffer)
-        this.context.enableVertexAttribArray(location)
-        this.context.vertexAttribPointer (
-          location,
-          attribute.stride, 
-          this.context.FLOAT, 
-          false,
-          0, 0)
-      }
+        // bind: geometry indices
+        const target = this.context.ELEMENT_ARRAY_BUFFER
+        const buffer = mesh.geometry.instance.indices.buffer
+        this.context.bindBuffer (target, buffer)
 
-      // bind: geometry indices
-      const target = this.context.ELEMENT_ARRAY_BUFFER
-      const buffer = mesh.geometry.indices.buffer
-      this.context.bindBuffer (target, buffer)
-
-      // draw: instanced or non instanced
-      const instanced = (Object.keys(mesh.instances).length > 0)
-      if (instanced) {
-        const mode       = this.context.TRIANGLES
-        const count      = mesh.geometry.indices.data.length
-        const offset     = 0
-        const iterations = mesh.instanceCount()
-        const type   = (mesh.geometry.indices.data instanceof Uint8Array) 
+        // draw: instanced
+        const mode = this.context.TRIANGLES
+        const count = mesh.geometry.instance.indices.data.length
+        const offset = 0
+        const iterations = mesh.geometry.length
+        const type = (mesh.geometry.instance.indices.data instanceof Uint8Array) 
           ? this.context.UNSIGNED_BYTE
           : this.context.UNSIGNED_SHORT
         this.context.drawElementsInstanced(mode, count, type, offset, iterations)
-      } else {
+      }
+
+      // ------------------------------------------------------
+      // Geometry
+      // ------------------------------------------------------
+      if (mesh.geometry instanceof Geometry) {
+        for (const key in mesh.geometry.attributes) {
+          const attribute = mesh.geometry.attributes[key]
+          const location  = this.context.getAttribLocation(mesh.material.shader.program, key)
+          if (location === -1) {
+            continue
+          }
+          this.context.bindBuffer(this.context.ARRAY_BUFFER, attribute.buffer)
+          this.context.enableVertexAttribArray(location)
+          this.context.vertexAttribPointer (
+            location,
+            attribute.stride, 
+            this.context.FLOAT, 
+            false,
+            0, 0)
+        }
+        // bind: geometry indices
+        const target = this.context.ELEMENT_ARRAY_BUFFER
+        const buffer = mesh.geometry.indices.buffer
+        this.context.bindBuffer (target, buffer)
+
         const mode   = this.context.TRIANGLES
         const count  = mesh.geometry.indices.data.length
         const offset = 0

@@ -69,19 +69,21 @@ export class Material {
   }
 
   /**
-   * synchronizes this material.
+   * updates this material
    * @param {WebGL2RenderingContext} this webgl context.
    * @returns {void}
    */
   public update(context: WebGL2RenderingContext) : void {
     this.shader.update (context)
-
-    for (const key in this.uniforms) {
-      const uniform = this.uniforms[key]
-      if(uniform instanceof Texture2D) {
-        uniform.update (context)
+    
+    if (this.needsupdate) {
+      for (const key in this.uniforms) {
+        const uniform = this.uniforms[key]
+        if(uniform instanceof Texture2D) {
+          uniform.update (context)
+        }
       }
+      this.needsupdate = false
     }
-    this.needsupdate = false
   }
 }

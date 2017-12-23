@@ -27,10 +27,11 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 
-import { Object3D }  from "./object"
-import { Geometry }  from "./geometry"
-import { Material }  from "./material"
-import { Attribute } from "./attribute"
+import { Object3D }      from "./object"
+import { Geometry }      from "./geometry"
+import { GeometryArray } from "./geometry-array"
+import { Material }      from "./material"
+
 
 /**
  * Mesh
@@ -38,7 +39,6 @@ import { Attribute } from "./attribute"
  * A renderable mesh container housing geometry and material.
  */
 export class Mesh extends Object3D {
-  public instances: {[name: string]: Attribute}  = {}
   public needsupdate: boolean
 
   /**
@@ -47,16 +47,9 @@ export class Mesh extends Object3D {
    * @param {Geometry} geometry the geometry for this mesh.
    * @returns {Mesh}
    */
-  constructor(public material: Material, public geometry: Geometry) {
+  constructor(public material: Material, public geometry: Geometry | GeometryArray) {
     super()
     this.needsupdate = true
-  }
-  public instanceCount(): number {
-    let keys = Object.keys(this.instances)
-    return (keys.length > 0) 
-      ? this.instances[keys[0]].data.length / 
-        this.instances[keys[0]].stride
-      : 0
   }
 
   /**
@@ -65,26 +58,10 @@ export class Mesh extends Object3D {
    * @returns {void}
    */
   public update(context: WebGL2RenderingContext) : void {
-    if(this.needsupdate) {
-      this.needsupdate = false
-      // validate instances array lengths. 
-      if(Object.keys(this.instances).length > 1) {
-        let lens = Object.keys(this.instances).map(key => 
-          this.instances[key].data.length / 
-          this.instances[key].stride)
-        if(lens.every(n => n === lens[0]) === false) {
-          throw Error("geometry: instance length mismatch.")
-        }
-      }
-      
-      // synchronize instances.
-      Object.keys(this.instances).forEach(key => {
-        let instance = this.instances[key]
-        instance.update(context, context.ARRAY_BUFFER)
-      })
-    }
-
     this.material.update(context)
     this.geometry.update(context)
+    if(this.needsupdate) {
+      this.needsupdate = false
+    }
   }
 }
