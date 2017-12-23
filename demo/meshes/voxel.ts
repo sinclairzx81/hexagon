@@ -15,7 +15,9 @@ const createShader = () => new hex.Shader(
 
   in vec4        offset;
   in vec4        color;
+  in vec4        target;
   in float       enabled;
+  in float       amount;
 
   out vec2       out_texcoord;
   out vec4       out_position;
@@ -25,7 +27,12 @@ const createShader = () => new hex.Shader(
     if (enabled == 0.0) {
       gl_Position = vec4(0.0, 0.0, 0.0, 0.0);
     } else {
-      vec4 temp    = position + offset;
+      vec3 local    = (position.xyz + offset.xyz);
+      vec3 remote   = (position.xyz + offset.xyz) + target.xyz;
+      vec3 direct   = (remote - local);
+      
+      vec4 temp     = vec4(local + (direct * amount), 1.0);
+
       out_texcoord = texcoord;
       out_color    = color;
       out_position = (model * temp);
@@ -53,10 +60,14 @@ const createGeometry = (width: number, height: number, depth: number) => {
   const cube     = new hex.CubeGeometry()
   const offsets  = new Array(width * height * depth * 4)
   const colors   = new Array(width * height * depth * 4)
+  const targets  = new Array(width * height * depth * 4)
   const enableds = new Array(width * height * depth)
+  const amounts  = new Array(width * height * depth)
   let offset_index  = 0
   let enabled_index = 0
   let color_index   = 0
+  let target_index  = 0
+  let amount_index  = 0
   for ( let iz = 0; iz < depth; iz ++) {
     for ( let iy = 0; iy < height; iy ++) {
       for ( let ix = 0; ix < width; ix ++) {
@@ -73,8 +84,15 @@ const createGeometry = (width: number, height: number, depth: number) => {
         colors[color_index + 2] = Math.random()
         colors[color_index + 3] = 1
         color_index += 4 
+        targets[target_index + 0] = (Math.random() - 0.5) * 3200
+        targets[target_index + 1] = (Math.random() - 0.5) * 3200
+        targets[target_index + 2] = (Math.random() - 0.5) * 3200
+        targets[target_index + 3] = 1
+        target_index += 4 
         enableds[enabled_index] = 1
-        enabled_index = 0
+        enabled_index += 1
+        amounts[amount_index] = 0.0
+        amount_index += 1
       }
     }
   }
@@ -82,7 +100,9 @@ const createGeometry = (width: number, height: number, depth: number) => {
   const geometry = new hex.GeometryArray(cube, width * height * depth)
   geometry.addAttribute("offset",  new hex.Attribute(4, offsets))
   geometry.addAttribute("color",   new hex.Attribute(4, colors))
+  geometry.addAttribute("target",  new hex.Attribute(4, targets))
   geometry.addAttribute("enabled", new hex.Attribute(1, enableds))
+  geometry.addAttribute("amount",  new hex.Attribute(1, amounts))
   return geometry
 }
 
@@ -91,7 +111,8 @@ export type VoxelData = {
   g: number,
   b: number,
   a: number,
-  v: boolean
+  v: boolean,
+  d: number
 }
 
 /**
@@ -123,13 +144,16 @@ export class Voxel extends hex.Mesh {
     const geometry = this.geometry as hex.GeometryArray
     const colors   = geometry.attributes["color"].data  as Float32Array
     const enabled  = geometry.attributes["enabled"].data as Float32Array
+    const amounts  = geometry.attributes["amount"].data as Float32Array
     colors [((x + (y * this.width) + (z * this.width * this.height)) * 4) + 0] = data.r
     colors [((x + (y * this.width) + (z * this.width * this.height)) * 4) + 1] = data.g
     colors [((x + (y * this.width) + (z * this.width * this.height)) * 4) + 2] = data.b
     colors [((x + (y * this.width) + (z * this.width * this.height)) * 4) + 3] = data.a
     enabled[((x + (y * this.width) + (z * this.width * this.height)))] = (data.v) ? 1.0 : 0.0
-    geometry.attributes["color"].needsupdate = true
+    amounts[((x + (y * this.width) + (z * this.width * this.height)))] = (data.d)
+    geometry.attributes["color"].needsupdate  = true
     geometry.attributes["enabled"].needsupdate = true
+    geometry.attributes["amount"].needsupdate = true
     geometry.needsupdate = true
   }
 }
