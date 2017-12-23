@@ -5472,12 +5472,12 @@
   define("demo/meshes/voxel", ["require", "exports", "src/index"], function (require, exports, hex) {
       "use strict";
       exports.__esModule = true;
-      var createShader = function () { return new hex.Shader("#version 300 es\n  precision highp float;\n\n  uniform mat4   model;\n  uniform mat4   view;\n  uniform mat4   projection;\n\n  in vec4        position;\n  in vec2        texcoord;\n  in vec3        normal;\n\n  in vec4        offset;\n  in vec4        color;\n  in vec4        target;\n  in float       enabled;\n  in float       amount;\n\n  out vec2       out_texcoord;\n  out vec4       out_position;\n  out vec4       out_color;\n\n  void main() {\n    if (enabled == 0.0) {\n      gl_Position = vec4(0.0, 0.0, 0.0, 0.0);\n    } else {\n      vec3 local    = (position.xyz + offset.xyz);\n      vec3 remote   = (position.xyz + offset.xyz) + target.xyz;\n      vec3 direct   = (remote - local);\n      \n      vec4 temp     = vec4(local + (direct * amount), 1.0);\n\n      out_texcoord = texcoord;\n      out_color    = color;\n      out_position = (model * temp);\n      gl_Position  = projection * view * (model * temp);\n    }\n  }\n", "#version 300 es\n precision highp float;\n\n uniform sampler2D map;\n in vec2 out_texcoord;\n in vec4 out_position;\n in vec4 out_color;\n\n out vec4 color;\n\n void main() {\n   color = out_color;\n }\n"); };
+      var createShader = function () { return new hex.Shader("#version 300 es\n  precision highp float;\n\n  uniform mat4   model;\n  uniform mat4   view;\n  uniform mat4   projection;\n\n  // attributes\n  in vec4        position;\n  in vec2        texcoord;\n  in vec3        normal;\n\n  // array attributes\n  in vec3        offset;\n  in vec3        color;\n  in vec3        target;\n  in float       enabled;\n  in float       amount;\n\n  // vs-out\n  out vec4       out_position;\n  out vec3       out_color;\n  out vec2       out_texcoord;\n\n  void main() {\n    if (enabled == 0.0) {\n      gl_Position = vec4(0.0, 0.0, 0.0, 0.0);\n    } else {\n      vec3 local    = (position.xyz + offset);\n      vec3 remote   = (position.xyz + offset) + target;\n      vec3 direct   = (remote - local);\n      vec4 temp     = vec4(local + (direct * amount), 1.0);\n\n      out_texcoord = texcoord;\n      out_color    = color;\n      out_position = (model * temp);\n      gl_Position  = projection * view * (model * temp);\n    }\n  }\n", "#version 300 es\n precision highp float;\n\n in vec4 out_position;\n in vec3 out_color;\n in vec2 out_texcoord;\n \n out vec4 color;\n\n void main() {\n   color = vec4(out_color, 1.0);\n }\n"); };
       var createGeometry = function (width, height, depth) {
           var cube = new hex.CubeGeometry();
-          var offsets = new Array(width * height * depth * 4);
-          var colors = new Array(width * height * depth * 4);
-          var targets = new Array(width * height * depth * 4);
+          var offsets = new Array(width * height * depth * 3);
+          var colors = new Array(width * height * depth * 3);
+          var targets = new Array(width * height * depth * 3);
           var enableds = new Array(width * height * depth);
           var amounts = new Array(width * height * depth);
           var offset_index = 0;
@@ -5494,18 +5494,15 @@
                       offsets[offset_index + 0] = x * 1.2;
                       offsets[offset_index + 1] = y * 1.2;
                       offsets[offset_index + 2] = z * 1.2;
-                      offsets[offset_index + 3] = 1;
-                      offset_index += 4;
+                      offset_index += 3;
                       colors[color_index + 0] = Math.random();
                       colors[color_index + 1] = Math.random();
                       colors[color_index + 2] = Math.random();
-                      colors[color_index + 3] = 1;
-                      color_index += 4;
-                      targets[target_index + 0] = (Math.random() - 0.5) * 3200;
-                      targets[target_index + 1] = (Math.random() - 0.5) * 3200;
-                      targets[target_index + 2] = (Math.random() - 0.5) * 3200;
-                      targets[target_index + 3] = 1;
-                      target_index += 4;
+                      color_index += 3;
+                      targets[target_index + 0] = (Math.random() - 0.5) * 32;
+                      targets[target_index + 1] = (Math.random() - 0.5) * 32;
+                      targets[target_index + 2] = (Math.random() - 0.5) * 32;
+                      target_index += 3;
                       enableds[enabled_index] = 1;
                       enabled_index += 1;
                       amounts[amount_index] = 0.0;
@@ -5514,9 +5511,9 @@
               }
           }
           var geometry = new hex.GeometryArray(cube, width * height * depth);
-          geometry.addAttribute("offset", new hex.Attribute(4, offsets));
-          geometry.addAttribute("color", new hex.Attribute(4, colors));
-          geometry.addAttribute("target", new hex.Attribute(4, targets));
+          geometry.addAttribute("offset", new hex.Attribute(3, offsets));
+          geometry.addAttribute("color", new hex.Attribute(3, colors));
+          geometry.addAttribute("target", new hex.Attribute(3, targets));
           geometry.addAttribute("enabled", new hex.Attribute(1, enableds));
           geometry.addAttribute("amount", new hex.Attribute(1, amounts));
           return geometry;
@@ -5530,20 +5527,22 @@
               _this.depth = depth;
               return _this;
           }
-          Voxel.prototype.set = function (x, y, z, data) {
+          Voxel.prototype.enable = function (x, y, z, state) {
+              var geometry = this.geometry;
+              var enabled = geometry.attributes["enabled"].data;
+              var index = ((x + (y * this.width) + (z * this.width * this.height)));
+              enabled[((x + (y * this.width) + (z * this.width * this.height)))] = (state) ? 1.0 : 0.0;
+              geometry.attributes["enabled"].needsupdate = true;
+              geometry.needsupdate = true;
+          };
+          Voxel.prototype.color = function (x, y, z, r, g, b) {
               var geometry = this.geometry;
               var colors = geometry.attributes["color"].data;
-              var enabled = geometry.attributes["enabled"].data;
-              var amounts = geometry.attributes["amount"].data;
-              colors[((x + (y * this.width) + (z * this.width * this.height)) * 4) + 0] = data.r;
-              colors[((x + (y * this.width) + (z * this.width * this.height)) * 4) + 1] = data.g;
-              colors[((x + (y * this.width) + (z * this.width * this.height)) * 4) + 2] = data.b;
-              colors[((x + (y * this.width) + (z * this.width * this.height)) * 4) + 3] = data.a;
-              enabled[((x + (y * this.width) + (z * this.width * this.height)))] = (data.v) ? 1.0 : 0.0;
-              amounts[((x + (y * this.width) + (z * this.width * this.height)))] = (data.d);
+              var index = ((x + (y * this.width) + (z * this.width * this.height)) * 3);
+              colors[index + 0] = r;
+              colors[index + 1] = g;
+              colors[index + 2] = b;
               geometry.attributes["color"].needsupdate = true;
-              geometry.attributes["enabled"].needsupdate = true;
-              geometry.attributes["amount"].needsupdate = true;
               geometry.needsupdate = true;
           };
           return Voxel;
@@ -5555,29 +5554,14 @@
       exports.__esModule = true;
       var canvas = document.getElementById("canvas");
       var renderer = new hex.Renderer(canvas);
-      var camera = new hex.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000);
-      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, 0, -200), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
-      var voxel = new voxel_1.Voxel(32, 32, 32);
+      var camera = new hex.PerspectiveCamera(90, canvas.width / canvas.height, 0.1, 1000);
+      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, 0, -100), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
+      var voxel = new voxel_1.Voxel(240, 120, 1);
       var scene = new hex.Scene();
       scene.objects.push(voxel);
       var texture = new hex.Texture2D(16, 16, "rgb", new Uint8Array(16 * 16 * 3));
       var t = 0;
       setInterval(function () {
-          var d = (Math.cos(t) + 1.0) / 2;
-          for (var iz = 0; iz < voxel.depth; iz++) {
-              for (var iy = 0; iy < voxel.height; iy++) {
-                  for (var ix = 0; ix < voxel.width; ix++) {
-                      var l = Math.random();
-                      if (l > 0.7) {
-                          var p = Math.random();
-                          var n = Math.random();
-                          var k = 1;
-                          voxel.set(ix, iy, iz, { r: k, g: k, b: k, a: 1, v: true, d: d });
-                      }
-                  }
-              }
-          }
-          t += 0.001;
           voxel.matrix = voxel.matrix.rotateZ(0.001);
           renderer.clear(0.1, 0.1, 0.1, 1);
           renderer.render(camera, scene);
