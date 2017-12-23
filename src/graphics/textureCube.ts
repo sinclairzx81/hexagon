@@ -26,15 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo} from "./typeinfo"
-
-export class TextureCube implements TypeInfo {
+export class TextureCube {
   
-  /**
-   * returns the typename for this type.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "TextureCube"
-  }
 }

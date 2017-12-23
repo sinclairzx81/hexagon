@@ -26,27 +26,20 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo} from "./typeinfo"
-import {Object3D}           from "./object"
-import {Light}              from "./light"
+import { Object3D } from "./object"
 
-export class Scene extends Object3D implements TypeInfo {
-  public lights: Array<Light>
-  
+/**
+ * Scene
+ * 
+ * A container type for a rendering scene.
+ */
+export class Scene extends Object3D {
+
   /**
    * creates a new scene.
    * @returns {Scene}
    */
   constructor() {
     super()
-    this.lights = new Array<Light>()
-  }
-
-  /**
-   * returns the typename for this type.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Object3D"
   }
 }

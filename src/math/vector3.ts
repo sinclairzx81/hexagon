@@ -26,9 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo} from "./typeinfo"
-import {Quaternion}         from "./quaternion"
-import {Matrix}             from "./matrix"
+import { Quaternion } from "./quaternion"
+import { Matrix }     from "./matrix"
 
 /** see IEEE 754 floating point number. */
 const f32 = { max: 2147483647, min: -2147483647 }
@@ -42,11 +41,11 @@ const mi = {
 }
 
 /**
- * Vector3:
+ * Vector3
  * 
  * A 3-dimensional spatial vector.
  */
-export class Vector3 implements TypeInfo {
+export class Vector3 {
   /** returns a vector with values set to their maximum values. */
   public static MAX_VALUE: Vector3 = new Vector3(f32.max, f32.max, f32.max)
   /** returns a vector with values set to their minimum values. */
@@ -74,14 +73,6 @@ export class Vector3 implements TypeInfo {
    */
   public toString(): string {
     return `[${this.v[v3i.x]}, ${this.v[v3i.y]}, ${this.v[v3i.z]}]`
-  }
-
-  /**
-   * returns the type name of this object.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Vector3"
   }
 
   /**

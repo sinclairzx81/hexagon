@@ -26,9 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo} from "./typeinfo"
-
-export class Shader implements TypeInfo {
+export class Shader {
   public context        : WebGLRenderingContext
   public program        : WebGLProgram
   public vertexShader   : WebGLShader
@@ -47,21 +45,13 @@ export class Shader implements TypeInfo {
     this.needsupdate = true
     this.disposed    = false
   }
-  
-  /**
-   * returns the typename for this type.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Object3D"
-  }
 
   /**
    * synchronizes this shader.
    * @param {WebGLRenderingContext} this webgl context.
    * @returns {void}
    */
-  public sync(context: WebGLRenderingContext): void {
+  public update(context: WebGLRenderingContext): void {
     if (this.needsupdate === false) return
     
     this.context         = context

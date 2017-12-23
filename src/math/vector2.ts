@@ -26,9 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo} from "./typeinfo"
-import {Quaternion}         from "./quaternion"
-import {Matrix}             from "./matrix"
+import { Quaternion } from "./quaternion"
+import { Matrix }     from "./matrix"
 
 /** see IEEE 754 floating point number. */
 const f32 = { max: 2147483647, min: -2147483647 }
@@ -46,7 +45,7 @@ const mi  = {
  * 
  * A 2-dimensional spatial vector.
  */
-export class Vector2 implements TypeInfo {
+export class Vector2 {
   /** returns a vector with values set to their maximum values. */
   public static MAX_VALUE: Vector2 = new Vector2(f32.max, f32.max)
   /** returns a vector with values set to their minimum values. */
@@ -72,14 +71,6 @@ export class Vector2 implements TypeInfo {
    */
   public toString(): string {
     return `[${this.v[v2i.x]}, ${this.v[v2i.y]}]`
-  }
-
-  /**
-   * returns the type name of this object.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Vector2"
   }
 
   /**

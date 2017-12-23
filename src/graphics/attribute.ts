@@ -26,53 +26,59 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {Single}              from "../math/single"
-import {Vector2}             from "../math/vector2"
-import {Vector3}             from "../math/vector3"
-import {Vector4}             from "../math/vector4"
-import {TypeName, TypeInfo}  from "./typeinfo"
+/**
+ * AttributeData
+ * 
+ * The allowed attribute data types.
+ */
+export type AttributeData =
+  | Float32Array
+  | Uint8Array
+  | Uint16Array
+  | Array<number>
 
-
-export class Attribute implements TypeInfo {
-  public context     : WebGLRenderingContext
-  public buffer      : WebGLBuffer
-  public disposed    : boolean
+/**
+ * Attribute
+ * 
+ * A container type for a webgl geomtry attribute or index buffer.
+ */
+export class Attribute {
+  public context:     WebGL2RenderingContext
+  public buffer:      WebGLBuffer
+  public disposed:    boolean
+  public needsupdate: boolean
   
   /**
    * creates a new attribute. 
-   * @param {AttributeArray} the local data for this attribute.
-   * @param {number} the size of each element.
-   * @returns Attribute.
+   * @param {number} stride the stride between each element in the buffer. 
+   * @param {AttributeArray} data the attribute data array.
+   * @returns {Attribute}
    */
-  constructor(public array: Float32Array | Uint8Array | Uint16Array, public size: number) {
-    if(array.length % size !== 0) 
-      throw Error("attribute: (array.length % size) does not equal 0")
+  constructor(public stride: number, public data: AttributeData) {
+    if(data.length % stride !== 0) {
+      throw Error("attribute stride mismatch with given data length.")
+    }
     this.context     = undefined
     this.buffer      = undefined
     this.disposed    = false
-  }
-  
-  /**
-   * returns the typename for this type.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Attribute"
+    this.needsupdate = true
   }
   
   /**
    * synchronizes this attribute.
-   * @param {WebGLRenderingContext} this webgl context.
-   * @param {number} the target ARRAY_BUFFER | ELEMENT_ARRAY_BUFFER
+   * @param {WebGL2RenderingContext} context this webgl context.
+   * @param {number} target the target ARRAY_BUFFER | ELEMENT_ARRAY_BUFFER
    * @returns {void}
    */
-  public sync(context: WebGLRenderingContext, target: number): void {
-    this.context = context
-    this.buffer  = (this.buffer === undefined)
-      ? this.context.createBuffer()
-      : this.buffer
-    this.context.bindBuffer(target, this.buffer)
-    this.context.bufferData(target, this.array, this.context.STATIC_DRAW)
+  public update (context: WebGL2RenderingContext, target: number): void {
+    if (this.needsupdate) { 
+      this.context = context
+      this.buffer  = (this.buffer === undefined) ? this.context.createBuffer() : this.buffer
+      const data   = this.resolve_data (context, this.data, target)
+      this.context.bindBuffer (target, this.buffer)
+      this.context.bufferData (target, data, this.context.STATIC_DRAW)
+      this.needsupdate = false
+    }
   }
 
   /**
@@ -80,41 +86,33 @@ export class Attribute implements TypeInfo {
    * returns {void}
    */
   public dispose(): void {
-    if (this.disposed === true)       return
-    if (this.context  === undefined)  return
-    if (this.buffer   === undefined)  return
-    this.context.deleteBuffer(this.buffer)
-    this.context  = undefined
-    this.buffer   = undefined
-    this.disposed = true
+    if (!this.disposed) {
+      if (this.context  === undefined)  return
+      if (this.buffer   === undefined)  return
+      this.context.deleteBuffer(this.buffer)
+      this.context  = undefined
+      this.buffer   = undefined
+      this.disposed = true
+    }
   }
 
   /**
-   * creates a new attribute from the given vector array.
-   * @param {Array<Single> | Array<Vector2> | Array<Vector3> | Array<Vector4>} array the array source. 
-   * @returns {Attribute}
+   * resolves a typed array from the attribute data and target.
+   * @param {WebGl2RenderingContext} context the webgl2 rendering context.
+   * @param {AttributeData} buffer the buffer to resolve.
+   * @param {number} target the element target type.
+   * @returns {Float32Array | Uint8Array | Uint16Array}
    */
-  public static fromArray(array: Array<Single> | Array<Vector2> | Array<Vector3> | Array<Vector4>) : Attribute {
-    if(array.length === 0) throw new Error("array is empty")
-    let length = 0;
-    let size   = 0;
-    switch(array[0].typeinfo()) {
-      case "Single":  length = array.length * 1;   size = 1;   break;
-      case "Vector2": length = array.length * 2;   size = 2;   break;
-      case "Vector3": length = array.length * 3;   size = 3;   break;
-      case "Vector4": length = array.length * 4;   size = 4;   break;
-      default: throw new Error("unknown array type.")
-    }
-    
-    let index  = 0
-    let buffer = new Float32Array(length)
-    for(let i = 0; i < array.length; i++) {
-      for(let j = 0; j < array[i].v.length; j++) {
-        buffer[index] = array[i].v[j]
-        index += 1
+  private resolve_data (context: WebGL2RenderingContext, buffer: AttributeData, target: number): Float32Array | Uint8Array | Uint16Array {
+    if (buffer instanceof Float32Array || buffer instanceof Uint8Array || buffer instanceof Uint16Array) {
+      return buffer
+    } else {
+      switch (target) {
+        case context.ELEMENT_ARRAY_BUFFER: return new Uint16Array(buffer)
+        case context.ARRAY_BUFFER:         return new Float32Array(buffer)
+        default: throw Error("unable to resolve js array from target")
       }
     }
-    return new Attribute(buffer, size)
   }
 }
 

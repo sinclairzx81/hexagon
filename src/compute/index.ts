@@ -31,6 +31,3 @@ export { Program }                   from "./program"
 export { Script, transform }         from "./script"
 export { Float1D, Float2D, Float3D } from "./float"
 export { Color1D, Color2D, Color3D } from "./color"
-
-export const createContext = (webgl2?: WebGL2RenderingContext) => new Context(webgl2)
-

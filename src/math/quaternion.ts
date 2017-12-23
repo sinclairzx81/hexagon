@@ -26,9 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo}    from "./typeinfo"
-import {Matrix}                from "./matrix"
-import {Vector3}               from "./vector3"
+import { Matrix }  from "./matrix"
+import { Vector3 } from "./vector3"
 
 const qui = { x: 0, y: 1, z: 2, w: 3 }
 const v3i = { x: 0, y: 1, z: 2 }
@@ -44,7 +43,7 @@ const mi  = {
  * 
  * Axis independent matrix and vector rotations.
  */
-export class Quaternion implements TypeInfo {
+export class Quaternion {
   /** the internal elements for this type. */
   public v: Float32Array
 
@@ -70,14 +69,6 @@ export class Quaternion implements TypeInfo {
    */
   public toString(): string {
     return `[${this.v[qui.x]}, ${this.v[qui.y]}, ${this.v[qui.z]}, ${this.v[qui.w]}]`
-  }
-
-  /**
-   * returns the type name of this object.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Quaternion"
   }
 
   /**

@@ -26,8 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo} from "./typeinfo"
-
 const si = { x: 0 }
 
 /**
@@ -35,7 +33,7 @@ const si = { x: 0 }
  * 
  * A single 32-bit floating point value.
  */
-export class Single implements TypeInfo {
+export class Single {
   /** the internal elements for this type. */
   public v: Float32Array
 
@@ -55,14 +53,6 @@ export class Single implements TypeInfo {
    */
   public toString(): string {
     return `${this.v[si.x]}`
-  }
-
-  /**
-   * returns the type name of this object.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Single"
   }
 
   /**

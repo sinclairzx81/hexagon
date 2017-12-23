@@ -26,13 +26,12 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {Matrix}             from "../math/matrix"
-import {Single}             from "../math/single"
-import {Vector2}            from "../math/vector2"
-import {Vector3}            from "../math/vector3"
-import {Vector4}            from "../math/vector4"
-import {Plane}              from "../math/plane"
-import {TypeName, TypeInfo} from "./typeinfo"
+import { Matrix }  from "../math/matrix"
+import { Single }  from "../math/single"
+import { Vector2 } from "../math/vector2"
+import { Vector3 } from "../math/vector3"
+import { Vector4 } from "../math/vector4"
+import { Plane }   from "../math/plane"
 
 export interface LightOptions {
   position?    : Vector3
@@ -43,7 +42,7 @@ export interface LightOptions {
   intensity?   : Single
 }
 
-export class Light implements TypeInfo {
+export class Light {
   public position    : Vector3
   public diffuse     : Vector3
   public ambient     : Vector3
@@ -57,13 +56,5 @@ export class Light implements TypeInfo {
     this.specular    = options.specular    || new Vector3(1, 1, 1);
     this.attenuation = options.attenuation || new Single (0.0)
     this.intensity   = options.intensity   || new Single (1.0)
-  }
-
-  /**
-   * returns the typename for this type.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Light"
   }
 }

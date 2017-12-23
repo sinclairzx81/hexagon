@@ -26,8 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo} from "./typeinfo"
-
 /**
  * N-dimensional spatial vector.
  */
@@ -59,14 +57,6 @@ export class VectorN {
     return buf.join("")
   }
 
-  /**
-   * returns the type name of this object.
-   * @returns {TypeName}
-   */
-  public typename(): TypeName {
-    return "VectorN"
-  }
-  
   /**
    * returns a clone of this vector.
    * @returns {VectorN}

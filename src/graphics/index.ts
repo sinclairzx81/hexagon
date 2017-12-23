@@ -29,6 +29,7 @@ THE SOFTWARE.
 export { Attribute }                              from "./attribute"
 export { Camera, PerspectiveCamera, OrthoCamera } from "./camera"
 export { Geometry }                               from "./geometry"
+export { CubeGeometry }                           from "./geometry"
 export { Light }                                  from "./light"
 export { Material }                               from "./material"
 export { Mesh }                                   from "./mesh"

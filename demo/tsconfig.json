@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "amd",
     "outFile": "./static/index.js",
-    "lib": ["dom", "es2015"],
+    "lib": ["dom", "es2017"],
     "baseUrl": ".",
     "paths": {
       "@hexagon/*": [

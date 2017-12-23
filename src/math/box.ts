@@ -26,7 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo}           from "./typeinfo"
 import {Plane, PlaneIntersectionType} from "./plane"
 import {Vector3}                      from "./vector3"
 import {Single}                       from "./single"
@@ -42,7 +41,7 @@ export type ContainmentType = "inside" | "outside" | "intersect"
 /**
  * An axis aligned bounding box.
  */
-export class Box implements TypeInfo {
+export class Box {
   /** the min vector. */
   public min: Vector3
   /** the max vector. */
@@ -65,14 +64,6 @@ export class Box implements TypeInfo {
    */
   public toString(): string {
     return `[${this.min.toString()}, ${this.max.toString()}]`
-  }
-
-  /**
-   * returns the type name of this object.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Box"
   }
 
   /**

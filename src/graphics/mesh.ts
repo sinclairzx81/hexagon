@@ -26,55 +26,52 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo}    from "./typeinfo"
-import {Object3D}              from "./object"
-import {Geometry}              from "./geometry"
-import {Material}              from "./material"
-import {Attribute}             from "./attribute"
 
-export class Mesh extends Object3D implements TypeInfo {
+import { Object3D }  from "./object"
+import { Geometry }  from "./geometry"
+import { Material }  from "./material"
+import { Attribute } from "./attribute"
+
+/**
+ * Mesh
+ * 
+ * A renderable mesh container housing geometry and material.
+ */
+export class Mesh extends Object3D {
   public instances: {[name: string]: Attribute}  = {}
   public needsupdate: boolean
 
   /**
    * creates a new mesh.
-   * @param {Material} the material for this mesh.
-   * @param {Geometry} the geometry for this mesh.
+   * @param {Material} material the material for this mesh.
+   * @param {Geometry} geometry the geometry for this mesh.
    * @returns {Mesh}
    */
   constructor(public material: Material, public geometry: Geometry) {
     super()
     this.needsupdate = true
-    
   }
   public instanceCount(): number {
     let keys = Object.keys(this.instances)
     return (keys.length > 0) 
-      ? this.instances[keys[0]].array.length / 
-        this.instances[keys[0]].size
+      ? this.instances[keys[0]].data.length / 
+        this.instances[keys[0]].stride
       : 0
-  }
-  /**
-   * returns the typename for this type.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Mesh"
   }
 
   /**
    * synchronizes this mesh.
-   * @param {WebGLRenderingContext} this webgl context.
+   * @param {WebGL2RenderingContext} this webgl context.
    * @returns {void}
    */
-  public sync(context: WebGLRenderingContext) : void {
+  public update(context: WebGL2RenderingContext) : void {
     if(this.needsupdate) {
       this.needsupdate = false
       // validate instances array lengths. 
       if(Object.keys(this.instances).length > 1) {
         let lens = Object.keys(this.instances).map(key => 
-          this.instances[key].array.length / 
-          this.instances[key].size)
+          this.instances[key].data.length / 
+          this.instances[key].stride)
         if(lens.every(n => n === lens[0]) === false) {
           throw Error("geometry: instance length mismatch.")
         }
@@ -83,11 +80,11 @@ export class Mesh extends Object3D implements TypeInfo {
       // synchronize instances.
       Object.keys(this.instances).forEach(key => {
         let instance = this.instances[key]
-        instance.sync(context, context.ARRAY_BUFFER)
+        instance.update(context, context.ARRAY_BUFFER)
       })
     }
 
-    this.material.sync(context)
-    this.geometry.sync(context)
+    this.material.update(context)
+    this.geometry.update(context)
   }
 }

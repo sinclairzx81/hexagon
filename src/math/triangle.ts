@@ -26,16 +26,15 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo} from "./typeinfo"
-import {Vector3}            from "./vector3"
-import {Plane}              from "./plane"
+import { Vector3 }            from "./vector3"
+import { Plane }              from "./plane"
 
 /**
  * Triangle:
  * 
  * A triangle in 3 space.
  */
-export class Triangle implements TypeInfo {
+export class Triangle {
 
   /**
    * creates a new triangle from the given vertices.
@@ -54,14 +53,6 @@ export class Triangle implements TypeInfo {
    */
   public toString(): string {
     return `{v0: ${this.v0.toString()}, v1: ${this.v0.toString()}, v2: ${this.v0.toString()}}`
-  }
-
-  /**
-   * returns the type name of this object.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Triangle"
   }
 
   /**

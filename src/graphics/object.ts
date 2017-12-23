@@ -27,15 +27,14 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 
-import {Matrix}             from "../math/index"
-import {TypeName, TypeInfo} from "./typeinfo"
-import {Guid}               from "./guid"
+import { Matrix } from "../math/index"
+import { Guid }   from "./guid"
 
 /**
  * Object3D - base class 3D object. contains the object 
  * transformation and scene graph query operations.
  */
-export class Object3D implements TypeInfo {
+export class Object3D {
   public id        : string
   public name      : string
   public matrix    : Matrix
@@ -47,18 +46,10 @@ export class Object3D implements TypeInfo {
    * @returns {Object3D}
    */
   constructor() {
-    this.id        = Guid.next()
-    this.name      = undefined 
-    this.matrix    = Matrix.identity()
-    this.objects   = new Array<Object3D>()
-    this.visible   = true
-  }
-
-  /**
-   * returns the typename for this type.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Object3D"
+    this.id      = Guid.next()
+    this.name    = undefined 
+    this.matrix  = Matrix.identity()
+    this.objects = new Array<Object3D>()
+    this.visible = true
   }
 }

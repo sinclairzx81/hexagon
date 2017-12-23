@@ -26,9 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo} from "./typeinfo"
-import {Quaternion}         from "./quaternion"
-import {Matrix}             from "./matrix"
+import { Quaternion } from "./quaternion"
+import { Matrix }     from "./matrix"
 
 /** see IEEE 754 floating point number. */
 const f32 = { max: 2147483647, min: -2147483647 }
@@ -76,14 +75,6 @@ export class Vector4 {
    */
   public toString(): string {
     return `[${this.v[v4i.x]}, ${this.v[v4i.y]}, ${this.v[v4i.z]}, ${this.v[v4i.w]}]`
-  }
-
-  /**
-   * returns the type name of this object.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Vector4"
   }
 
   /**

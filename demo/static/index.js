@@ -71,10 +71,6 @@
       }());
       exports.Radian = Radian;
   });
-  define("src/math/typeinfo", ["require", "exports"], function (require, exports) {
-      "use strict";
-      exports.__esModule = true;
-  });
   define("src/math/vector3", ["require", "exports"], function (require, exports) {
       "use strict";
       exports.__esModule = true;
@@ -96,9 +92,6 @@
           }
           Vector3.prototype.toString = function () {
               return "[" + this.v[v3i.x] + ", " + this.v[v3i.y] + ", " + this.v[v3i.z] + "]";
-          };
-          Vector3.prototype.typeinfo = function () {
-              return "Vector3";
           };
           Vector3.prototype.clone = function () {
               return Vector3.clone(this);
@@ -367,9 +360,6 @@
           }
           Quaternion.prototype.toString = function () {
               return "[" + this.v[qui.x] + ", " + this.v[qui.y] + ", " + this.v[qui.z] + ", " + this.v[qui.w] + "]";
-          };
-          Quaternion.prototype.typeinfo = function () {
-              return "Quaternion";
           };
           Quaternion.prototype.clone = function () {
               return Quaternion.clone(this);
@@ -644,9 +634,6 @@
           Vector4.prototype.toString = function () {
               return "[" + this.v[v4i.x] + ", " + this.v[v4i.y] + ", " + this.v[v4i.z] + ", " + this.v[v4i.w] + "]";
           };
-          Vector4.prototype.typeinfo = function () {
-              return "Vector4";
-          };
           Vector4.prototype.clone = function () {
               return Vector4.clone(this);
           };
@@ -899,9 +886,6 @@
           Single.prototype.toString = function () {
               return "" + this.v[si.x];
           };
-          Single.prototype.typeinfo = function () {
-              return "Single";
-          };
           Single.prototype.clone = function () {
               return Single.clone(this);
           };
@@ -1013,9 +997,6 @@
           }
           Sphere.prototype.toString = function () {
               return "{ position: " + this.position.toString() + ", radius: " + this.radius + "}";
-          };
-          Sphere.prototype.typeinfo = function () {
-              return "Sphere";
           };
           Sphere.prototype.clone = function () {
               return Sphere.clone(this);
@@ -1203,9 +1184,6 @@
               buf.push("}");
               return buf.join('\n');
           };
-          Frustum.prototype.typeinfo = function () {
-              return "Frustum";
-          };
           Frustum.prototype.clone = function () {
               return Frustum.clone(this);
           };
@@ -1252,9 +1230,6 @@
           Triangle.prototype.toString = function () {
               return "{v0: " + this.v0.toString() + ", v1: " + this.v0.toString() + ", v2: " + this.v0.toString() + "}";
           };
-          Triangle.prototype.typeinfo = function () {
-              return "Triangle";
-          };
           Triangle.prototype.clone = function () {
               return Triangle.clone(this);
           };
@@ -1291,9 +1266,6 @@
           }
           Ray.prototype.toString = function () {
               return "{ position: " + this.position.toString() + ", direction: " + this.direction.toString() + " }";
-          };
-          Ray.prototype.typeinfo = function () {
-              return "Ray";
           };
           Ray.equals = function (r0, r1) {
               return (vector3_4.Vector3.equals(r0.position, r1.position) &&
@@ -1457,9 +1429,6 @@
           Box.prototype.toString = function () {
               return "[" + this.min.toString() + ", " + this.max.toString() + "]";
           };
-          Box.prototype.typeinfo = function () {
-              return "Box";
-          };
           Box.prototype.clone = function () {
               return Box.clone(this);
           };
@@ -1591,9 +1560,6 @@
           };
           Plane.prototype.toString = function () {
               return "[" + this.v[pli.x] + ", " + this.v[pli.y] + ", " + this.v[pli.z] + ", " + this.v[pli.w] + "]";
-          };
-          Plane.prototype.typeinfo = function () {
-              return "Plane";
           };
           Plane.prototype.clone = function () {
               return Plane.clone(this);
@@ -1963,9 +1929,6 @@
               buf.push(" " + this.v[mi.m31] + ", " + this.v[mi.m32] + ", " + this.v[mi.m33] + ", " + this.v[mi.m34]);
               buf.push(" " + this.v[mi.m41] + ", " + this.v[mi.m42] + ", " + this.v[mi.m43] + ", " + this.v[mi.m44] + "]");
               return buf.join('\n');
-          };
-          Matrix.prototype.typeinfo = function () {
-              return "Matrix";
           };
           Matrix.prototype.clone = function () {
               return Matrix.clone(this);
@@ -2495,9 +2458,6 @@
           Vector2.prototype.toString = function () {
               return "[" + this.v[v2i.x] + ", " + this.v[v2i.y] + "]";
           };
-          Vector2.prototype.typeinfo = function () {
-              return "Vector2";
-          };
           Vector2.prototype.clone = function () {
               return Vector2.clone(this);
           };
@@ -2721,9 +2681,6 @@
               }
               buf.push(']');
               return buf.join("");
-          };
-          VectorN.prototype.typename = function () {
-              return "VectorN";
           };
           VectorN.prototype.clone = function () {
               return VectorN.clone(this);
@@ -4772,81 +4729,55 @@
       exports.Color1D = color_2.Color1D;
       exports.Color2D = color_2.Color2D;
       exports.Color3D = color_2.Color3D;
-      exports.createContext = function (webgl2) { return new Context(webgl2); };
-  });
-  define("src/graphics/typeinfo", ["require", "exports"], function (require, exports) {
-      "use strict";
-      exports.__esModule = true;
   });
   define("src/graphics/attribute", ["require", "exports"], function (require, exports) {
       "use strict";
       exports.__esModule = true;
       var Attribute = (function () {
-          function Attribute(array, size) {
-              this.array = array;
-              this.size = size;
-              if (array.length % size !== 0)
-                  throw Error("attribute: (array.length % size) does not equal 0");
+          function Attribute(stride, data) {
+              this.stride = stride;
+              this.data = data;
+              if (data.length % stride !== 0) {
+                  throw Error("attribute stride mismatch with given data length.");
+              }
               this.context = undefined;
               this.buffer = undefined;
               this.disposed = false;
+              this.needsupdate = true;
           }
-          Attribute.prototype.typeinfo = function () {
-              return "Attribute";
-          };
-          Attribute.prototype.sync = function (context, target) {
-              this.context = context;
-              this.buffer = (this.buffer === undefined)
-                  ? this.context.createBuffer()
-                  : this.buffer;
-              this.context.bindBuffer(target, this.buffer);
-              this.context.bufferData(target, this.array, this.context.STATIC_DRAW);
+          Attribute.prototype.update = function (context, target) {
+              if (this.needsupdate) {
+                  this.context = context;
+                  this.buffer = (this.buffer === undefined) ? this.context.createBuffer() : this.buffer;
+                  var data = this.resolve_data(context, this.data, target);
+                  this.context.bindBuffer(target, this.buffer);
+                  this.context.bufferData(target, data, this.context.STATIC_DRAW);
+                  this.needsupdate = false;
+              }
           };
           Attribute.prototype.dispose = function () {
-              if (this.disposed === true)
-                  return;
-              if (this.context === undefined)
-                  return;
-              if (this.buffer === undefined)
-                  return;
-              this.context.deleteBuffer(this.buffer);
-              this.context = undefined;
-              this.buffer = undefined;
-              this.disposed = true;
-          };
-          Attribute.fromArray = function (array) {
-              if (array.length === 0)
-                  throw new Error("array is empty");
-              var length = 0;
-              var size = 0;
-              switch (array[0].typeinfo()) {
-                  case "Single":
-                      length = array.length * 1;
-                      size = 1;
-                      break;
-                  case "Vector2":
-                      length = array.length * 2;
-                      size = 2;
-                      break;
-                  case "Vector3":
-                      length = array.length * 3;
-                      size = 3;
-                      break;
-                  case "Vector4":
-                      length = array.length * 4;
-                      size = 4;
-                      break;
-                  default: throw new Error("unknown array type.");
+              if (!this.disposed) {
+                  if (this.context === undefined)
+                      return;
+                  if (this.buffer === undefined)
+                      return;
+                  this.context.deleteBuffer(this.buffer);
+                  this.context = undefined;
+                  this.buffer = undefined;
+                  this.disposed = true;
               }
-              var index = 0;
-              var buffer = new Float32Array(length);
-              for (var i = 0; i < array.length; i++) {
-                  for (var j = 0; j < array[i].v.length; j++) {
-                      buffer[index] = array[i].v[j];
-                      index += 1;
+          };
+          Attribute.prototype.resolve_data = function (context, buffer, target) {
+              if (buffer instanceof Float32Array || buffer instanceof Uint8Array || buffer instanceof Uint16Array) {
+                  return buffer;
+              }
+              else {
+                  switch (target) {
+                      case context.ELEMENT_ARRAY_BUFFER: return new Uint16Array(buffer);
+                      case context.ARRAY_BUFFER: return new Float32Array(buffer);
+                      default: throw Error("unable to resolve js array from target");
                   }
               }
-              return new Attribute(buffer, size);
           };
           return Attribute;
       }());
@@ -4879,9 +4810,6 @@
               this.objects = new Array();
               this.visible = true;
           }
-          Object3D.prototype.typeinfo = function () {
-              return "Object3D";
-          };
           return Object3D;
       }());
       exports.Object3D = Object3D;
@@ -4897,9 +4825,6 @@
               _this.projection = projection;
               return _this;
           }
-          Camera.prototype.typeinfo = function () {
-              return "Camera";
-          };
           Camera.prototype.lookAt = function (position, target, up) {
               this.matrix = matrix_4.Matrix.lookAt(position, target, up);
           };
@@ -4930,56 +4855,151 @@
       "use strict";
       exports.__esModule = true;
       var Geometry = (function () {
-          function Geometry(options) {
-              options = options || { attributes: undefined, indices: undefined };
-              this.attributes = options.attributes || {};
-              this.indices = options.indices;
-              this.indices_wireframe = undefined;
+          function Geometry() {
+              this.attributes = {};
+              this.indices = undefined;
               this.needsupdate = true;
               this.disposed = false;
           }
-          Geometry.prototype.typeinfo = function () {
-              return "Geometry";
-          };
-          Geometry.prototype.sync = function (context) {
-              var _this = this;
-              if (!this.needsupdate)
-                  return;
-              this.needsupdate = false;
-              this.indices.sync(context, context.ELEMENT_ARRAY_BUFFER);
-              var wireframe = new Uint16Array(this.indices.array.length * 2);
-              for (var i = 0, j = 0; i < this.indices.array.length; i += 3, j += 6) {
-                  wireframe[j + 0] = this.indices.array[i + 0];
-                  wireframe[j + 1] = this.indices.array[i + 1];
-                  wireframe[j + 2] = this.indices.array[i + 1];
-                  wireframe[j + 3] = this.indices.array[i + 2];
-                  wireframe[j + 4] = this.indices.array[i + 2];
-                  wireframe[j + 5] = this.indices.array[i + 0];
+          Geometry.prototype.addAttribute = function (name, attribute) {
+              if (this.disposed) {
+                  throw Error("cannot add attribute on disposed geometry.");
               }
-              this.indices_wireframe = new attribute_1.Attribute(wireframe, 1);
-              this.indices_wireframe.sync(context, context.ELEMENT_ARRAY_BUFFER);
-              Object.keys(this.attributes).forEach(function (key) {
-                  var attribute = _this.attributes[key];
-                  attribute.sync(context, context.ARRAY_BUFFER);
-              });
+              this.attributes[name] = attribute;
+              this.needsupdate = true;
+          };
+          Geometry.prototype.addIndex = function (attribute) {
+              if (this.disposed) {
+                  throw Error("cannot add indexing attribute on disposed geometry.");
+              }
+              this.indices = attribute;
+              this.needsupdate = true;
+          };
+          Geometry.prototype.update = function (context) {
+              if (this.needsupdate) {
+                  if (this.indices !== undefined) {
+                      this.indices.update(context, context.ELEMENT_ARRAY_BUFFER);
+                  }
+                  for (var name_1 in this.attributes) {
+                      this.attributes[name_1].update(context, context.ARRAY_BUFFER);
+                  }
+                  this.needsupdate = false;
+              }
           };
           Geometry.prototype.dispose = function () {
-              var _this = this;
-              if (this.disposed === true)
+              if (this.disposed) {
                   return;
-              if (this.indices === undefined)
-                  return;
-              if (this.attributes === undefined)
-                  return;
-              this.indices.dispose();
-              Object.keys(this.attributes).forEach(function (key) {
-                  _this.attributes[key].dispose();
-              });
+              }
+              if (this.indices !== undefined) {
+                  this.indices.dispose();
+              }
+              for (var name_2 in this.attributes) {
+                  this.attributes[name_2].dispose();
+              }
               this.disposed = true;
           };
           return Geometry;
       }());
       exports.Geometry = Geometry;
+      var CubeGeometry = (function (_super) {
+          __extends(CubeGeometry, _super);
+          function CubeGeometry() {
+              var _this = _super.call(this) || this;
+              _this.build();
+              return _this;
+          }
+          CubeGeometry.prototype.build = function () {
+              var s = 1;
+              this.addAttribute("position", new attribute_1.Attribute(4, [
+                  -s, -s, s, 1.0,
+                  s, -s, s, 1.0,
+                  s, s, s, 1.0,
+                  -s, s, s, 1.0,
+                  -s, -s, -s, 1.0,
+                  -s, s, -s, 1.0,
+                  s, s, -s, 1.0,
+                  s, -s, -s, 1.0,
+                  -s, s, -s, 1.0,
+                  -s, s, s, 1.0,
+                  s, s, s, 1.0,
+                  s, s, -s, 1.0,
+                  -s, -s, -s, 1.0,
+                  s, -s, -s, 1.0,
+                  s, -s, s, 1.0,
+                  -s, -s, s, 1.0,
+                  s, -s, -s, 1.0,
+                  s, s, -s, 1.0,
+                  s, s, s, 1.0,
+                  s, -s, s, 1.0,
+                  -s, -s, s, 1.0,
+                  -s, s, s, 1.0,
+                  -s, s, -s, 1.0,
+                  -s, -s, -s, 1.0
+              ]));
+              this.addAttribute("normal", new attribute_1.Attribute(3, [
+                  0.0, 0.0, 1.0,
+                  0.0, 0.0, 1.0,
+                  0.0, 0.0, 1.0,
+                  0.0, 0.0, 1.0,
+                  0.0, 0.0, -1.0,
+                  0.0, 0.0, -1.0,
+                  0.0, 0.0, -1.0,
+                  0.0, 0.0, -1.0,
+                  0.0, 1.0, 0.0,
+                  0.0, 1.0, 0.0,
+                  0.0, 1.0, 0.0,
+                  0.0, 1.0, 0.0,
+                  0.0, -1.0, 0.0,
+                  0.0, -1.0, 0.0,
+                  0.0, -1.0, 0.0,
+                  0.0, -1.0, 0.0,
+                  1.0, 0.0, 0.0,
+                  1.0, 0.0, 0.0,
+                  1.0, 0.0, 0.0,
+                  1.0, 0.0, 0.0,
+                  -1.0, 0.0, 0.0,
+                  -1.0, 0.0, 0.0,
+                  -1.0, 0.0, 0.0,
+                  -1.0, 0.0, 0.0
+              ]));
+              this.addAttribute("texcoord", new attribute_1.Attribute(2, [
+                  0.0, 0.0,
+                  1.0, 0.0,
+                  1.0, 1.0,
+                  0.0, 1.0,
+                  0.0, 0.0,
+                  1.0, 0.0,
+                  1.0, 1.0,
+                  0.0, 1.0,
+                  0.0, 0.0,
+                  1.0, 0.0,
+                  1.0, 1.0,
+                  0.0, 1.0,
+                  0.0, 0.0,
+                  1.0, 0.0,
+                  1.0, 1.0,
+                  0.0, 1.0,
+                  0.0, 0.0,
+                  1.0, 0.0,
+                  1.0, 1.0,
+                  0.0, 1.0,
+                  0.0, 0.0,
+                  1.0, 0.0,
+                  1.0, 1.0,
+                  0.0, 1.0
+              ]));
+              this.addIndex(new attribute_1.Attribute(1, [
+                  0, 1, 2, 0, 2, 3,
+                  4, 5, 6, 4, 6, 7,
+                  8, 9, 10, 8, 10, 11,
+                  12, 13, 14, 12, 14, 15,
+                  16, 17, 18, 16, 18, 19,
+                  20, 21, 22, 20, 22, 23
+              ]));
+          };
+          return CubeGeometry;
+      }(Geometry));
+      exports.CubeGeometry = CubeGeometry;
   });
   define("src/graphics/light", ["require", "exports", "src/math/single", "src/math/vector3"], function (require, exports, single_3, vector3_9) {
       "use strict";
@@ -4994,9 +5014,6 @@
               this.attenuation = options.attenuation || new single_3.Single(0.0);
               this.intensity = options.intensity || new single_3.Single(1.0);
           }
-          Light.prototype.typeinfo = function () {
-              return "Light";
-          };
           return Light;
       }());
       exports.Light = Light;
@@ -5012,10 +5029,7 @@
               this.needsupdate = true;
               this.disposed = false;
           }
-          Shader.prototype.typeinfo = function () {
-              return "Object3D";
-          };
-          Shader.prototype.sync = function (context) {
+          Shader.prototype.update = function (context) {
               if (this.needsupdate === false)
                   return;
               this.context = context;
@@ -5073,30 +5087,27 @@
           }
       };
       var Texture2D = (function () {
-          function Texture2D(pixels, width, height, format) {
-              this.pixels = pixels;
+          function Texture2D(width, height, format, pixels) {
               this.width = width;
               this.height = height;
               this.format = format;
+              this.pixels = pixels;
               this.needsupdate = true;
               this.disposed = false;
           }
-          Texture2D.prototype.typeinfo = function () {
-              return "Texture2D";
-          };
-          Texture2D.prototype.sync = function (context) {
-              if (this.needsupdate === false)
-                  return;
-              this.context = this.context || context;
-              this.texture = this.texture || context.createTexture();
-              var format = to_format(context, this.format);
-              context.bindTexture(context.TEXTURE_2D, this.texture);
-              context.texImage2D(context.TEXTURE_2D, 0, format, this.width, this.height, 0, format, context.UNSIGNED_BYTE, this.pixels);
-              context.texParameteri(context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.NEAREST);
-              context.texParameteri(context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.NEAREST);
-              context.generateMipmap(context.TEXTURE_2D);
-              context.bindTexture(context.TEXTURE_2D, null);
-              this.needsupdate = false;
+          Texture2D.prototype.update = function (context) {
+              if (this.needsupdate) {
+                  this.context = this.context || context;
+                  this.texture = this.texture || context.createTexture();
+                  var format = to_format(context, this.format);
+                  context.bindTexture(context.TEXTURE_2D, this.texture);
+                  context.texImage2D(context.TEXTURE_2D, 0, format, this.width, this.height, 0, format, context.UNSIGNED_BYTE, this.pixels);
+                  context.texParameteri(context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.NEAREST);
+                  context.texParameteri(context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.NEAREST);
+                  context.generateMipmap(context.TEXTURE_2D);
+                  context.bindTexture(context.TEXTURE_2D, null);
+                  this.needsupdate = false;
+              }
           };
           Texture2D.prototype.dispose = function () {
               if (this.disposed === true)
@@ -5118,9 +5129,6 @@
       var TextureCube = (function () {
           function TextureCube() {
           }
-          TextureCube.prototype.typeinfo = function () {
-              return "TextureCube";
-          };
           return TextureCube;
       }());
       exports.TextureCube = TextureCube;
@@ -5135,21 +5143,15 @@
               this.wireframe = false;
               this.needsupdate = true;
           }
-          Material.prototype.typeinfo = function () {
-              return "Material";
-          };
-          Material.prototype.sync = function (context) {
-              var _this = this;
-              if (!this.needsupdate)
-                  return;
-              this.needsupdate = false;
-              this.shader.sync(context);
-              Object.keys(this.uniforms).forEach(function (key) {
-                  var uniform = _this.uniforms[key];
+          Material.prototype.update = function (context) {
+              this.shader.update(context);
+              for (var key in this.uniforms) {
+                  var uniform = this.uniforms[key];
                   if (uniform instanceof texture2D_1.Texture2D) {
-                      uniform.sync(context);
+                      uniform.update(context);
                   }
-              });
+              }
+              this.needsupdate = false;
           };
           return Material;
       }());
@@ -5171,21 +5173,18 @@
           Mesh.prototype.instanceCount = function () {
               var keys = Object.keys(this.instances);
               return (keys.length > 0)
-                  ? this.instances[keys[0]].array.length /
-                      this.instances[keys[0]].size
+                  ? this.instances[keys[0]].data.length /
+                      this.instances[keys[0]].stride
                   : 0;
           };
-          Mesh.prototype.typeinfo = function () {
-              return "Mesh";
-          };
-          Mesh.prototype.sync = function (context) {
+          Mesh.prototype.update = function (context) {
               var _this = this;
               if (this.needsupdate) {
                   this.needsupdate = false;
                   if (Object.keys(this.instances).length > 1) {
                       var lens_1 = Object.keys(this.instances).map(function (key) {
-                          return _this.instances[key].array.length /
-                              _this.instances[key].size;
+                          return _this.instances[key].data.length /
+                              _this.instances[key].stride;
                       });
                       if (lens_1.every(function (n) { return n === lens_1[0]; }) === false) {
                           throw Error("geometry: instance length mismatch.");
@@ -5193,11 +5192,11 @@
                   }
                   Object.keys(this.instances).forEach(function (key) {
                       var instance = _this.instances[key];
-                      instance.sync(context, context.ARRAY_BUFFER);
+                      instance.update(context, context.ARRAY_BUFFER);
                   });
               }
-              this.material.sync(context);
-              this.geometry.sync(context);
+              this.material.update(context);
+              this.geometry.update(context);
           };
           return Mesh;
       }(object_2.Object3D));
@@ -5209,197 +5208,144 @@
       var Scene = (function (_super) {
           __extends(Scene, _super);
           function Scene() {
-              var _this = _super.call(this) || this;
-              _this.lights = new Array();
-              return _this;
+              return _super.call(this) || this;
           }
-          Scene.prototype.typeinfo = function () {
-              return "Object3D";
-          };
           return Scene;
       }(object_3.Object3D));
       exports.Scene = Scene;
   });
-  define("src/graphics/renderer", ["require", "exports", "src/math/matrix"], function (require, exports, matrix_5) {
+  define("src/graphics/renderer", ["require", "exports", "src/math/matrix", "src/math/single", "src/math/vector2", "src/math/vector3", "src/math/vector4", "src/math/plane", "src/math/quaternion", "src/graphics/mesh", "src/graphics/object", "src/graphics/texture2D", "src/graphics/textureCube"], function (require, exports, matrix_5, single_4, vector2_2, vector3_10, vector4_3, plane_6, quaternion_2, mesh_1, object_4, texture2D_2, textureCube_1) {
       "use strict";
       exports.__esModule = true;
       var Renderer = (function () {
           function Renderer(canvas) {
               this.canvas = canvas;
               this.context = this.canvas.getContext("webgl2");
-              this.lights = new Array();
           }
-          Renderer.prototype.typeinfo = function () {
-              return "Renderer";
-          };
           Renderer.prototype.viewport = function (x, y, width, height) {
               this.context.viewport(x, y, width, height);
           };
           Renderer.prototype.clear = function (r, g, b, a) {
+              if (a === void 0) { a = 1.0; }
               this.context.clearColor(r, g, b, a);
               this.context.enable(this.context.DEPTH_TEST);
               this.context.depthFunc(this.context.LEQUAL);
               this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
           };
-          Renderer.prototype.renderObject = function (camera, transform, object) {
-              if (object.visible === false)
-                  return;
-              this.renderObjects(camera, transform, object.objects);
+          Renderer.prototype.render_object = function (camera, transform, object) {
+              if (object.visible === false) {
+                  this.render_object_list(camera, transform, object.objects);
+              }
           };
-          Renderer.prototype.renderMesh = function (camera, transform, mesh) {
-              var _this = this;
-              if (mesh.visible === false)
-                  return;
-              mesh.sync(this.context);
-              this.context.useProgram(mesh.material.shader.program);
-              for (var i = 0; i < this.lights.length; i++) {
-                  var light_position = this.context.getUniformLocation(mesh.material.shader.program, "lights[" + i + "].position");
-                  var light_diffuse = this.context.getUniformLocation(mesh.material.shader.program, "lights[" + i + "].diffuse");
-                  var light_ambient = this.context.getUniformLocation(mesh.material.shader.program, "lights[" + i + "].ambient");
-                  var light_specular = this.context.getUniformLocation(mesh.material.shader.program, "lights[" + i + "].specular");
-                  var light_attenuation = this.context.getUniformLocation(mesh.material.shader.program, "lights[" + i + "].attenuation");
-                  var light_intensity = this.context.getUniformLocation(mesh.material.shader.program, "lights[" + i + "].intensity");
-                  this.context.uniform3fv(light_position, this.lights[i].position.v);
-                  this.context.uniform3fv(light_diffuse, this.lights[i].diffuse.v);
-                  this.context.uniform3fv(light_ambient, this.lights[i].ambient.v);
-                  this.context.uniform3fv(light_specular, this.lights[i].specular.v);
-                  this.context.uniform1f(light_attenuation, this.lights[i].attenuation.v[0]);
-                  this.context.uniform1f(light_intensity, this.lights[i].intensity.v[0]);
-              }
-              var camera_position = this.context.getUniformLocation(mesh.material.shader.program, "camera_position");
-              var camera_projection = this.context.getUniformLocation(mesh.material.shader.program, "camera_projection");
-              var camera_view = this.context.getUniformLocation(mesh.material.shader.program, "camera_view");
-              this.context.uniform3fv(camera_position, matrix_5.Matrix.origin(camera.matrix).v);
-              this.context.uniformMatrix4fv(camera_projection, false, camera.projection.v);
-              this.context.uniformMatrix4fv(camera_view, false, camera.matrix.v);
-              var object_matrix = this.context.getUniformLocation(mesh.material.shader.program, "object_matrix");
-              this.context.uniformMatrix4fv(object_matrix, false, transform.v);
-              var texture_index = 0;
-              Object.keys(mesh.material.uniforms).forEach(function (key) {
-                  var location = _this.context.getUniformLocation(mesh.material.shader.program, key);
-                  var uniform = mesh.material.uniforms[key];
-                  switch (uniform.typeinfo()) {
-                      case "Matrix":
-                          _this.context.uniformMatrix4fv(location, false, uniform.v);
-                          break;
-                      case "Single":
-                          _this.context.uniform1fv(location, uniform.v);
-                          break;
-                      case "Vector2":
-                          _this.context.uniform2fv(location, uniform.v);
-                          break;
-                      case "Vector3":
-                          _this.context.uniform3fv(location, uniform.v);
-                          break;
-                      case "Vector4":
-                          _this.context.uniform4fv(location, uniform.v);
-                          break;
-                      case "Plane":
-                          _this.context.uniform4fv(location, uniform.v);
-                          break;
-                      case "Quaternion":
-                          _this.context.uniform4fv(location, uniform.v);
-                          break;
-                      case "Texture2D":
-                          _this.context.activeTexture(_this.context.TEXTURE0 + texture_index);
-                          _this.context.bindTexture(_this.context.TEXTURE_2D, uniform.texture);
-                          _this.context.uniform1i(location, texture_index);
+          Renderer.prototype.render_mesh = function (camera, transform, mesh) {
+              if (mesh.visible) {
+                  mesh.update(this.context);
+                  this.context.useProgram(mesh.material.shader.program);
+                  var camera_projection = this.context.getUniformLocation(mesh.material.shader.program, "projection");
+                  var camera_view = this.context.getUniformLocation(mesh.material.shader.program, "view");
+                  this.context.uniformMatrix4fv(camera_projection, false, camera.projection.v);
+                  this.context.uniformMatrix4fv(camera_view, false, camera.matrix.v);
+                  var object_matrix = this.context.getUniformLocation(mesh.material.shader.program, "model");
+                  this.context.uniformMatrix4fv(object_matrix, false, transform.v);
+                  var texture_index = 0;
+                  for (var key in mesh.material.uniforms) {
+                      var location_1 = this.context.getUniformLocation(mesh.material.shader.program, key);
+                      var uniform = mesh.material.uniforms[key];
+                      if (uniform instanceof matrix_5.Matrix) {
+                          this.context.uniformMatrix4fv(location_1, false, uniform.v);
+                      }
+                      else if (uniform instanceof single_4.Single) {
+                          this.context.uniform1fv(location_1, uniform.v);
+                      }
+                      else if (uniform instanceof vector2_2.Vector2) {
+                          this.context.uniform2fv(location_1, uniform.v);
+                      }
+                      else if (uniform instanceof vector3_10.Vector3) {
+                          this.context.uniform3fv(location_1, uniform.v);
+                      }
+                      else if (uniform instanceof vector4_3.Vector4) {
+                          this.context.uniform4fv(location_1, uniform.v);
+                      }
+                      else if (uniform instanceof plane_6.Plane) {
+                          this.context.uniform4fv(location_1, uniform.v);
+                      }
+                      else if (uniform instanceof quaternion_2.Quaternion) {
+                          this.context.uniform4fv(location_1, uniform.v);
+                      }
+                      else if (uniform instanceof texture2D_2.Texture2D) {
+                          this.context.activeTexture(this.context.TEXTURE0 + texture_index);
+                          this.context.bindTexture(this.context.TEXTURE_2D, uniform.texture);
+                          this.context.uniform1i(location_1, texture_index);
                           texture_index += 1;
-                          break;
-                      case "TextureCube":
+                      }
+                      else if (uniform instanceof textureCube_1.TextureCube) {
                           texture_index += 1;
-                          break;
+                      }
                   }
-              });
-              if (Object.keys(mesh.instances).length > 0) {
-                  Object.keys(mesh.instances).forEach(function (key) {
+                  for (var key in mesh.instances) {
                       var instance = mesh.instances[key];
-                      var location = _this.context.getAttribLocation(mesh.material.shader.program, key);
-                      if (location === -1)
-                          return;
-                      _this.context.bindBuffer(_this.context.ARRAY_BUFFER, instance.buffer);
-                      _this.context.enableVertexAttribArray(location);
-                      _this.context.vertexAttribPointer(location, instance.size, _this.context.FLOAT, false, 0, 0);
-                      _this.context.vertexAttribDivisor(location, 1);
-                  });
-              }
-              Object.keys(mesh.geometry.attributes).forEach(function (key) {
-                  var attribute = mesh.geometry.attributes[key];
-                  var location = _this.context.getAttribLocation(mesh.material.shader.program, key);
-                  if (location === -1)
-                      return;
-                  _this.context.bindBuffer(_this.context.ARRAY_BUFFER, attribute.buffer);
-                  _this.context.enableVertexAttribArray(location);
-                  _this.context.vertexAttribPointer(location, attribute.size, _this.context.FLOAT, false, 0, 0);
-              });
-              if (mesh.material.wireframe) {
-                  var target = this.context.ELEMENT_ARRAY_BUFFER;
-                  var buffer = mesh.geometry.indices_wireframe.buffer;
-                  this.context.bindBuffer(target, buffer);
-                  if (Object.keys(mesh.instances).length === 0) {
-                      var mode = this.context.LINES;
-                      var count = mesh.geometry.indices_wireframe.array.length;
-                      var offset = 0;
-                      var type = (mesh.geometry.indices_wireframe.array instanceof Uint8Array)
-                          ? this.context.UNSIGNED_BYTE
-                          : this.context.UNSIGNED_SHORT;
-                      this.context.drawElements(mode, count, type, offset);
+                      var location_2 = this.context.getAttribLocation(mesh.material.shader.program, key);
+                      if (location_2 === -1) {
+                          continue;
+                      }
+                      this.context.bindBuffer(this.context.ARRAY_BUFFER, instance.buffer);
+                      this.context.enableVertexAttribArray(location_2);
+                      this.context.vertexAttribPointer(location_2, instance.stride, this.context.FLOAT, false, 0, 0);
+                      this.context.vertexAttribDivisor(location_2, 1);
                   }
-                  else {
-                      var mode = this.context.LINES;
-                      var length_1 = mesh.geometry.indices_wireframe.array.length;
-                      var offset = 0;
-                      var iterations = mesh.instanceCount();
-                      var type = (mesh.geometry.indices_wireframe.array instanceof Uint8Array)
-                          ? this.context.UNSIGNED_BYTE
-                          : this.context.UNSIGNED_SHORT;
-                      this.context.drawElementsInstanced(mode, length_1, type, offset, iterations);
+                  for (var key in mesh.geometry.attributes) {
+                      var attribute = mesh.geometry.attributes[key];
+                      var location_3 = this.context.getAttribLocation(mesh.material.shader.program, key);
+                      if (location_3 === -1) {
+                          continue;
+                      }
+                      this.context.bindBuffer(this.context.ARRAY_BUFFER, attribute.buffer);
+                      this.context.enableVertexAttribArray(location_3);
+                      this.context.vertexAttribPointer(location_3, attribute.stride, this.context.FLOAT, false, 0, 0);
                   }
-              }
-              else {
                   var target = this.context.ELEMENT_ARRAY_BUFFER;
                   var buffer = mesh.geometry.indices.buffer;
                   this.context.bindBuffer(target, buffer);
-                  if (Object.keys(mesh.instances).length === 0) {
+                  var instanced = (Object.keys(mesh.instances).length > 0);
+                  if (instanced) {
                       var mode = this.context.TRIANGLES;
-                      var count = mesh.geometry.indices.array.length;
-                      var offset = 0;
-                      var type = (mesh.geometry.indices.array instanceof Uint8Array)
-                          ? this.context.UNSIGNED_BYTE
-                          : this.context.UNSIGNED_SHORT;
-                      this.context.drawElements(mode, count, type, offset);
-                  }
-                  else {
-                      var mode = this.context.TRIANGLES;
-                      var count = mesh.geometry.indices.array.length;
+                      var count = mesh.geometry.indices.data.length;
                       var offset = 0;
                       var iterations = mesh.instanceCount();
-                      var type = (mesh.geometry.indices.array instanceof Uint8Array)
+                      var type = (mesh.geometry.indices.data instanceof Uint8Array)
                           ? this.context.UNSIGNED_BYTE
                           : this.context.UNSIGNED_SHORT;
                       this.context.drawElementsInstanced(mode, count, type, offset, iterations);
                   }
-              }
-              this.renderObjects(camera, transform, mesh.objects);
-          };
-          Renderer.prototype.renderObjects = function (camera, transform, objects) {
-              var _this = this;
-              objects.forEach(function (object) {
-                  switch (object.typeinfo()) {
-                      case "Object3D":
-                          _this.renderObject(camera, matrix_5.Matrix.mul(object.matrix, transform), object);
-                          break;
-                      case "Mesh":
-                          _this.renderMesh(camera, matrix_5.Matrix.mul(object.matrix, transform), object);
-                          break;
+                  else {
+                      var mode = this.context.TRIANGLES;
+                      var count = mesh.geometry.indices.data.length;
+                      var offset = 0;
+                      var type = (mesh.geometry.indices.data instanceof Uint8Array)
+                          ? this.context.UNSIGNED_BYTE
+                          : this.context.UNSIGNED_SHORT;
+                      this.context.drawElements(mode, count, type, offset);
                   }
-              });
+                  this.render_object_list(camera, transform, mesh.objects);
+              }
+          };
+          Renderer.prototype.render_object_list = function (camera, transform, objects) {
+              for (var _i = 0, objects_1 = objects; _i < objects_1.length; _i++) {
+                  var object = objects_1[_i];
+                  if (object instanceof mesh_1.Mesh) {
+                      this.render_mesh(camera, matrix_5.Matrix.mul(object.matrix, transform), object);
+                  }
+                  else if (object instanceof object_4.Object3D) {
+                      this.render_object(camera, matrix_5.Matrix.mul(object.matrix, transform), object);
+                  }
+                  else {
+                  }
+              }
           };
           Renderer.prototype.render = function (camera, scene) {
-              if (scene.visible === false)
-                  return;
-              this.lights = scene.lights;
-              this.renderObjects(camera, scene.matrix, scene.objects);
+              if (scene.visible) {
+                  this.render_object_list(camera, scene.matrix, scene.objects);
+              }
           };
           return Renderer;
       }());
@@ -5413,9 +5359,6 @@
               this.width = width;
               this.height = height;
           }
-          RenderTarget.prototype.typeinfo = function () {
-              return "Object3D";
-          };
           RenderTarget.prototype.dispose = function () {
               if (this.disposed === true)
                   return;
@@ -5430,7 +5373,7 @@
       }());
       exports.RenderTarget = RenderTarget;
   });
-  define("src/graphics/index", ["require", "exports", "src/graphics/attribute", "src/graphics/camera", "src/graphics/geometry", "src/graphics/light", "src/graphics/material", "src/graphics/mesh", "src/graphics/object", "src/graphics/renderer", "src/graphics/render-target", "src/graphics/scene", "src/graphics/shader", "src/graphics/texture2D", "src/graphics/textureCube"], function (require, exports, attribute_2, camera_1, geometry_1, light_1, material_1, mesh_1, object_4, renderer_1, render_target_1, scene_1, shader_1, texture2D_2, textureCube_1) {
+  define("src/graphics/index", ["require", "exports", "src/graphics/attribute", "src/graphics/camera", "src/graphics/geometry", "src/graphics/geometry", "src/graphics/light", "src/graphics/material", "src/graphics/mesh", "src/graphics/object", "src/graphics/renderer", "src/graphics/render-target", "src/graphics/scene", "src/graphics/shader", "src/graphics/texture2D", "src/graphics/textureCube"], function (require, exports, attribute_2, camera_1, geometry_1, geometry_2, light_1, material_1, mesh_2, object_5, renderer_1, render_target_1, scene_1, shader_1, texture2D_3, textureCube_2) {
       "use strict";
       exports.__esModule = true;
       exports.Attribute = attribute_2.Attribute;
@@ -5438,18 +5381,19 @@
       exports.PerspectiveCamera = camera_1.PerspectiveCamera;
       exports.OrthoCamera = camera_1.OrthoCamera;
       exports.Geometry = geometry_1.Geometry;
+      exports.CubeGeometry = geometry_2.CubeGeometry;
       exports.Light = light_1.Light;
       exports.Material = material_1.Material;
-      exports.Mesh = mesh_1.Mesh;
-      exports.Object3D = object_4.Object3D;
+      exports.Mesh = mesh_2.Mesh;
+      exports.Object3D = object_5.Object3D;
       exports.Renderer = renderer_1.Renderer;
       exports.RenderTarget = render_target_1.RenderTarget;
       exports.Scene = scene_1.Scene;
       exports.Shader = shader_1.Shader;
-      exports.Texture2D = texture2D_2.Texture2D;
-      exports.TextureCube = textureCube_1.TextureCube;
+      exports.Texture2D = texture2D_3.Texture2D;
+      exports.TextureCube = textureCube_2.TextureCube;
   });
-  define("src/index", ["require", "exports", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/scene", "src/graphics/index", "src/graphics/index", "src/graphics/index"], function (require, exports, index_2, index_3, index_4, index_5, index_6, index_7, index_8, index_9, index_10, index_11, index_12, index_13, index_14, index_15, index_16, index_17, index_18, index_19, index_20, index_21, index_22, index_23, index_24, index_25, index_26, index_27, index_28, index_29, index_30, index_31, index_32, index_33, index_34, scene_2, index_35, index_36, index_37) {
+  define("src/index", ["require", "exports", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/scene", "src/graphics/index", "src/graphics/index", "src/graphics/index"], function (require, exports, index_2, index_3, index_4, index_5, index_6, index_7, index_8, index_9, index_10, index_11, index_12, index_13, index_14, index_15, index_16, index_17, index_18, index_19, index_20, index_21, index_22, index_23, index_24, index_25, index_26, index_27, index_28, index_29, index_30, index_31, index_32, index_33, index_34, index_35, scene_2, index_36, index_37, index_38) {
       "use strict";
       exports.__esModule = true;
       exports.Box = index_2.Box;
@@ -5479,156 +5423,54 @@
       exports.PerspectiveCamera = index_26.PerspectiveCamera;
       exports.OrthoCamera = index_27.OrthoCamera;
       exports.Geometry = index_28.Geometry;
-      exports.Light = index_29.Light;
-      exports.Material = index_30.Material;
-      exports.Mesh = index_31.Mesh;
-      exports.Object3D = index_32.Object3D;
-      exports.Renderer = index_33.Renderer;
-      exports.RenderTarget = index_34.RenderTarget;
+      exports.CubeGeometry = index_29.CubeGeometry;
+      exports.Light = index_30.Light;
+      exports.Material = index_31.Material;
+      exports.Mesh = index_32.Mesh;
+      exports.Object3D = index_33.Object3D;
+      exports.Renderer = index_34.Renderer;
+      exports.RenderTarget = index_35.RenderTarget;
       exports.Scene = scene_2.Scene;
-      exports.Shader = index_35.Shader;
-      exports.Texture2D = index_36.Texture2D;
-      exports.TextureCube = index_37.TextureCube;
+      exports.Shader = index_36.Shader;
+      exports.Texture2D = index_37.Texture2D;
+      exports.TextureCube = index_38.TextureCube;
   });
-  define("demo/meshes/hexagon", ["require", "exports", "src/index"], function (require, exports, hexagon) {
+  define("demo/index", ["require", "exports", "src/index"], function (require, exports, hex) {
       "use strict";
       exports.__esModule = true;
-      function toRadian(angle) {
-          return (angle * 0.01745329);
-      }
-      var createHexagonTemplate = function () { return ({
-          positions: [
-              new hexagon.Vector3(Math.sin(toRadian(60 * 0)), 1, Math.cos(toRadian(60 * 0))),
-              new hexagon.Vector3(Math.sin(toRadian(60 * 1)), 1, Math.cos(toRadian(60 * 1))),
-              new hexagon.Vector3(Math.sin(toRadian(60 * 2)), 1, Math.cos(toRadian(60 * 2))),
-              new hexagon.Vector3(Math.sin(toRadian(60 * 3)), 1, Math.cos(toRadian(60 * 3))),
-              new hexagon.Vector3(Math.sin(toRadian(60 * 4)), 1, Math.cos(toRadian(60 * 4))),
-              new hexagon.Vector3(Math.sin(toRadian(60 * 5)), 1, Math.cos(toRadian(60 * 5))),
-              new hexagon.Vector3(Math.sin(toRadian(60 * 0)), 0, Math.cos(toRadian(60 * 0))),
-              new hexagon.Vector3(Math.sin(toRadian(60 * 1)), 0, Math.cos(toRadian(60 * 1))),
-              new hexagon.Vector3(Math.sin(toRadian(60 * 2)), 0, Math.cos(toRadian(60 * 2))),
-              new hexagon.Vector3(Math.sin(toRadian(60 * 3)), 0, Math.cos(toRadian(60 * 3))),
-              new hexagon.Vector3(Math.sin(toRadian(60 * 4)), 0, Math.cos(toRadian(60 * 4))),
-              new hexagon.Vector3(Math.sin(toRadian(60 * 5)), 0, Math.cos(toRadian(60 * 5))),
-          ],
-          indices: [
-              0, 2, 1, 0, 3, 2, 0, 4, 3, 0, 5, 4,
-              6, 7, 8, 6, 8, 9, 6, 9, 10, 6, 10, 11,
-              0, 1, 7, 7, 6, 0, 1, 2, 8, 8, 7, 1, 2, 3, 9, 9, 8, 2,
-              3, 4, 10, 10, 9, 3, 4, 5, 11, 11, 10, 4, 5, 0, 6, 6, 11, 5
-          ]
-      }); };
-      function createHexagonGeometry() {
-          var template = createHexagonTemplate();
-          var positions = new Array();
-          var normals = new Array();
-          var texcoords = new Array();
-          var indices = new Array();
-          for (var i = 0; i < template.indices.length; i += 3) {
-              var v0 = template.positions[template.indices[i + 0]];
-              var v1 = template.positions[template.indices[i + 1]];
-              var v2 = template.positions[template.indices[i + 2]];
-              positions.push(v0);
-              positions.push(v1);
-              positions.push(v2);
-              var d0 = v0.sub(v1);
-              var d1 = v0.sub(v2);
-              var normal = d1.cross(d0).normalize();
-              normals.push(normal);
-              normals.push(normal);
-              normals.push(normal);
-              texcoords.push(new hexagon.Vector2(0, 0));
-              texcoords.push(new hexagon.Vector2(0, 0));
-              texcoords.push(new hexagon.Vector2(0, 0));
-              indices.push(i + 0);
-              indices.push(i + 1);
-              indices.push(i + 2);
-          }
-          return new hexagon.Geometry({
-              attributes: {
-                  vertex_position: hexagon.Attribute.fromArray(positions),
-                  vertex_normal: hexagon.Attribute.fromArray(normals),
-                  vertex_texcoord: hexagon.Attribute.fromArray(texcoords)
-              },
-              indices: new hexagon.Attribute(new Uint16Array(indices), 1)
-          });
-      }
-      function createHexagonMesh() {
-          var material = new hexagon.Material(new hexagon.Shader("\n    precision highp float;\n\n    uniform vec3  camera_position;\n    uniform mat4  camera_projection;\n    uniform mat4  camera_view;\n    uniform mat4  object_matrix;\n\n    attribute vec4  instance_model_0;\n    attribute vec4  instance_model_1;\n    attribute vec4  instance_model_2;\n    attribute vec4  instance_model_3;\n    attribute vec3  instance_color;\n    attribute float instance_height;\n\n    attribute vec3  vertex_position;\n    attribute vec3  vertex_normal;\n    attribute vec2  vertex_texcoord;\n\n    varying   vec3  position;\n    varying   vec3  color;\n    varying   vec3  normal;\n    varying   vec2  texcoord;\n\n    void main(void) {\n      mat4 instance_model = object_matrix * mat4(\n        instance_model_0,\n        instance_model_1,\n        instance_model_2,\n        instance_model_3\n      );\n      vec3 adjusted     = vec3(vertex_position.x, vertex_position.y * instance_height, vertex_position.z);\n      vec4 translated   = instance_model * vec4(adjusted, 1.0);\n      position          = translated.xyz;\n      color             = instance_color;\n      normal            = (instance_model * vec4(vertex_normal, 0.0)).xyz;\n      texcoord          = vertex_texcoord;\n      gl_Position       = camera_projection * camera_view * (instance_model * vec4(adjusted, 1.0));\n    }\n    ", "\n    precision highp float;\n\n    struct Light {\n      vec3  position;\n      vec3  diffuse;\n      vec3  ambient;\n      vec3  specular;\n      float attenuation;\n      float intensity;\n    };\n    uniform Light lights[16];\n\n    uniform vec3 camera_position;\n    uniform mat4 camera_projection;\n    uniform mat4 camera_view;\n    uniform mat4 object_matrix;\n\n    varying vec3 position;\n    varying vec3 color;\n    varying vec3 normal;\n    varying vec2 texcoord;\n\n    vec3 diffuse(vec3 position, vec3 normal, vec3 color, Light light) {\n      vec3   surfaceToLight     = normalize(light.position - position);\n      float  diffuseCoefficient = max(0.0, dot(normal, surfaceToLight));\n      return diffuseCoefficient * color * light.intensity;\n    }\n    \n    vec3 ambient(vec3 color, Light light) {\n      return light.ambient * color * light.intensity;\n    }\n\n    vec3 specular(vec3 position, vec3 normal, vec3 color, vec3 camera_position, Light light) {\n      vec3 surfaceToLight   = normalize(light.position - position);\n      vec3 incidenceVector  = -surfaceToLight;                         // a unit vector\n      vec3 reflectionVector = reflect(incidenceVector, normal);        // also a unit vector\n      vec3 surfaceToCamera = normalize(camera_position - position);    // also a unit vector\n      float cosAngle = max(0.0, dot(surfaceToCamera, reflectionVector));\n      float specularCoefficient = pow(cosAngle, 1.0);                  // where 1.0 is shininess;\n      return specularCoefficient * vec3(1, 1, 1) * light.intensity;    // where vec is specular  \n    }\n\n    float attenuation(vec3 position, Light light) {\n      float distanceToLight = length(light.position - position);\n      float attenuation = 0.001;\n      if(light.attenuation > 0.0) { attenuation = light.attenuation; }\n      return 1.0 / (1.0 + attenuation * pow(distanceToLight, 2.0));\n    }\n\n    void main(void) {\n      vec3  _diffuse      = diffuse(position, normal, color, lights[0]);\n      vec3  _ambient      = ambient(color, lights[0]);\n      vec3  _specular     = specular(position, normal, color, camera_position, lights[0]);\n      float _attenuation  = attenuation(position, lights[0]);\n      vec3  _linear       = _ambient + (_attenuation * (_diffuse * _specular));\n      vec3 _gamma         = vec3(1.0/2.2, 1.0/2.2, 1.0/2.2);\n      vec3 _final         = vec3(pow(_linear.x, _gamma.x),\n                                 pow(_linear.y, _gamma.y),\n                                 pow(_linear.z, _gamma.z));\n      gl_FragColor        = vec4(_final, 1.0);\n    }\n  "));
-          console.log(1.0 / (1.0 + 0.01 * Math.pow(100, 2)));
-          var x0 = Math.sin(toRadian(60 * 1)) * 2;
-          var y0 = Math.cos(toRadian(60 * 1)) * 3;
-          var geometry = createHexagonGeometry();
-          var width = 200;
-          var height = 200;
-          var half_width = (width * 0.5);
-          var half_height = (height * 0.5);
-          var count = width * height;
-          var models_0 = new Array(count);
-          var models_1 = new Array(count);
-          var models_2 = new Array(count);
-          var models_3 = new Array(count);
-          var colors = new Array(count);
-          var heights = new Array(count);
-          var index = 0;
-          for (var y = 0; y < height; y++) {
-              for (var x = 0; x < width; x++) {
-                  var xx = (x % 2 != 0) ? (x0 * y) : (x0 * y) + (x0 * 0.5);
-                  var yy = (y0 * x);
-                  var cols = hexagon.Matrix.translation(new hexagon.Vector3(xx - width, 0, yy - height)).rows();
-                  models_0[index] = cols[0];
-                  models_1[index] = cols[1];
-                  models_2[index] = cols[2];
-                  models_3[index] = cols[3];
-                  heights[index] = new hexagon.Single(1);
-                  colors[index] = (Math.random() > 0.8)
-                      ? new hexagon.Vector3(0.8, 0.4, 0)
-                      : new hexagon.Vector3(0.25, 0.25, 0.25);
-                  index += 1;
-              }
-          }
-          var mesh = new hexagon.Mesh(material, geometry);
-          mesh.instances.instance_model_0 = hexagon.Attribute.fromArray(models_0);
-          mesh.instances.instance_model_0 = hexagon.Attribute.fromArray(models_0);
-          mesh.instances.instance_model_1 = hexagon.Attribute.fromArray(models_1);
-          mesh.instances.instance_model_2 = hexagon.Attribute.fromArray(models_2);
-          mesh.instances.instance_model_3 = hexagon.Attribute.fromArray(models_3);
-          mesh.instances.instance_height = hexagon.Attribute.fromArray(heights);
-          mesh.instances.instance_color = hexagon.Attribute.fromArray(colors);
-          return mesh;
-      }
-      exports.createHexagonMesh = createHexagonMesh;
-  });
-  define("demo/index", ["require", "exports", "src/index", "demo/meshes/hexagon"], function (require, exports, hexagon, hexagon_1) {
-      "use strict";
-      exports.__esModule = true;
-      var renderer = new hexagon.Renderer(document.querySelector("#canvas"));
-      var camera = new hexagon.PerspectiveCamera(45, 800 / 480, 0.1, 4000);
-      var scene = new hexagon.Scene();
-      var mesh = hexagon_1.createHexagonMesh();
-      var light = new hexagon.Light();
-      light.position = new hexagon.Vector3(0, 20, 0);
-      light.intensity = new hexagon.Single(1.4);
-      light.attenuation = new hexagon.Single(0.0001);
+      var canvas = document.getElementById("canvas");
+      var renderer = new hex.Renderer(canvas);
+      var camera = new hex.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000);
+      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, 0, -3), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
+      var geometry = new hex.CubeGeometry();
+      var shader = new hex.Shader("#version 300 es\n  \n  precision highp float;\n  \n  uniform mat4   model;\n  uniform mat4   view;\n  uniform mat4   projection;\n\n  in vec4 position;\n  in vec2 texcoord;\n  in vec3 normal;\n\n  out vec2 out_texcoord;\n  out vec4 out_position;\n  void main() {\n    out_texcoord = texcoord;\n    out_position = (model * position);\n    gl_Position  = projection * view * (model * position);\n  }\n", "#version 300 es\n\n  precision highp float;\n\n  uniform sampler2D map;\n  in vec2 out_texcoord;\n  in vec4 out_position;\n  out vec4 color;\n  \n  void main() {\n    int a = int(3.0);\n    int b = int(out_position.x * 20.0);\n    int c = int(out_position.y * 20.0);\n    int d = int(out_position.z * 20.0);\n    \n    if (((b % a) == 0) || ((c % a) == 0) || ((d % a) == 0)) {\n      // color = vec4(0.8, 0.8, 0.8, 1.0);\n      color = texture(map, out_texcoord);\n    } else {\n      //color = texture(map, out_texcoord);\n      color = vec4(0.3, 0.3, 0.3, 0.1);\n      //discard;\n    }\n\n    // float x = 0.1;\n    // if((out_position.x > -x && out_position.x < x) || \n    //    (out_position.y > -x && out_position.y < x) || \n    //    (out_position.z > -x && out_position.z < x) ) {\n    //     color = vec4(1.0, 1.0, 1.0, 1.0);\n    // } else {\n    //   discard;\n    //   //gl_FragColor = texture2D(texture, out_texcoord);\n    // }\n    \n  }\n");
+      var material = new hex.Material(shader);
+      var mesh = new hex.Mesh(material, geometry);
+      var scene = new hex.Scene();
       scene.objects.push(mesh);
-      scene.lights.push(light);
-      var t = 0.1;
-      (function loop() {
-          requestAnimationFrame(function () {
-              var array = mesh.instances["instance_height"].array;
-              for (var i = 0; i < array.length; i++) {
-                  array[i] = (Math.cos((i * 0.16) + (t * 0.1)) * 1) + 3;
+      var texture = new hex.Texture2D(16, 16, "rgb", new Uint8Array(16 * 16 * 3));
+      var t = 0;
+      setInterval(function () {
+          var data = texture.pixels;
+          for (var i = 0; i < data.length; i += 3) {
+              var r = Math.random();
+              if (r > 0.995) {
+                  var x_1 = Math.floor(Math.random() * 256);
+                  data[i] = x_1;
+                  data[i + 1] = x_1;
+                  data[i + 2] = x_1;
               }
-              mesh.needsupdate = true;
-              mesh.matrix = mesh.matrix.rotateY(0.0025);
-              camera.lookAt(new hexagon.Vector3((t * 0.14) % 30, 10, (t * 0.04) % 30), new hexagon.Vector3(0, 0, 0), new hexagon.Vector3(-0.5, 1, 0));
-              renderer.render(camera, scene);
-              renderer.clear(0.11, 0.11, 0.11, 1);
-              renderer.render(camera, scene);
-              t += 1.0;
-              loop();
-          });
-      })();
+          }
+          texture.needsupdate = true;
+          var x = (Math.cos(t) + 1) / 2;
+          var y = (Math.sin(t) + 1) / 2;
+          t += 0.01;
+          material.uniforms.color = new hex.Vector4(x, y, 0, 1);
+          material.uniforms.map = texture;
+          mesh.matrix = mesh.matrix.rotateZ(0.001).rotateY(0.001).rotateX(0.002);
+          renderer.clear(0.2, 0.2, 0.2, 1);
+          renderer.render(camera, scene);
+      }, 1);
   });
   
   return collect(); 

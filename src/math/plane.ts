@@ -26,13 +26,12 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo}    from "./typeinfo"
-import {Vector3}               from "./vector3"
-import {Vector4}               from "./vector4"
-import {Matrix}                from "./matrix"
-import {Box}                   from "./box"
-import {Sphere}                from "./sphere"
-import {Frustum}               from "./frustum"
+import { Vector3 } from "./vector3"
+import { Vector4 } from "./vector4"
+import { Matrix }  from "./matrix"
+import { Box }     from "./box"
+import { Sphere }  from "./sphere"
+import { Frustum } from "./frustum"
 
 const qi = { x: 0, y: 1, z: 2, w: 3 }
 const pli = { x: 0, y: 1, z: 2, w: 3 }
@@ -57,7 +56,7 @@ export type PlaneIntersectionType = "front" | "back" | "intersect"
  * 
  * A infinite 3-dimensional surface.
  */
-export class Plane implements TypeInfo {
+export class Plane {
   /** the internal elements for this type. */
   public v: Float32Array
 
@@ -139,14 +138,6 @@ export class Plane implements TypeInfo {
    */
   public toString(): string {
     return `[${this.v[pli.x]}, ${this.v[pli.y]}, ${this.v[pli.z]}, ${this.v[pli.w]}]`
-  }
-
-  /**
-   * returns the type name of this object.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Plane"
   }
 
   /**

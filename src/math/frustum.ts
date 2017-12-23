@@ -26,11 +26,10 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo} from "./typeinfo"
-import {Matrix}   from "./matrix"
-import {Vector3}  from "./vector3"
-import {Plane}    from "./plane"
-import {Ray}      from "./ray"
+import { Matrix }  from "./matrix"
+import { Vector3 } from "./vector3"
+import { Plane }   from "./plane"
+import { Ray }     from "./ray"
 
 const pli = { x: 0, y: 1, z: 2, w: 3 }
 const v3i = { x: 0, y: 1, z: 2 }
@@ -75,7 +74,7 @@ const computeIntersectionVector = (plane: Plane, ray: Ray): Vector3 => {
   return Vector3.add(ray.position, Vector3.scale(ray.direction, num))
 }
 
-export class Frustum implements TypeInfo {
+export class Frustum {
   public matrix : Matrix
   public planes : Array<Plane>
   public corners: Array<Vector3>
@@ -173,14 +172,6 @@ export class Frustum implements TypeInfo {
     buf.push(`  ]`)
     buf.push("}")
     return buf.join('\n')
-  }
-
-  /**
-   * returns the type name of this object.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Frustum"
   }
 
   /**

@@ -26,13 +26,12 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo}    from "./typeinfo"
-import {Vector3}               from "./vector3"
-import {Plane}                 from "./plane"
-import {Box}                   from "./box"
-import {Sphere}                from "./sphere"
-import {Frustum}               from "./frustum"
-import {Triangle}              from "./triangle"
+import { Vector3 }  from "./vector3"
+import { Plane }    from "./plane"
+import { Box }      from "./box"
+import { Sphere }   from "./sphere"
+import { Frustum }  from "./frustum"
+import { Triangle } from "./triangle"
 
 const f32 = { max: 2147483647, min: -2147483647 }
 const v3i = { x: 0, y: 1, z: 2 }
@@ -43,7 +42,7 @@ const max = (a: number, b: number) => a > b ? a : b
 /**
  * A infinite ray cast from a position towards a given direction.
  */
-export class Ray implements TypeInfo {
+export class Ray {
 
   /** the position of this ray. */
   public position: Vector3
@@ -67,14 +66,6 @@ export class Ray implements TypeInfo {
    */
   public toString(): string {
     return `{ position: ${this.position.toString()}, direction: ${this.direction.toString()} }`
-  }
-
-  /**
-   * returns the type name of this object.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Ray"
   }
 
   /**

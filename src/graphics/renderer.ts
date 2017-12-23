@@ -33,7 +33,6 @@ import { Vector3 }               from "../math/vector3"
 import { Vector4 }               from "../math/vector4"
 import { Plane }                 from "../math/plane"
 import { Quaternion }            from "../math/quaternion"
-import { TypeName, TypeInfo }    from "./typeinfo"
 import { Shader }                from "./shader"
 import { Camera }                from "./camera"
 import { Scene }                 from "./scene"
@@ -48,9 +47,8 @@ import { TextureCube }           from "./textureCube"
  * 
  * WebGL 1.0 based scene graph renderer.
  */
-export class Renderer implements TypeInfo {
+export class Renderer {
   private context    : WebGL2RenderingContext
-  private lights     : Array<Light>
 
   /**
    * creates a new webgl device context.
@@ -58,16 +56,7 @@ export class Renderer implements TypeInfo {
    * @returns {Device}
    */
   constructor(public canvas: HTMLCanvasElement) {
-    this.context    = this.canvas.getContext("webgl2")
-    this.lights     = new Array<Light>()
-  }
-
-  /**
-   * returns the typename for this type.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Renderer"
+    this.context = this.canvas.getContext("webgl2")
   }
 
   /**
@@ -84,13 +73,13 @@ export class Renderer implements TypeInfo {
 
   /**
    * clears the framebuffer.
-   * @param {number} r the red value.
-   * @param {number} g the green value.
-   * @param {number} b the blue value.
-   * @param {number} a the alpha value.
+   * @param {number} r the red value (0.0 - 1.0)
+   * @param {number} g the green value  (0.0 - 1.0)
+   * @param {number} b the blue value  (0.0 - 1.0)
+   * @param {number} a (optional) the alpha value (default is 1.0)
    * @returns {void}
    */
-  public clear(r: number, g: number, b: number, a: number): void {
+  public clear(r: number, g: number, b: number, a: number = 1.0): void {
     this.context.clearColor (r, g, b, a)
     this.context.enable     (this.context.DEPTH_TEST)
     this.context.depthFunc  (this.context.LEQUAL)
@@ -102,9 +91,10 @@ export class Renderer implements TypeInfo {
    * @param {Node} the node.
    * @returns {void}
    */
-  private renderObject(camera: Camera, transform: Matrix, object: Object3D): void {
-    if(object.visible === false) return
-    this.renderObjects(camera, transform, object.objects)
+  private render_object(camera: Camera, transform: Matrix, object: Object3D): void {
+    if (object.visible === false) {
+      this.render_object_list(camera, transform, object.objects)
+    }
   }
 
   /**
@@ -114,153 +104,118 @@ export class Renderer implements TypeInfo {
    * @param {Mesh} the mesh to render.
    * @returns {void}
    */
-  private renderMesh(camera: Camera, transform: Matrix, mesh: Mesh): void {
-    if(mesh.visible === false) return
+  private render_mesh(camera: Camera, transform: Matrix, mesh: Mesh): void {
+    if (mesh.visible) {
+      // update: mesh data
+      mesh.update(this.context)
 
-    // synchronize mesh.
-    mesh.sync(this.context)
+      // bind: material shader.
+      this.context.useProgram (mesh.material.shader.program)
 
-    // bind shader.
-    this.context.useProgram (mesh.material.shader.program)
+      // bind: camera uniform.
+      const camera_projection = this.context.getUniformLocation(mesh.material.shader.program, "projection")
+      const camera_view       = this.context.getUniformLocation(mesh.material.shader.program, "view")
+      this.context.uniformMatrix4fv(camera_projection, false, camera.projection.v)
+      this.context.uniformMatrix4fv(camera_view,       false, camera.matrix.v)
+      
+      // bind: object uniforms.
+      const object_matrix = this.context.getUniformLocation(mesh.material.shader.program, "model")
+      this.context.uniformMatrix4fv(object_matrix, false, transform.v)
 
-    // bind lights.
-    for(let i = 0; i < this.lights.length; i++) {
-      let light_position    = this.context.getUniformLocation(mesh.material.shader.program, `lights[${i}].position`)
-      let light_diffuse     = this.context.getUniformLocation(mesh.material.shader.program, `lights[${i}].diffuse`)
-      let light_ambient     = this.context.getUniformLocation(mesh.material.shader.program, `lights[${i}].ambient`)
-      let light_specular    = this.context.getUniformLocation(mesh.material.shader.program, `lights[${i}].specular`)
-      let light_attenuation = this.context.getUniformLocation(mesh.material.shader.program, `lights[${i}].attenuation`)
-      let light_intensity   = this.context.getUniformLocation(mesh.material.shader.program, `lights[${i}].intensity`)
-      this.context.uniform3fv (light_position,    this.lights[i].position.v)
-      this.context.uniform3fv (light_diffuse,     this.lights[i].diffuse.v)
-      this.context.uniform3fv (light_ambient,     this.lights[i].ambient.v)
-      this.context.uniform3fv (light_specular,    this.lights[i].specular.v)
-      this.context.uniform1f  (light_attenuation, this.lights[i].attenuation.v[0])
-      this.context.uniform1f  (light_intensity,   this.lights[i].intensity.v[0])
-    }
-
-    // bind camera uniform.
-    let camera_position   = this.context.getUniformLocation(mesh.material.shader.program, "camera_position")
-    let camera_projection = this.context.getUniformLocation(mesh.material.shader.program, "camera_projection")
-    let camera_view       = this.context.getUniformLocation(mesh.material.shader.program, "camera_view")
-    this.context.uniform3fv      (camera_position,   Matrix.origin(camera.matrix).v)
-    this.context.uniformMatrix4fv(camera_projection, false, camera.projection.v)
-    this.context.uniformMatrix4fv(camera_view,       false, camera.matrix.v)
-    
-    // bind object uniforms.
-    let object_matrix = this.context.getUniformLocation(mesh.material.shader.program, "object_matrix")
-    this.context.uniformMatrix4fv(object_matrix, false, transform.v)
-
-    // bind material uniforms.
-    let texture_index = 0
-    Object.keys(mesh.material.uniforms).forEach(key => {
-      let location = this.context.getUniformLocation(mesh.material.shader.program, key)
-      let uniform  = mesh.material.uniforms[key]
-      switch(uniform.typeinfo()) {
-        case "Matrix":     this.context.uniformMatrix4fv(location, false, (<Matrix>uniform).v); break;
-        case "Single":     this.context.uniform1fv      (location, (<Single>uniform).v);        break;
-        case "Vector2":    this.context.uniform2fv      (location, (<Vector2>uniform).v);       break;
-        case "Vector3":    this.context.uniform3fv      (location, (<Vector3>uniform).v);       break;
-        case "Vector4":    this.context.uniform4fv      (location, (<Vector4>uniform).v);       break;
-        case "Plane":      this.context.uniform4fv      (location, (<Plane>uniform).v);         break;
-        case "Quaternion": this.context.uniform4fv      (location, (<Quaternion>uniform).v);    break;
-        case "Texture2D":
+      // bind: material uniforms.
+      let texture_index = 0
+      for (const key in mesh.material.uniforms) {
+        const location = this.context.getUniformLocation(mesh.material.shader.program, key)
+        const uniform  = mesh.material.uniforms[key]
+        if (uniform instanceof Matrix) {
+          this.context.uniformMatrix4fv(location, false, (<Matrix>uniform).v)
+        } else if (uniform instanceof Single) {
+          this.context.uniform1fv (location, (<Single>uniform).v)
+        } else if (uniform instanceof Vector2) {
+          this.context.uniform2fv (location, (<Vector2>uniform).v)
+        } else if (uniform instanceof Vector3) {
+          this.context.uniform3fv  (location, (<Vector3>uniform).v)
+        } else if (uniform instanceof Vector4) {
+          this.context.uniform4fv (location, (<Vector4>uniform).v)
+        } else if (uniform instanceof Plane) {
+          this.context.uniform4fv (location, (<Plane>uniform).v)
+        } else if (uniform instanceof Quaternion) {
+          this.context.uniform4fv (location, (<Quaternion>uniform).v)
+        } else if (uniform instanceof Texture2D) {
           this.context.activeTexture(this.context.TEXTURE0 + texture_index)
-          this.context.bindTexture  (this.context.TEXTURE_2D, (<Texture2D>uniform).texture)
-          this.context.uniform1i    (location, texture_index)
+          this.context.bindTexture (this.context.TEXTURE_2D, (<Texture2D>uniform).texture)
+          this.context.uniform1i (location, texture_index)
           texture_index += 1
-          break;
-        case "TextureCube":
+        } else if (uniform instanceof TextureCube) {
           texture_index += 1
-          break;
+        }
       }
-    })
 
-    // bind instances.
-    if(Object.keys(mesh.instances).length > 0) {
-      Object.keys(mesh.instances).forEach(key => {
-        let instance = mesh.instances[key]
-        let location = this.context.getAttribLocation(mesh.material.shader.program, key)
-        if(location === -1) return
+      // bind: mesh instances
+      for (const key in mesh.instances) {
+        const instance = mesh.instances[key]
+        const location = this.context.getAttribLocation(mesh.material.shader.program, key)
+        if (location === -1) { 
+          continue
+        }
         this.context.bindBuffer(this.context.ARRAY_BUFFER, instance.buffer)
         this.context.enableVertexAttribArray(location)
         this.context.vertexAttribPointer (
           location, 
-          instance.size, 
+          instance.stride, 
           this.context.FLOAT, 
           false,
           0, 0)
         this.context.vertexAttribDivisor(location, 1)
-      })
-    }
-
-    // bind attributes.
-    Object.keys(mesh.geometry.attributes).forEach(key => {
-      let attribute = mesh.geometry.attributes[key]
-      let location  = this.context.getAttribLocation(mesh.material.shader.program, key)
-      if(location === -1) return
-      this.context.bindBuffer(this.context.ARRAY_BUFFER, attribute.buffer)
-      this.context.enableVertexAttribArray(location)
-      this.context.vertexAttribPointer(
-        location,
-        attribute.size, 
-        this.context.FLOAT, 
-        false, 
-        0, 0)
-    })
-    
-    // wireframe path.
-    if(mesh.material.wireframe) {
-      let target = this.context.ELEMENT_ARRAY_BUFFER
-      let buffer =  mesh.geometry.indices_wireframe.buffer
-      this.context.bindBuffer (target, buffer)
-      if(Object.keys(mesh.instances).length === 0) {
-        let mode   = this.context.LINES
-        let count  = mesh.geometry.indices_wireframe.array.length
-        let offset = 0
-        let type   = (mesh.geometry.indices_wireframe.array instanceof Uint8Array) 
-            ? this.context.UNSIGNED_BYTE
-            : this.context.UNSIGNED_SHORT;
-        this.context.drawElements (mode, count, type, offset)
-      } else {
-        let mode   = this.context.LINES
-        let length = mesh.geometry.indices_wireframe.array.length
-        let offset = 0
-        let iterations = mesh.instanceCount()
-        let type   = (mesh.geometry.indices_wireframe.array instanceof Uint8Array) 
-            ? this.context.UNSIGNED_BYTE
-            : this.context.UNSIGNED_SHORT
-        this.context.drawElementsInstanced(mode, length, type, offset, iterations)
       }
-    }
-    // standard path.
-    else {
-      let target = this.context.ELEMENT_ARRAY_BUFFER
-      let buffer = mesh.geometry.indices.buffer
+
+      // bind: geometry attributes
+      for (const key in mesh.geometry.attributes) {
+        const attribute = mesh.geometry.attributes[key]
+        const location  = this.context.getAttribLocation(mesh.material.shader.program, key)
+        if (location === -1) {
+          continue
+        }
+        this.context.bindBuffer(this.context.ARRAY_BUFFER, attribute.buffer)
+        this.context.enableVertexAttribArray(location)
+        this.context.vertexAttribPointer (
+          location,
+          attribute.stride, 
+          this.context.FLOAT, 
+          false,
+          0, 0)
+      }
+
+      // bind: geometry indices
+      const target = this.context.ELEMENT_ARRAY_BUFFER
+      const buffer = mesh.geometry.indices.buffer
       this.context.bindBuffer (target, buffer)
-      if(Object.keys(mesh.instances).length === 0) {
-        let mode   = this.context.TRIANGLES
-        let count  = mesh.geometry.indices.array.length
-        let offset = 0
-        let type   = (mesh.geometry.indices.array instanceof Uint8Array) 
-          ? this.context.UNSIGNED_BYTE
-          : this.context.UNSIGNED_SHORT
-        this.context.drawElements (mode, count, type, offset)
-      } else {
-        let mode       = this.context.TRIANGLES
-        let count      = mesh.geometry.indices.array.length
-        let offset     = 0
-        let iterations = mesh.instanceCount()
-        let type   = (mesh.geometry.indices.array instanceof Uint8Array) 
+
+      // draw: instanced or non instanced
+      const instanced = (Object.keys(mesh.instances).length > 0)
+      if (instanced) {
+        const mode       = this.context.TRIANGLES
+        const count      = mesh.geometry.indices.data.length
+        const offset     = 0
+        const iterations = mesh.instanceCount()
+        const type   = (mesh.geometry.indices.data instanceof Uint8Array) 
           ? this.context.UNSIGNED_BYTE
           : this.context.UNSIGNED_SHORT
         this.context.drawElementsInstanced(mode, count, type, offset, iterations)
+      } else {
+        const mode   = this.context.TRIANGLES
+        const count  = mesh.geometry.indices.data.length
+        const offset = 0
+        const type   = (mesh.geometry.indices.data instanceof Uint8Array) 
+          ? this.context.UNSIGNED_BYTE
+          : this.context.UNSIGNED_SHORT
+        this.context.drawElements (mode, count, type, offset)
       }
-    }
-    // next
-    this.renderObjects(camera, transform, mesh.objects)
-  }
 
+      // next:
+      this.render_object_list(camera, transform, mesh.objects)
+    }
+  }
 
   /**
    * renders a group of objects.
@@ -268,13 +223,16 @@ export class Renderer implements TypeInfo {
    * @param {Matrix} transform the current world transform.
    * @param {Array<Object3D>} objects the objects to render.
    */
-  private renderObjects(camera: Camera, transform: Matrix, objects: Array<Object3D>) {
-    objects.forEach(object => {
-      switch (object.typeinfo()) {
-        case "Object3D": this.renderObject(camera, Matrix.mul(object.matrix, transform), object as Object3D); break;
-        case "Mesh":     this.renderMesh  (camera, Matrix.mul(object.matrix, transform), object as Mesh);     break;
+  private render_object_list(camera: Camera, transform: Matrix, objects: Array<Object3D>) {
+    for (const object of objects) {
+      if (object instanceof Mesh) {
+        this.render_mesh (camera, Matrix.mul(object.matrix, transform), object as Mesh)
+      } else if (object instanceof Object3D) {
+        this.render_object (camera, Matrix.mul(object.matrix, transform), object as Object3D)
+      } else {
+        /* ignore */
       }
-    })
+    }
   }
 
   /**
@@ -284,10 +242,8 @@ export class Renderer implements TypeInfo {
    * @returns {void}
    */
   public render(camera: Camera, scene: Scene): void {
-    if(scene.visible === false) return
-    
-
-    this.lights = scene.lights
-    this.renderObjects(camera, scene.matrix, scene.objects)
+    if (scene.visible) {
+      this.render_object_list(camera, scene.matrix, scene.objects)
+    }
   }
 } 

@@ -26,9 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo} from "./typeinfo"
-
-export class RenderTarget implements TypeInfo {
+export class RenderTarget {
   public context  : WebGLRenderingContext
   public buffer   : WebGLRenderbuffer
   public disposed : boolean
@@ -40,15 +38,6 @@ export class RenderTarget implements TypeInfo {
    * @returns {FrameBuffer}
    */
   constructor(public width: number, public height: number) {
-    
-  }
-
-  /**
-   * returns the typename for this type.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Object3D"
   }
 
   /**

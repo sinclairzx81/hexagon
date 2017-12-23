@@ -26,9 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo} from "./typeinfo"
-
-
 //-----------------------------------------
 // 
 // example: 
@@ -53,11 +50,11 @@ export type TextureData =
 
 /**
  * converts the given texture format to a gl format.
- * @param {WebGLRenderingContext} the webgl context.
+ * @param {WebGL2RenderingContext} the webgl context.
  * @param {TextureFormat} the texture format.
  * @returns {number} the webgl texture format.
  */
-const to_format = (context: WebGLRenderingContext, format: TextureFormat) : number => {
+const to_format = (context: WebGL2RenderingContext, format: TextureFormat) : number => {
   switch(format) {
     case "rgb"  : return context.RGB
     case "rgba" : return context.RGBA
@@ -66,7 +63,12 @@ const to_format = (context: WebGLRenderingContext, format: TextureFormat) : numb
   }
 }
 
-export class Texture2D implements TypeInfo {
+/**
+ * Texture2D
+ * 
+ * A standard texture2D texture type.
+ */
+export class Texture2D {
   public context     : WebGLRenderingContext
   public texture     : WebGLTexture
   public needsupdate : boolean
@@ -74,51 +76,39 @@ export class Texture2D implements TypeInfo {
   
   /**
    * creates a new texture2D.
-   * @param {TextureData} the data for this texture.
    * @param {number} the width of this texture.
    * @param {number} the height of this texture.
    * @param {string} the number of components per pixel.
+   * @param {TextureData} the data for this texture.
    * @returns {Texture2D}
    */
-  constructor(public pixels  : TextureData, 
-              public width   : number,
+  constructor(public width   : number,
               public height  : number,
-              public format  : TextureFormat) {
+              public format  : TextureFormat,
+              public pixels  : TextureData) {
     this.needsupdate = true
     this.disposed    = false
   }
 
   /**
-   * returns the typename for this type.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Texture2D"
-  }
-
-  /**
    * synchronizes this attribute.
-   * @param {WebGLRenderingContext} this webgl context.
-   * @param {number} the target ARRAY_BUFFER | ELEMENT_ARRAY_BUFFER
+   * @param {WebGL2RenderingContext} context this webgl context.
+   * @param {number} target the target ARRAY_BUFFER | ELEMENT_ARRAY_BUFFER
    * @returns {void}
    */
-  public sync(context: WebGLRenderingContext) : void {
-    if(this.needsupdate === false) return
-    this.context     = this.context || context
-    this.texture     = this.texture || context.createTexture()
-    // texImage2D(target: number, level: number, internalformat: number, width: number, height: number, border: number, format: number, type: number, pixels: ArrayBufferView): void;
-    // texImage2D(target: number, level: number, internalformat: number, format: number, type: number, image: HTMLImageElement): void;
-    // texImage2D(target: number, level: number, internalformat: number, format: number, type: number, canvas: HTMLCanvasElement): void;
-    // texImage2D(target: number, level: number, internalformat: number, format: number, type: number, video: HTMLVideoElement): void;
-    // texImage2D(target: number, level: number, internalformat: number, format: number, type: number, pixels: ImageData): void;    
-    let format = to_format(context, this.format)
-    context.bindTexture    (context.TEXTURE_2D, this.texture)
-    context.texImage2D     (context.TEXTURE_2D, 0, format, this.width, this.height, 0, format, context.UNSIGNED_BYTE, this.pixels)
-    context.texParameteri  (context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.NEAREST)
-    context.texParameteri  (context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.NEAREST)
-    context.generateMipmap (context.TEXTURE_2D)
-    context.bindTexture    (context.TEXTURE_2D, null)
-    this.needsupdate = false
+  public update (context: WebGL2RenderingContext): void {
+    if (this.needsupdate) {
+      this.context     = this.context || context
+      this.texture     = this.texture || context.createTexture()
+      const format = to_format(context, this.format)
+      context.bindTexture    (context.TEXTURE_2D, this.texture)
+      context.texImage2D     (context.TEXTURE_2D, 0, format, this.width, this.height, 0, format, context.UNSIGNED_BYTE, this.pixels)
+      context.texParameteri  (context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.NEAREST)
+      context.texParameteri  (context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.NEAREST)
+      context.generateMipmap (context.TEXTURE_2D)
+      context.bindTexture    (context.TEXTURE_2D, null)
+      this.needsupdate = false
+    }
   }
 
   /**

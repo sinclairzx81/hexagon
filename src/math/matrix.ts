@@ -26,11 +26,10 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo} from "./typeinfo"
-import {Quaternion}         from "./quaternion"
-import {Plane}              from "./plane"
-import {Vector3}            from "./vector3"
-import {Vector4}            from "./vector4"
+import { Quaternion } from "./quaternion"
+import { Plane }      from "./plane"
+import { Vector3 }    from "./vector3"
+import { Vector4 }    from "./vector4"
 
 const qui = { x: 0, y: 1, z: 2, w: 3 }
 const pli = { x: 0, y: 1, z: 2, w: 3 }
@@ -45,7 +44,7 @@ const mi = {
 /**
  * A 16 component vector matrix. 
  */
-export class Matrix implements TypeInfo {
+export class Matrix {
   
   /** the internal elements for this type. */
   public v: Float32Array
@@ -464,14 +463,6 @@ export class Matrix implements TypeInfo {
     buf.push(` ${this.v[mi.m31]}, ${this.v[mi.m32]}, ${this.v[mi.m33]}, ${this.v[mi.m34]}`)
     buf.push(` ${this.v[mi.m41]}, ${this.v[mi.m42]}, ${this.v[mi.m43]}, ${this.v[mi.m44]}]`)
     return buf.join('\n')
-  }
-
-  /**
-   * returns the type name of this object.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Matrix"
   }
 
   /**

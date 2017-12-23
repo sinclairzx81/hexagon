@@ -26,19 +26,16 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeInfo as MathTypeInfo} from "../math/typeinfo"
-import {Matrix}                   from "../math/matrix"
-import {Single}                   from "../math/single"
-import {Vector2}                  from "../math/vector2"
-import {Vector3}                  from "../math/vector3"
-import {Vector4}                  from "../math/vector4"
-import {Plane}                    from "../math/plane"
-import {Quaternion}               from "../math/quaternion"
-
-import {TypeName, TypeInfo}       from "./typeinfo"
-import {Shader}                   from "./shader"
-import {Texture2D}                from "./texture2D"
-import {TextureCube}              from "./textureCube"
+import { Matrix }      from "../math/matrix"
+import { Single }      from "../math/single"
+import { Vector2 }     from "../math/vector2"
+import { Vector3 }     from "../math/vector3"
+import { Vector4 }     from "../math/vector4"
+import { Plane }       from "../math/plane"
+import { Quaternion }  from "../math/quaternion"
+import { Shader }      from "./shader"
+import { Texture2D }   from "./texture2D"
+import { TextureCube } from "./textureCube"
 
 export type UniformType = 
   Matrix     | 
@@ -55,7 +52,7 @@ export type UniformType =
  * Material: default material. Provides a abstraction over
  * mesh uniforms and houses the shader.
  */
-export class Material implements TypeInfo {
+export class Material {
   public uniforms    : {[name: string]: UniformType}
   public wireframe   : boolean
   public needsupdate : boolean
@@ -70,34 +67,21 @@ export class Material implements TypeInfo {
     this.wireframe   = false
     this.needsupdate = true
   }
-  
-  /**
-   * returns the typename for this type.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Material"
-  }
 
   /**
    * synchronizes this material.
-   * @param {WebGLRenderingContext} this webgl context.
+   * @param {WebGL2RenderingContext} this webgl context.
    * @returns {void}
    */
-  public sync(context: WebGLRenderingContext) : void {
-    if(!this.needsupdate) return
+  public update(context: WebGL2RenderingContext) : void {
+    this.shader.update (context)
 
-    this.needsupdate = false
-    
-    // sync shader.
-    this.shader.sync(context)
-
-    // sync textures.
-    Object.keys(this.uniforms).forEach(key => {
-      let uniform = this.uniforms[key]
+    for (const key in this.uniforms) {
+      const uniform = this.uniforms[key]
       if(uniform instanceof Texture2D) {
-        uniform.sync(context)
+        uniform.update (context)
       }
-    })
+    }
+    this.needsupdate = false
   }
 }

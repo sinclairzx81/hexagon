@@ -26,12 +26,16 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {Matrix}                from "../math/matrix"
-import {Vector3}               from "../math/vector3"
-import {TypeName, TypeInfo}    from "./typeinfo"
-import {Object3D}              from "./object"
+import { Matrix }   from "../math/matrix"
+import { Vector3 }  from "../math/vector3"
+import { Object3D } from "./object"
 
-export class Camera extends Object3D implements TypeInfo {
+/**
+ * Camera
+ * 
+ * A base class camera type.
+ */
+export class Camera extends Object3D {
   public projection: Matrix
 
   /**
@@ -44,14 +48,6 @@ export class Camera extends Object3D implements TypeInfo {
     super()
     this.matrix     = Matrix.identity()
     this.projection = projection
-  }
-
-  /**
-   * returns the typename for this type.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Camera"
   }
 
   /**
@@ -74,8 +70,13 @@ export class Camera extends Object3D implements TypeInfo {
   }
 }
 
-
+/**
+ * PerspectiveCamera
+ * 
+ * A typical perspective camera type.
+ */
 export class PerspectiveCamera extends Camera {
+  
   /**
    * creates a new perspective camera.
    * @param {number} the field of view.
@@ -89,6 +90,11 @@ export class PerspectiveCamera extends Camera {
   }
 }
 
+/**
+ * OrthoCamera
+ * 
+ * A typical orthographic camera.
+ */
 export class OrthoCamera extends Camera {
   /**
    * creates a new orthographic camera.

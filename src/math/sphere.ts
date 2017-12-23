@@ -26,11 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {TypeName, TypeInfo}        from "./typeinfo"
-import {Plane, PlaneIntersectionType} from "./plane"
-import {Single}                       from "./single"
-import {Vector3}                      from "./vector3"
-import {Box}                          from "./box"
+
+import { Plane, PlaneIntersectionType }  from "./plane"
+import { Single }                        from "./single"
+import { Vector3 }                       from "./vector3"
+import { Box }                           from "./box"
 
 const v3i = { x: 0, y: 1, z: 2 }
 const pli = { x: 0, y: 1, z: 2, w: 3 }
@@ -40,7 +40,7 @@ const pli = { x: 0, y: 1, z: 2, w: 3 }
  * 
  * A 3-dimensional bounding sphere.
  */
-export class Sphere implements TypeInfo {
+export class Sphere {
   /** this spheres origin */
   public position: Vector3
   /** this spheres radius */
@@ -63,14 +63,6 @@ export class Sphere implements TypeInfo {
    */
   public toString(): string {
     return `{ position: ${this.position.toString()}, radius: ${this.radius}}`
-  }
-
-  /**
-   * returns the type name of this object.
-   * @returns {TypeName}
-   */
-  public typeinfo(): TypeName {
-    return "Sphere"
   }
 
   /**
