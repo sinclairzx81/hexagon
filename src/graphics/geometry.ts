@@ -118,43 +118,42 @@ export class Geometry {
  * A simple cube geometry
  */
 export class CubeGeometry extends Geometry {
-  constructor() {
+  constructor(private scale: number = 0.5) {
     super()
     this.build()
   }
   private build() {
-    const s = 1
     this.addAttribute("position", new Attribute(4, [
       /* front  */ 
-      -s, -s,  s, 1.0, 
-       s, -s,  s, 1.0,  
-       s,  s,  s, 1.0,  
-      -s,  s,  s, 1.0,
+      -this.scale, -this.scale,  this.scale, 1.0, 
+       this.scale, -this.scale,  this.scale, 1.0,  
+       this.scale,  this.scale,  this.scale, 1.0,  
+      -this.scale,  this.scale,  this.scale, 1.0,
       /* back   */ 
-      -s, -s, -s, 1.0, 
-      -s,  s, -s, 1.0,  
-       s,  s, -s, 1.0,  
-       s, -s, -s, 1.0,
+      -this.scale, -this.scale, -this.scale, 1.0, 
+      -this.scale,  this.scale, -this.scale, 1.0,  
+       this.scale,  this.scale, -this.scale, 1.0,  
+       this.scale, -this.scale, -this.scale, 1.0,
       /* top    */ 
-      -s,  s, -s, 1.0, 
-      -s,  s,  s, 1.0,  
-       s,  s,  s, 1.0,  
-       s,  s, -s, 1.0,
+      -this.scale, this.scale, -this.scale, 1.0, 
+      -this.scale,  this.scale,  this.scale, 1.0,  
+       this.scale,  this.scale,  this.scale, 1.0,  
+       this.scale,  this.scale, -this.scale, 1.0,
       /* bottom */
-      -s, -s, -s, 1.0, 
-       s, -s, -s, 1.0,  
-       s, -s,  s, 1.0,  
-      -s, -s,  s, 1.0,
+      -this.scale, -this.scale, -this.scale, 1.0, 
+       this.scale, -this.scale, -this.scale, 1.0,  
+       this.scale, -this.scale,  this.scale, 1.0,  
+      -this.scale, -this.scale,  this.scale, 1.0,
       /* right  */ 
-      s, -s, -s, 1.0, 
-      s,  s, -s, 1.0,  
-      s,  s,  s, 1.0,  
-      s, -s,  s, 1.0,
+       this.scale, -this.scale, -this.scale, 1.0, 
+       this.scale,  this.scale, -this.scale, 1.0,  
+       this.scale,  this.scale,  this.scale, 1.0,  
+       this.scale, -this.scale,  this.scale, 1.0,
       /* left   */ 
-      -s, -s,  s, 1.0,  
-      -s,  s,  s, 1.0,  
-      -s,  s, -s, 1.0,
-      -s, -s, -s, 1.0
+      -this.scale, -this.scale,  this.scale, 1.0,  
+      -this.scale,  this.scale,  this.scale, 1.0,  
+      -this.scale,  this.scale, -this.scale, 1.0,
+      -this.scale, -this.scale, -this.scale, 1.0
     ]))
     this.addAttribute("normal", new Attribute(3, [
       /* front  */ 

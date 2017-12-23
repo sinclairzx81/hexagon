@@ -4903,38 +4903,39 @@
       exports.Geometry = Geometry;
       var CubeGeometry = (function (_super) {
           __extends(CubeGeometry, _super);
-          function CubeGeometry() {
+          function CubeGeometry(scale) {
+              if (scale === void 0) { scale = 0.5; }
               var _this = _super.call(this) || this;
+              _this.scale = scale;
               _this.build();
               return _this;
           }
           CubeGeometry.prototype.build = function () {
-              var s = 1;
               this.addAttribute("position", new attribute_1.Attribute(4, [
-                  -s, -s, s, 1.0,
-                  s, -s, s, 1.0,
-                  s, s, s, 1.0,
-                  -s, s, s, 1.0,
-                  -s, -s, -s, 1.0,
-                  -s, s, -s, 1.0,
-                  s, s, -s, 1.0,
-                  s, -s, -s, 1.0,
-                  -s, s, -s, 1.0,
-                  -s, s, s, 1.0,
-                  s, s, s, 1.0,
-                  s, s, -s, 1.0,
-                  -s, -s, -s, 1.0,
-                  s, -s, -s, 1.0,
-                  s, -s, s, 1.0,
-                  -s, -s, s, 1.0,
-                  s, -s, -s, 1.0,
-                  s, s, -s, 1.0,
-                  s, s, s, 1.0,
-                  s, -s, s, 1.0,
-                  -s, -s, s, 1.0,
-                  -s, s, s, 1.0,
-                  -s, s, -s, 1.0,
-                  -s, -s, -s, 1.0
+                  -this.scale, -this.scale, this.scale, 1.0,
+                  this.scale, -this.scale, this.scale, 1.0,
+                  this.scale, this.scale, this.scale, 1.0,
+                  -this.scale, this.scale, this.scale, 1.0,
+                  -this.scale, -this.scale, -this.scale, 1.0,
+                  -this.scale, this.scale, -this.scale, 1.0,
+                  this.scale, this.scale, -this.scale, 1.0,
+                  this.scale, -this.scale, -this.scale, 1.0,
+                  -this.scale, this.scale, -this.scale, 1.0,
+                  -this.scale, this.scale, this.scale, 1.0,
+                  this.scale, this.scale, this.scale, 1.0,
+                  this.scale, this.scale, -this.scale, 1.0,
+                  -this.scale, -this.scale, -this.scale, 1.0,
+                  this.scale, -this.scale, -this.scale, 1.0,
+                  this.scale, -this.scale, this.scale, 1.0,
+                  -this.scale, -this.scale, this.scale, 1.0,
+                  this.scale, -this.scale, -this.scale, 1.0,
+                  this.scale, this.scale, -this.scale, 1.0,
+                  this.scale, this.scale, this.scale, 1.0,
+                  this.scale, -this.scale, this.scale, 1.0,
+                  -this.scale, -this.scale, this.scale, 1.0,
+                  -this.scale, this.scale, this.scale, 1.0,
+                  -this.scale, this.scale, -this.scale, 1.0,
+                  -this.scale, -this.scale, -this.scale, 1.0
               ]));
               this.addAttribute("normal", new attribute_1.Attribute(3, [
                   0.0, 0.0, 1.0,
@@ -5468,48 +5469,78 @@
       exports.Texture2D = index_38.Texture2D;
       exports.TextureCube = index_39.TextureCube;
   });
-  define("demo/index", ["require", "exports", "src/index"], function (require, exports, hex) {
+  define("demo/meshes/voxel", ["require", "exports", "src/index"], function (require, exports, hex) {
+      "use strict";
+      exports.__esModule = true;
+      var createShader = function () { return new hex.Shader("#version 300 es\n  precision highp float;\n\n  uniform mat4   model;\n  uniform mat4   view;\n  uniform mat4   projection;\n\n  in vec4 position;\n  in vec2 texcoord;\n  in vec3 normal;\n  in vec4 offset;\n  in vec4 color;\n\n  out vec2 out_texcoord;\n  out vec4 out_position;\n  out vec4 out_color;\n\n  void main() {\n    vec4 temp    = position + offset;\n    out_texcoord = texcoord;\n    out_color    = color;\n    out_position = (model * temp);\n    gl_Position  = projection * view * (model * temp);\n  }\n", "#version 300 es\n\nprecision highp float;\n\nuniform sampler2D map;\nin vec2 out_texcoord;\nin vec4 out_position;\nin vec4 out_color;\n\nout vec4 color;\n\nvoid main() {\n  color = out_color;\n}\n"); };
+      var createGeometry = function (width, height, depth) {
+          var cube = new hex.CubeGeometry();
+          var offsets = new Array(width * height * depth * 4);
+          var colors = new Array(width * height * depth * 4);
+          var actives = new Array(width * height * depth);
+          var offset_index = 0;
+          var active_index = 0;
+          var color_index = 0;
+          for (var iz = 0; iz < depth; iz++) {
+              for (var iy = 0; iy < height; iy++) {
+                  for (var ix = 0; ix < width; ix++) {
+                      var x = (ix - (width / 2));
+                      var y = (iy - (height / 2));
+                      var z = (iz - (depth / 2));
+                      offsets[offset_index + 0] = x * 1;
+                      offsets[offset_index + 1] = y * 1;
+                      offsets[offset_index + 2] = z * 1;
+                      offsets[offset_index + 3] = 1;
+                      offset_index += 4;
+                      colors[color_index + 0] = Math.random();
+                      colors[color_index + 1] = Math.random();
+                      colors[color_index + 2] = Math.random();
+                      colors[color_index + 3] = 1;
+                      color_index += 4;
+                      actives[active_index] = 1;
+                      active_index = 0;
+                  }
+              }
+          }
+          var geometry = new hex.GeometryArray(cube, width * height * depth);
+          geometry.addAttribute("offset", new hex.Attribute(4, offsets));
+          geometry.addAttribute("color", new hex.Attribute(4, colors));
+          geometry.addAttribute("active", new hex.Attribute(1, actives));
+          return geometry;
+      };
+      var Voxel = (function (_super) {
+          __extends(Voxel, _super);
+          function Voxel(width, height, depth) {
+              var _this = _super.call(this, new hex.Material(createShader()), createGeometry(width, height, depth)) || this;
+              _this.width = width;
+              _this.height = height;
+              _this.depth = depth;
+              return _this;
+          }
+          Voxel.prototype.set = function (x, y, z, active) {
+              var geometry = this.geometry;
+          };
+          return Voxel;
+      }(hex.Mesh));
+      exports.Voxel = Voxel;
+  });
+  define("demo/index", ["require", "exports", "src/index", "demo/meshes/voxel"], function (require, exports, hex, voxel_1) {
       "use strict";
       exports.__esModule = true;
       var canvas = document.getElementById("canvas");
       var renderer = new hex.Renderer(canvas);
       var camera = new hex.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000);
-      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, 0, -36), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
-      var cube = new hex.CubeGeometry();
-      var geometry = new hex.GeometryArray(cube, 10000);
-      var data = [];
-      for (var i = 0; i < 10000; i++) {
-          data.push((Math.random() - 0.5) * 30);
-          data.push((Math.random() - 0.5) * 30);
-          data.push((Math.random() - 0.5) * 30);
-          data.push(1);
-      }
-      geometry.addAttribute("offset", new hex.Attribute(4, data));
-      var shader = new hex.Shader("#version 300 es\n  \n  precision highp float;\n  \n  uniform mat4   model;\n  uniform mat4   view;\n  uniform mat4   projection;\n\n  in vec4 position;\n  in vec2 texcoord;\n  in vec3 normal;\n  in vec4 offset;\n\n  out vec2 out_texcoord;\n  out vec4 out_position;\n  void main() {\n    vec4 temp = position + offset;\n    out_texcoord = texcoord;\n    out_position = (model * temp);\n    gl_Position  = projection * view * (model * temp);\n  }\n", "#version 300 es\n\n  precision highp float;\n\n  uniform sampler2D map;\n  in vec2 out_texcoord;\n  in vec4 out_position;\n  out vec4 color;\n  \n  void main() {\n    int a = int(80.0);\n    int b = int(out_position.x * 20.0);\n    int c = int(out_position.y * 20.0);\n    int d = int(out_position.z * 20.0);\n    \n    if (((b % a) == 0) || ((c % a) == 0) || ((d % a) == 0)) {\n      // color = vec4(0.8, 0.8, 0.8, 1.0);\n      color = texture(map, out_texcoord);\n    } else {\n      //color = texture(map, out_texcoord);\n      color = vec4(0.3, 0.3, 0.3, 0.1);\n      //discard;\n    }\n\n    // float x = 0.1;\n    // if((out_position.x > -x && out_position.x < x) || \n    //    (out_position.y > -x && out_position.y < x) || \n    //    (out_position.z > -x && out_position.z < x) ) {\n    //     color = vec4(1.0, 1.0, 1.0, 1.0);\n    // } else {\n    //   discard;\n    //   //gl_FragColor = texture2D(texture, out_texcoord);\n    // }\n    \n  }\n");
-      var material = new hex.Material(shader);
-      var mesh = new hex.Mesh(material, geometry);
+      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, 0, -64), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
+      var voxel = new voxel_1.Voxel(64, 64, 32);
       var scene = new hex.Scene();
-      scene.objects.push(mesh);
+      scene.objects.push(voxel);
       var texture = new hex.Texture2D(16, 16, "rgb", new Uint8Array(16 * 16 * 3));
       var t = 0;
       setInterval(function () {
-          var data = texture.pixels;
-          for (var i = 0; i < data.length; i += 3) {
-              var r = Math.random();
-              if (r > 0.995) {
-                  var x_1 = Math.floor(Math.random() * 256);
-                  data[i] = x_1;
-                  data[i + 1] = x_1;
-                  data[i + 2] = x_1;
-              }
-          }
-          texture.needsupdate = true;
           var x = (Math.cos(t) + 1) / 2;
           var y = (Math.sin(t) + 1) / 2;
           t += 0.01;
-          material.uniforms.color = new hex.Vector4(x, y, 0, 1);
-          material.uniforms.map = texture;
-          mesh.matrix = mesh.matrix.rotateZ(0.001).rotateY(0.001).rotateX(0.002);
+          voxel.matrix = voxel.matrix.rotateZ(0.001).rotateY(0.001).rotateX(0.002);
           renderer.clear(0.2, 0.2, 0.2, 1);
           renderer.render(camera, scene);
       }, 1);
