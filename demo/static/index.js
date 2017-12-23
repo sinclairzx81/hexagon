@@ -5472,14 +5472,14 @@
   define("demo/meshes/voxel", ["require", "exports", "src/index"], function (require, exports, hex) {
       "use strict";
       exports.__esModule = true;
-      var createShader = function () { return new hex.Shader("#version 300 es\n  precision highp float;\n\n  uniform mat4   model;\n  uniform mat4   view;\n  uniform mat4   projection;\n\n  in vec4 position;\n  in vec2 texcoord;\n  in vec3 normal;\n  in vec4 offset;\n  in vec4 color;\n\n  out vec2 out_texcoord;\n  out vec4 out_position;\n  out vec4 out_color;\n\n  void main() {\n    vec4 temp    = position + offset;\n    out_texcoord = texcoord;\n    out_color    = color;\n    out_position = (model * temp);\n    gl_Position  = projection * view * (model * temp);\n  }\n", "#version 300 es\n\nprecision highp float;\n\nuniform sampler2D map;\nin vec2 out_texcoord;\nin vec4 out_position;\nin vec4 out_color;\n\nout vec4 color;\n\nvoid main() {\n  color = out_color;\n}\n"); };
+      var createShader = function () { return new hex.Shader("#version 300 es\n  precision highp float;\n\n  uniform mat4   model;\n  uniform mat4   view;\n  uniform mat4   projection;\n\n  in vec4        position;\n  in vec2        texcoord;\n  in vec3        normal;\n\n  in vec4        offset;\n  in vec4        color;\n  in float       enabled;\n\n  out vec2       out_texcoord;\n  out vec4       out_position;\n  out vec4       out_color;\n\n  void main() {\n    if (enabled == 0.0) {\n      gl_Position = vec4(0.0, 0.0, 0.0, 0.0);\n    } else {\n      vec4 temp    = position + offset;\n      out_texcoord = texcoord;\n      out_color    = color;\n      out_position = (model * temp);\n      gl_Position  = projection * view * (model * temp);\n    }\n  }\n", "#version 300 es\n precision highp float;\n\n uniform sampler2D map;\n in vec2 out_texcoord;\n in vec4 out_position;\n in vec4 out_color;\n\n out vec4 color;\n\n void main() {\n   color = out_color;\n }\n"); };
       var createGeometry = function (width, height, depth) {
           var cube = new hex.CubeGeometry();
           var offsets = new Array(width * height * depth * 4);
           var colors = new Array(width * height * depth * 4);
-          var actives = new Array(width * height * depth);
+          var enableds = new Array(width * height * depth);
           var offset_index = 0;
-          var active_index = 0;
+          var enabled_index = 0;
           var color_index = 0;
           for (var iz = 0; iz < depth; iz++) {
               for (var iy = 0; iy < height; iy++) {
@@ -5487,9 +5487,9 @@
                       var x = (ix - (width / 2));
                       var y = (iy - (height / 2));
                       var z = (iz - (depth / 2));
-                      offsets[offset_index + 0] = x * 1;
-                      offsets[offset_index + 1] = y * 1;
-                      offsets[offset_index + 2] = z * 1;
+                      offsets[offset_index + 0] = x * 1.2;
+                      offsets[offset_index + 1] = y * 1.2;
+                      offsets[offset_index + 2] = z * 1.2;
                       offsets[offset_index + 3] = 1;
                       offset_index += 4;
                       colors[color_index + 0] = Math.random();
@@ -5497,15 +5497,15 @@
                       colors[color_index + 2] = Math.random();
                       colors[color_index + 3] = 1;
                       color_index += 4;
-                      actives[active_index] = 1;
-                      active_index = 0;
+                      enableds[enabled_index] = 1;
+                      enabled_index = 0;
                   }
               }
           }
           var geometry = new hex.GeometryArray(cube, width * height * depth);
           geometry.addAttribute("offset", new hex.Attribute(4, offsets));
           geometry.addAttribute("color", new hex.Attribute(4, colors));
-          geometry.addAttribute("active", new hex.Attribute(1, actives));
+          geometry.addAttribute("enabled", new hex.Attribute(1, enableds));
           return geometry;
       };
       var Voxel = (function (_super) {
@@ -5517,8 +5517,18 @@
               _this.depth = depth;
               return _this;
           }
-          Voxel.prototype.set = function (x, y, z, active) {
+          Voxel.prototype.set = function (x, y, z, data) {
               var geometry = this.geometry;
+              var colors = geometry.attributes["color"].data;
+              var enabled = geometry.attributes["enabled"].data;
+              colors[((x + (y * this.width) + (z * this.width * this.height)) * 4) + 0] = data.r;
+              colors[((x + (y * this.width) + (z * this.width * this.height)) * 4) + 1] = data.g;
+              colors[((x + (y * this.width) + (z * this.width * this.height)) * 4) + 2] = data.b;
+              colors[((x + (y * this.width) + (z * this.width * this.height)) * 4) + 3] = data.a;
+              enabled[((x + (y * this.width) + (z * this.width * this.height)))] = (data.v) ? 1.0 : 0.0;
+              geometry.attributes["color"].needsupdate = true;
+              geometry.attributes["enabled"].needsupdate = true;
+              geometry.needsupdate = true;
           };
           return Voxel;
       }(hex.Mesh));
@@ -5530,18 +5540,34 @@
       var canvas = document.getElementById("canvas");
       var renderer = new hex.Renderer(canvas);
       var camera = new hex.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000);
-      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, 0, -64), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
+      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, 0, -32), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
       var voxel = new voxel_1.Voxel(64, 64, 32);
       var scene = new hex.Scene();
       scene.objects.push(voxel);
       var texture = new hex.Texture2D(16, 16, "rgb", new Uint8Array(16 * 16 * 3));
       var t = 0;
       setInterval(function () {
-          var x = (Math.cos(t) + 1) / 2;
-          var y = (Math.sin(t) + 1) / 2;
-          t += 0.01;
+          for (var iz = 0; iz < voxel.depth; iz++) {
+              for (var iy = 0; iy < voxel.height; iy++) {
+                  for (var ix = 0; ix < voxel.width; ix++) {
+                      var l = Math.random();
+                      if (l > 0.99) {
+                          var p = Math.random();
+                          if (p < 0.9) {
+                              var n = Math.random();
+                              var k = Math.random();
+                              voxel.set(ix, iy, iz, { r: k, g: k, b: k, a: 1, v: n > 0.5 });
+                          }
+                          else {
+                              var n = Math.random();
+                              voxel.set(ix, iy, iz, { r: Math.random(), g: Math.random(), b: Math.random(), a: 1, v: n > 0.5 });
+                          }
+                      }
+                  }
+              }
+          }
           voxel.matrix = voxel.matrix.rotateZ(0.001).rotateY(0.001).rotateX(0.002);
-          renderer.clear(0.2, 0.2, 0.2, 1);
+          renderer.clear(0.1, 0.1, 0.1, 1);
           renderer.render(camera, scene);
       }, 1);
   });

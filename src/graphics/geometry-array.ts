@@ -73,7 +73,7 @@ export class GeometryArray {
    */
   public update (context: WebGL2RenderingContext): void { 
     this.instance.update(context)
-    if (this.needsupdate) { 
+    if (this.needsupdate) {
       for (const name in this.attributes) {
         this.attributes[name].update(context, context.ARRAY_BUFFER)
       }
