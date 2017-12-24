@@ -5714,27 +5714,27 @@
       var context = canvas.getContext("webgl2");
       var renderer = new hex.Renderer(context);
       var camera = new hex.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000);
-      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, -0, -350), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
-      var voxel = new voxel_1.Voxel(320, 200, 1);
+      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, -0, -250), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
+      var voxel = new voxel_1.Voxel(256, 96, 2);
       var scene = new hex.Scene();
       scene.objects.push(voxel);
-      var video = new video_1.Video(context, 320, 200);
+      var video = new video_1.Video(context, 256, 96);
       voxel.matrix = voxel.matrix.rotateX(180 * Math.PI / 180);
       var loop = function () { return requestAnimationFrame(function () {
           var buffer = video.get();
           renderer.viewport(0, 0, canvas.width, canvas.height);
           voxel.clear(0, 0, 0);
-          for (var iy = 0; iy < 200; iy++) {
-              for (var ix = 0; ix < 320; ix++) {
-                  var r = buffer[((ix + (iy * 320)) * 4) + 0] / 255;
-                  var g = buffer[((ix + (iy * 320)) * 4) + 1] / 255;
-                  var b = buffer[((ix + (iy * 320)) * 4) + 2] / 255;
+          for (var iy = 0; iy < 96; iy++) {
+              for (var ix = 0; ix < 256; ix++) {
+                  var r = buffer[((ix + (iy * 256)) * 4) + 0] / 255;
+                  var g = buffer[((ix + (iy * 256)) * 4) + 1] / 255;
+                  var b = buffer[((ix + (iy * 256)) * 4) + 2] / 255;
                   voxel.color(ix, iy, 0, r, g, b);
                   var amount = Math.cos(Date.now() * 0.0005);
                   voxel.amount(ix, iy, 0, amount >= 0 ? amount : 0);
               }
           }
-          var block = new text_block_1.TextBlock(new Date().toString());
+          var block = new text_block_1.TextBlock(new Date().toTimeString());
           for (var iy = 0; iy < block.height; iy++) {
               for (var ix = 0; ix < block.width; ix++) {
                   if (block.get(ix, iy) === 1) {
