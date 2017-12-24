@@ -5677,31 +5677,33 @@
       var context = canvas.getContext("webgl2");
       var renderer = new hex.Renderer(context);
       var camera = new hex.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000);
-      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, -100, -100), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
-      var voxel = new voxel_1.Voxel(160, 100, 1);
+      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, -100, -320), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
+      var voxel = new voxel_1.Voxel(320, 200, 1);
       var scene = new hex.Scene();
       scene.objects.push(voxel);
       var texture = new hex.Texture2D(16, 16, "rgb", new Uint8Array(16 * 16 * 3));
       var renderTarget = new hex.RenderTarget(100, 100);
-      setInterval(function () {
+      var loop = function () { return requestAnimationFrame(function () {
           voxel.clear(0, 0, 0);
-          var block = new text_block_1.TextBlock(new Date().toISOString());
+          var block = new text_block_1.TextBlock(new Date().toString());
           for (var iy = 0; iy < block.height; iy++) {
               for (var ix = 0; ix < block.width; ix++) {
                   if (block.get(ix, iy) === 1) {
-                      var time = (new Date()).getTime();
-                      var r = (Math.cos(time) + 1) / 2;
-                      var g = (Math.cos(time + 123) + 1) / 2;
-                      var b = (Math.cos(time + 1232) + 1) / 2;
+                      var time = (new Date()).getTime() * 0.01;
+                      var r = (Math.cos(time + 1)) / 2;
+                      var g = (Math.cos(time + 2) + 1) / 2;
+                      var b = (Math.cos(time + 3) + 1) / 2;
                       voxel.color(ix, iy + 47, 0, r, g, b);
                   }
               }
           }
-          voxel.matrix = voxel.matrix.rotateZ(0.001).rotateX(0.001);
+          voxel.matrix = voxel.matrix.rotateZ(0.01);
           renderer.clear(0.1, 0.1, 0.1, 1);
           renderer.render(camera, scene);
           renderer.render(camera, scene);
-      }, 1);
+          loop();
+      }); };
+      loop();
   });
   
   return collect(); 
