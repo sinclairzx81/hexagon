@@ -4742,6 +4742,7 @@
               }
               this.context = undefined;
               this.buffer = undefined;
+              this.location = -1;
               this.disposed = false;
               this.needsupdate = true;
           }
@@ -5234,13 +5235,34 @@
       }(object_3.Object3D));
       exports.Scene = Scene;
   });
+  define("src/graphics/render-target", ["require", "exports"], function (require, exports) {
+      "use strict";
+      exports.__esModule = true;
+      var RenderTarget = (function () {
+          function RenderTarget(width, height) {
+              this.width = width;
+              this.height = height;
+          }
+          RenderTarget.prototype.dispose = function () {
+              if (this.disposed === true)
+                  return;
+              if (this.context === undefined)
+                  return;
+              if (this.buffer === undefined)
+                  return;
+              this.context.deleteFramebuffer(this.buffer);
+              this.disposed = true;
+          };
+          return RenderTarget;
+      }());
+      exports.RenderTarget = RenderTarget;
+  });
   define("src/graphics/renderer", ["require", "exports", "src/math/matrix", "src/math/single", "src/math/vector2", "src/math/vector3", "src/math/vector4", "src/math/plane", "src/math/quaternion", "src/graphics/geometry", "src/graphics/geometry-array", "src/graphics/mesh", "src/graphics/object", "src/graphics/texture2D", "src/graphics/textureCube"], function (require, exports, matrix_5, single_4, vector2_2, vector3_10, vector4_3, plane_6, quaternion_2, geometry_1, geometry_array_1, mesh_1, object_4, texture2D_2, textureCube_1) {
       "use strict";
       exports.__esModule = true;
       var Renderer = (function () {
-          function Renderer(canvas) {
-              this.canvas = canvas;
-              this.context = this.canvas.getContext("webgl2");
+          function Renderer(context) {
+              this.context = context;
           }
           Renderer.prototype.viewport = function (x, y, width, height) {
               this.context.viewport(x, y, width, height);
@@ -5304,25 +5326,29 @@
                   }
                   if (mesh.geometry instanceof geometry_array_1.GeometryArray) {
                       for (var key in mesh.geometry.attributes) {
-                          var instance = mesh.geometry.attributes[key];
-                          var location_2 = this.context.getAttribLocation(mesh.material.shader.program, key);
-                          if (location_2 === -1) {
-                              continue;
+                          var attribute = mesh.geometry.attributes[key];
+                          if (attribute.location === -1) {
+                              attribute.location = this.context.getAttribLocation(mesh.material.shader.program, key);
+                              if (attribute.location === -1) {
+                                  continue;
+                              }
                           }
-                          this.context.bindBuffer(this.context.ARRAY_BUFFER, instance.buffer);
-                          this.context.enableVertexAttribArray(location_2);
-                          this.context.vertexAttribPointer(location_2, instance.stride, this.context.FLOAT, false, 0, 0);
-                          this.context.vertexAttribDivisor(location_2, 1);
+                          this.context.bindBuffer(this.context.ARRAY_BUFFER, attribute.buffer);
+                          this.context.enableVertexAttribArray(attribute.location);
+                          this.context.vertexAttribPointer(attribute.location, attribute.stride, this.context.FLOAT, false, 0, 0);
+                          this.context.vertexAttribDivisor(attribute.location, 1);
                       }
                       for (var key in mesh.geometry.instance.attributes) {
                           var attribute = mesh.geometry.instance.attributes[key];
-                          var location_3 = this.context.getAttribLocation(mesh.material.shader.program, key);
-                          if (location_3 === -1) {
-                              continue;
+                          if (attribute.location === -1) {
+                              attribute.location = this.context.getAttribLocation(mesh.material.shader.program, key);
+                              if (attribute.location === -1) {
+                                  continue;
+                              }
                           }
                           this.context.bindBuffer(this.context.ARRAY_BUFFER, attribute.buffer);
-                          this.context.enableVertexAttribArray(location_3);
-                          this.context.vertexAttribPointer(location_3, attribute.stride, this.context.FLOAT, false, 0, 0);
+                          this.context.enableVertexAttribArray(attribute.location);
+                          this.context.vertexAttribPointer(attribute.location, attribute.stride, this.context.FLOAT, false, 0, 0);
                       }
                       var target = this.context.ELEMENT_ARRAY_BUFFER;
                       var buffer = mesh.geometry.instance.indices.buffer;
@@ -5339,13 +5365,13 @@
                   if (mesh.geometry instanceof geometry_1.Geometry) {
                       for (var key in mesh.geometry.attributes) {
                           var attribute = mesh.geometry.attributes[key];
-                          var location_4 = this.context.getAttribLocation(mesh.material.shader.program, key);
-                          if (location_4 === -1) {
+                          var location_2 = this.context.getAttribLocation(mesh.material.shader.program, key);
+                          if (location_2 === -1) {
                               continue;
                           }
                           this.context.bindBuffer(this.context.ARRAY_BUFFER, attribute.buffer);
-                          this.context.enableVertexAttribArray(location_4);
-                          this.context.vertexAttribPointer(location_4, attribute.stride, this.context.FLOAT, false, 0, 0);
+                          this.context.enableVertexAttribArray(location_2);
+                          this.context.vertexAttribPointer(location_2, attribute.stride, this.context.FLOAT, false, 0, 0);
                       }
                       var target = this.context.ELEMENT_ARRAY_BUFFER;
                       var buffer = mesh.geometry.indices.buffer;
@@ -5374,7 +5400,7 @@
                   }
               }
           };
-          Renderer.prototype.render = function (camera, scene) {
+          Renderer.prototype.render = function (camera, scene, renderTarget) {
               if (scene.visible) {
                   this.render_object_list(camera, scene.matrix, scene.objects);
               }
@@ -5382,28 +5408,6 @@
           return Renderer;
       }());
       exports.Renderer = Renderer;
-  });
-  define("src/graphics/render-target", ["require", "exports"], function (require, exports) {
-      "use strict";
-      exports.__esModule = true;
-      var RenderTarget = (function () {
-          function RenderTarget(width, height) {
-              this.width = width;
-              this.height = height;
-          }
-          RenderTarget.prototype.dispose = function () {
-              if (this.disposed === true)
-                  return;
-              if (this.context === undefined)
-                  return;
-              if (this.buffer === undefined)
-                  return;
-              this.context.deleteFramebuffer(this.buffer);
-              this.disposed = true;
-          };
-          return RenderTarget;
-      }());
-      exports.RenderTarget = RenderTarget;
   });
   define("src/graphics/index", ["require", "exports", "src/graphics/attribute", "src/graphics/camera", "src/graphics/geometry", "src/graphics/geometry", "src/graphics/geometry-array", "src/graphics/light", "src/graphics/material", "src/graphics/mesh", "src/graphics/object", "src/graphics/renderer", "src/graphics/render-target", "src/graphics/scene", "src/graphics/shader", "src/graphics/texture2D", "src/graphics/textureCube"], function (require, exports, attribute_2, camera_1, geometry_2, geometry_3, geometry_array_2, light_1, material_1, mesh_2, object_5, renderer_1, render_target_1, scene_1, shader_1, texture2D_3, textureCube_2) {
       "use strict";
@@ -5495,9 +5499,12 @@
                       offsets[offset_index + 1] = y * 1.2;
                       offsets[offset_index + 2] = z * 1.2;
                       offset_index += 3;
-                      colors[color_index + 0] = Math.random();
-                      colors[color_index + 1] = Math.random();
-                      colors[color_index + 2] = Math.random();
+                      colors[color_index + 0] = 0;
+                      Math.random();
+                      colors[color_index + 1] = 0;
+                      Math.random();
+                      colors[color_index + 2] = 0;
+                      Math.random();
                       color_index += 3;
                       targets[target_index + 0] = (Math.random() - 0.5) * 32;
                       targets[target_index + 1] = (Math.random() - 0.5) * 32;
@@ -5535,6 +5542,17 @@
               geometry.attributes["enabled"].needsupdate = true;
               geometry.needsupdate = true;
           };
+          Voxel.prototype.clear = function (r, g, b) {
+              var geometry = this.geometry;
+              var colors = geometry.attributes["color"].data;
+              for (var i = 0; i < colors.length; i += 3) {
+                  colors[i + 0] = r;
+                  colors[i + 1] = g;
+                  colors[i + 2] = g;
+              }
+              geometry.attributes["color"].needsupdate = true;
+              geometry.needsupdate = true;
+          };
           Voxel.prototype.color = function (x, y, z, r, g, b) {
               var geometry = this.geometry;
               var colors = geometry.attributes["color"].data;
@@ -5549,21 +5567,139 @@
       }(hex.Mesh));
       exports.Voxel = Voxel;
   });
-  define("demo/index", ["require", "exports", "src/index", "demo/meshes/voxel"], function (require, exports, hex, voxel_1) {
+  define("demo/meshes/text-block", ["require", "exports"], function (require, exports) {
+      "use strict";
+      exports.__esModule = true;
+      var character_map = {
+          "A": [0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1],
+          "B": [1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0],
+          "C": [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+          "D": [1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0],
+          "E": [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+          "F": [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+          "G": [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+          "H": [1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1],
+          "I": [0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0],
+          "J": [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0],
+          "K": [1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1],
+          "L": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+          "M": [1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
+          "N": [1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1],
+          "O": [1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+          "P": [1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+          "Q": [1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1],
+          "R": [1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1],
+          "S": [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+          "T": [1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+          "U": [1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+          "V": [1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0],
+          "W": [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1],
+          "X": [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1],
+          "Y": [1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+          "Z": [1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1],
+          "0": [0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0],
+          "1": [0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0],
+          "2": [0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0],
+          "3": [0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0],
+          "4": [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
+          "5": [0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0],
+          "6": [0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0],
+          "7": [0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
+          "8": [0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0],
+          "9": [0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0],
+          ")": [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+          "!": [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+          "@": [0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0],
+          "#": [0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0],
+          "$": [1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1],
+          "%": [1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1],
+          "^": [0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "&": [0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0],
+          "*": [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
+          "(": [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0],
+          "`": [0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "~": [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "-": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "_": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+          "+": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+          "=": [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+          "{": [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0],
+          "}": [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+          "[": [0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0],
+          "]": [0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
+          "|": [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+          "\\": [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+          ":": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+          ";": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+          "'": [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "\"": [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          ",": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+          "<": [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
+          ".": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+          ">": [0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+          "?": [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+          "/": [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+          " ": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "\n": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "\r": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      };
+      var TextBlock = (function () {
+          function TextBlock(text) {
+              this.text = text.toUpperCase();
+              this.width = (this.text.length * 6);
+              this.height = 5;
+              this.data = new Array(this.width * this.height);
+              var offset_x = 0;
+              for (var i = 0; i < this.text.length; i++) {
+                  var tab = character_map[this.text.charAt(i)];
+                  for (var iy = 0; iy < 5; iy++) {
+                      for (var ix = 0; ix < 5; ix++) {
+                          this.data[this.offset(offset_x + ix, iy, this.width)] = tab[this.offset(ix, iy, 5)];
+                      }
+                  }
+                  offset_x += 6;
+              }
+          }
+          TextBlock.prototype.get = function (x, y) {
+              return this.data[this.offset(x, y, this.width)];
+          };
+          TextBlock.prototype.offset = function (x, y, width) {
+              return x + (y * width);
+          };
+          return TextBlock;
+      }());
+      exports.TextBlock = TextBlock;
+  });
+  define("demo/index", ["require", "exports", "src/index", "demo/meshes/voxel", "demo/meshes/text-block"], function (require, exports, hex, voxel_1, text_block_1) {
       "use strict";
       exports.__esModule = true;
       var canvas = document.getElementById("canvas");
-      var renderer = new hex.Renderer(canvas);
-      var camera = new hex.PerspectiveCamera(90, canvas.width / canvas.height, 0.1, 1000);
-      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, 0, -100), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
-      var voxel = new voxel_1.Voxel(240, 120, 1);
+      var context = canvas.getContext("webgl2");
+      var renderer = new hex.Renderer(context);
+      var camera = new hex.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000);
+      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, -100, -100), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
+      var voxel = new voxel_1.Voxel(160, 100, 1);
       var scene = new hex.Scene();
       scene.objects.push(voxel);
       var texture = new hex.Texture2D(16, 16, "rgb", new Uint8Array(16 * 16 * 3));
-      var t = 0;
+      var renderTarget = new hex.RenderTarget(100, 100);
       setInterval(function () {
-          voxel.matrix = voxel.matrix.rotateZ(0.001);
+          voxel.clear(0, 0, 0);
+          var block = new text_block_1.TextBlock(new Date().toISOString());
+          for (var iy = 0; iy < block.height; iy++) {
+              for (var ix = 0; ix < block.width; ix++) {
+                  if (block.get(ix, iy) === 1) {
+                      var time = (new Date()).getTime();
+                      var r = (Math.cos(time) + 1) / 2;
+                      var g = (Math.cos(time + 123) + 1) / 2;
+                      var b = (Math.cos(time + 1232) + 1) / 2;
+                      voxel.color(ix, iy + 47, 0, r, g, b);
+                  }
+              }
+          }
+          voxel.matrix = voxel.matrix.rotateZ(0.001).rotateX(0.001);
           renderer.clear(0.1, 0.1, 0.1, 1);
+          renderer.render(camera, scene);
           renderer.render(camera, scene);
       }, 1);
   });

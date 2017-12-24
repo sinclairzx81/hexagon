@@ -79,9 +79,9 @@ const createGeometry = (width: number, height: number, depth: number) => {
         offsets[offset_index + 1] = y * 1.2
         offsets[offset_index + 2] = z * 1.2
         offset_index += 3
-        colors[color_index + 0] = Math.random()
-        colors[color_index + 1] = Math.random()
-        colors[color_index + 2] = Math.random()
+        colors[color_index + 0] = 0; Math.random()
+        colors[color_index + 1] = 0; Math.random()
+        colors[color_index + 2] = 0; Math.random()
         color_index += 3
         targets[target_index + 0] = (Math.random() - 0.5) * 32
         targets[target_index + 1] = (Math.random() - 0.5) * 32
@@ -144,6 +144,24 @@ export class Voxel extends hex.Mesh {
     const index = ((x + (y * this.width) + (z * this.width * this.height)))
     enabled[((x + (y * this.width) + (z * this.width * this.height)))] = (state) ? 1.0 : 0.0
     geometry.attributes["enabled"].needsupdate   = true
+    geometry.needsupdate = true
+  }
+  /**
+   * clears the buffer
+   * @param {number} r the red component.
+   * @param {number} g the green component.
+   * @param {number} b the blue component.
+   * @returns {void}
+   */
+  public clear(r: number, g: number, b:number) : void {
+    const geometry = this.geometry as hex.GeometryArray
+    const colors = geometry.attributes["color"].data  as Float32Array
+    for (let i = 0; i < colors.length; i+= 3) {
+      colors[i+0] = r
+      colors[i+1] = g
+      colors[i+2] = g
+    }
+    geometry.attributes["color"].needsupdate   = true
     geometry.needsupdate = true
   }
 

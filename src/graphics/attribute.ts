@@ -45,6 +45,7 @@ export type AttributeData =
 export class Attribute {
   public context:     WebGL2RenderingContext
   public buffer:      WebGLBuffer
+  public location:    number
   public disposed:    boolean
   public needsupdate: boolean
   
@@ -60,6 +61,7 @@ export class Attribute {
     }
     this.context     = undefined
     this.buffer      = undefined
+    this.location    = -1
     this.disposed    = false
     this.needsupdate = true
   }

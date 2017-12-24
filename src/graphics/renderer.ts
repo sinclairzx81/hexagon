@@ -43,6 +43,7 @@ import { Mesh }                  from "./mesh"
 import { Object3D }              from "./object"
 import { Texture2D }             from "./texture2D"
 import { TextureCube }           from "./textureCube"
+import { RenderTarget }          from "./render-target"
 
 /**
  * Renderer
@@ -50,15 +51,13 @@ import { TextureCube }           from "./textureCube"
  * WebGL 2.0 graphics renderer. 
  */
 export class Renderer {
-  private context: WebGL2RenderingContext
-
   /**
    * creates a new webgl device context.
    * @param {HTMLCanvasElement} canvas the html canvas element to render to..
    * @returns {Device}
    */
-  constructor(public canvas: HTMLCanvasElement) {
-    this.context = this.canvas.getContext("webgl2")
+  constructor(private context: WebGL2RenderingContext) {
+    
   }
 
   /**
@@ -159,32 +158,42 @@ export class Renderer {
       if (mesh.geometry instanceof GeometryArray) {
         // bind: geometry-array attributes
         for (const key in mesh.geometry.attributes) {
-          const instance = mesh.geometry.attributes[key]
-          const location = this.context.getAttribLocation(mesh.material.shader.program, key)
-          if (location === -1) { 
-            continue
+          const attribute = mesh.geometry.attributes[key]
+          if (attribute.location === -1) {
+            attribute.location = this.context.getAttribLocation(mesh.material.shader.program, key)
+            if (attribute.location === -1) { 
+              continue
+            }
           }
-          this.context.bindBuffer(this.context.ARRAY_BUFFER, instance.buffer)
-          this.context.enableVertexAttribArray(location)
+
+          this.context.bindBuffer(this.context.ARRAY_BUFFER, attribute.buffer)
+          this.context.enableVertexAttribArray(attribute.location)
           this.context.vertexAttribPointer (
-            location, 
-            instance.stride, 
+            attribute.location, 
+            attribute.stride, 
             this.context.FLOAT, 
             false,
             0, 0)
-          this.context.vertexAttribDivisor(location, 1)
+          this.context.vertexAttribDivisor(attribute.location, 1)
         }
         // bind: instance attributes
         for (const key in mesh.geometry.instance.attributes) {
+          // const attribute = mesh.geometry.instance.attributes[key]
+          // const location  = this.context.getAttribLocation(mesh.material.shader.program, key)
+          // if (location === -1) {
+          //   continue
+          // }
           const attribute = mesh.geometry.instance.attributes[key]
-          const location  = this.context.getAttribLocation(mesh.material.shader.program, key)
-          if (location === -1) {
-            continue
+          if (attribute.location === -1) {
+            attribute.location = this.context.getAttribLocation(mesh.material.shader.program, key)
+            if (attribute.location === -1) { 
+              continue
+            }
           }
           this.context.bindBuffer(this.context.ARRAY_BUFFER, attribute.buffer)
-          this.context.enableVertexAttribArray(location)
+          this.context.enableVertexAttribArray(attribute.location)
           this.context.vertexAttribPointer (
-            location,
+            attribute.location,
             attribute.stride, 
             this.context.FLOAT, 
             false,
@@ -249,8 +258,9 @@ export class Renderer {
    * @param {Camera} camera the camera 
    * @param {Matrix} transform the current world transform.
    * @param {Array<Object3D>} objects the objects to render.
+   * @returns {void}
    */
-  private render_object_list(camera: Camera, transform: Matrix, objects: Array<Object3D>) {
+  private render_object_list(camera: Camera, transform: Matrix, objects: Array<Object3D>): void {
     for (const object of objects) {
       if (object instanceof Mesh) {
         this.render_mesh (camera, Matrix.mul(object.matrix, transform), object as Mesh)
@@ -264,11 +274,12 @@ export class Renderer {
 
   /**
    * renders a pass with the given camera and scene.
-   * @param {Camera} the camera to render with.
-   * @param {Scene} the scene.
+   * @param {Camera} camera the camera to render with.
+   * @param {Scene} scene the scene to render.
+   * @param {RenderTarget?} renderTarget optional render target.
    * @returns {void}
    */
-  public render(camera: Camera, scene: Scene): void {
+  public render(camera: Camera, scene: Scene, renderTarget?: RenderTarget): void {
     if (scene.visible) {
       this.render_object_list(camera, scene.matrix, scene.objects)
     }
