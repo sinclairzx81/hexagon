@@ -4668,8 +4668,8 @@
   define("src/compute/context", ["require", "exports", "src/compute/color", "src/compute/float", "src/compute/program", "src/compute/plane", "src/compute/present"], function (require, exports, color_1, float_1, program_1, plane_5, present_1) {
       "use strict";
       exports.__esModule = true;
-      var Context = (function () {
-          function Context(context) {
+      var ComputeContext = (function () {
+          function ComputeContext(context) {
               if (context === void 0) { context = undefined; }
               this.context = context;
               if (context === undefined) {
@@ -4684,43 +4684,43 @@
               this.plane = new plane_5.Plane(this.context);
               this.present = new present_1.Present(this.context, this.plane);
           }
-          Context.prototype.createProgram = function (source) {
+          ComputeContext.prototype.createProgram = function (source) {
               return new program_1.Program(this.context, this.framebuf, this.plane, source);
           };
-          Context.prototype.createColor1D = function (length) {
+          ComputeContext.prototype.createColor1D = function (length) {
               return new color_1.Color1D(this.context, this.framebuf, length);
           };
-          Context.prototype.createColor2D = function (width, height) {
+          ComputeContext.prototype.createColor2D = function (width, height) {
               return new color_1.Color2D(this.context, this.framebuf, width, height);
           };
-          Context.prototype.createColor3D = function (width, height, depth) {
+          ComputeContext.prototype.createColor3D = function (width, height, depth) {
               return new color_1.Color3D(this.context, this.framebuf, width, height, depth);
           };
-          Context.prototype.createFloat1D = function (length) {
+          ComputeContext.prototype.createFloat1D = function (length) {
               return new float_1.Float1D(this.context, this.framebuf, length);
           };
-          Context.prototype.createFloat2D = function (width, height) {
+          ComputeContext.prototype.createFloat2D = function (width, height) {
               return new float_1.Float2D(this.context, this.framebuf, width, height);
           };
-          Context.prototype.createFloat3D = function (width, height, depth) {
+          ComputeContext.prototype.createFloat3D = function (width, height, depth) {
               return new float_1.Float3D(this.context, this.framebuf, width, height, depth);
           };
-          Context.prototype.render = function (buffer) {
+          ComputeContext.prototype.render = function (buffer) {
               this.present.present(buffer);
           };
-          Context.prototype.dispose = function () {
+          ComputeContext.prototype.dispose = function () {
               this.context.deleteFramebuffer(this.framebuf);
               this.present.dispose();
               this.plane.dispose();
           };
-          return Context;
+          return ComputeContext;
       }());
-      exports.Context = Context;
+      exports.ComputeContext = ComputeContext;
   });
   define("src/compute/index", ["require", "exports", "src/compute/context", "src/compute/program", "src/compute/script", "src/compute/float", "src/compute/color"], function (require, exports, context_1, program_2, script_2, float_2, color_2) {
       "use strict";
       exports.__esModule = true;
-      exports.Context = context_1.Context;
+      exports.ComputeContext = context_1.ComputeContext;
       exports.Program = program_2.Program;
       exports.transform = script_2.transform;
       exports.Float1D = float_2.Float1D;
@@ -5447,7 +5447,7 @@
       exports.Vector3 = index_13.Vector3;
       exports.Vector4 = index_14.Vector4;
       exports.VectorN = index_15.VectorN;
-      exports.Context = index_16.Context;
+      exports.ComputeContext = index_16.ComputeContext;
       exports.Program = index_17.Program;
       exports.Float1D = index_18.Float1D;
       exports.Float2D = index_19.Float2D;
@@ -5495,9 +5495,9 @@
                       var x = (ix - (width / 2));
                       var y = (iy - (height / 2));
                       var z = (iz - (depth / 2));
-                      offsets[offset_index + 0] = x * 1.2;
-                      offsets[offset_index + 1] = y * 1.2;
-                      offsets[offset_index + 2] = z * 1.2;
+                      offsets[offset_index + 0] = x * 1.0;
+                      offsets[offset_index + 1] = y * 1.0;
+                      offsets[offset_index + 2] = z * 1.0;
                       offset_index += 3;
                       colors[color_index + 0] = 0;
                       Math.random();
@@ -5506,9 +5506,9 @@
                       colors[color_index + 2] = 0;
                       Math.random();
                       color_index += 3;
-                      targets[target_index + 0] = (Math.random() - 0.5) * 32;
-                      targets[target_index + 1] = (Math.random() - 0.5) * 32;
-                      targets[target_index + 2] = (Math.random() - 0.5) * 32;
+                      targets[target_index + 0] = (Math.random() - 0.5) * 3200;
+                      targets[target_index + 1] = (Math.random() - 0.5) * 3200;
+                      targets[target_index + 2] = (Math.random() - 0.5) * 3200;
                       target_index += 3;
                       enableds[enabled_index] = 1;
                       enabled_index += 1;
@@ -5561,6 +5561,14 @@
               colors[index + 1] = g;
               colors[index + 2] = b;
               geometry.attributes["color"].needsupdate = true;
+              geometry.needsupdate = true;
+          };
+          Voxel.prototype.amount = function (x, y, z, amount) {
+              var geometry = this.geometry;
+              var enabled = geometry.attributes["amount"].data;
+              var index = ((x + (y * this.width) + (z * this.width * this.height)));
+              enabled[((x + (y * this.width) + (z * this.width * this.height)))] = amount;
+              geometry.attributes["amount"].needsupdate = true;
               geometry.needsupdate = true;
           };
           return Voxel;
@@ -5670,34 +5678,71 @@
       }());
       exports.TextBlock = TextBlock;
   });
-  define("demo/index", ["require", "exports", "src/index", "demo/meshes/voxel", "demo/meshes/text-block"], function (require, exports, hex, voxel_1, text_block_1) {
+  define("demo/meshes/video", ["require", "exports", "src/index"], function (require, exports, hex) {
+      "use strict";
+      exports.__esModule = true;
+      var source = function () {
+          return "\n  uniform float iTime;\n  uniform vec2 iMouse;\n\n  const int NUM_STEPS = 8;\n  const float PI\t \t= 3.141592;\n  const float EPSILON\t= 1e-3;\n  #define EPSILON_NRM (0.1 / float(thread.width))\n\n  // sea\n  const int ITER_GEOMETRY    = 3;\n  const int ITER_FRAGMENT    = 5;\n  const float SEA_HEIGHT     = 0.6;\n  const float SEA_CHOPPY     = 4.0;\n  const float SEA_SPEED      = 0.8;\n  const float SEA_FREQ       = 0.16;\n  const vec3 SEA_BASE        = vec3(0.1,0.19,0.22);\n  const vec3 SEA_WATER_COLOR = vec3(0.8,0.9,0.6);\n  #define SEA_TIME (1.0 + iTime * SEA_SPEED)\n  const mat2 octave_m = mat2(1.6,1.2,-1.2,1.6);\n\n  // math\n  mat3 fromEuler(vec3 ang) {\n  vec2 a1 = vec2(sin(ang.x),cos(ang.x));\n    vec2 a2 = vec2(sin(ang.y),cos(ang.y));\n    vec2 a3 = vec2(sin(ang.z),cos(ang.z));\n    mat3 m;\n    m[0] = vec3(a1.y*a3.y+a1.x*a2.x*a3.x,a1.y*a2.x*a3.x+a3.y*a1.x,-a2.y*a3.x);\n  m[1] = vec3(-a2.y*a1.x,a1.y*a2.y,a2.x);\n  m[2] = vec3(a3.y*a1.x*a2.x+a1.y*a3.x,a1.x*a3.x-a1.y*a3.y*a2.x,a2.y*a3.y);\n  return m;\n  }\n  float hash( vec2 p ) {\n  float h = dot(p,vec2(127.1,311.7));\t\n    return fract(sin(h)*43758.5453123);\n  }\n  float noise( in vec2 p ) {\n    vec2 i = floor( p );\n    vec2 f = fract( p );\t\n  vec2 u = f*f*(3.0-2.0*f);\n    return -1.0+2.0*mix( mix( hash( i + vec2(0.0,0.0) ), \n                      hash( i + vec2(1.0,0.0) ), u.x),\n                mix( hash( i + vec2(0.0,1.0) ), \n                      hash( i + vec2(1.0,1.0) ), u.x), u.y);\n  }\n\n  // lighting\n  float diffuse(vec3 n,vec3 l,float p) {\n    return pow(dot(n,l) * 0.4 + 0.6,p);\n  }\n  float specular(vec3 n,vec3 l,vec3 e,float s) {    \n    float nrm = (s + 8.0) / (PI * 8.0);\n    return pow(max(dot(reflect(e,n),l),0.0),s) * nrm;\n  }\n\n  // sky\n  vec3 getSkyColor(vec3 e) {\n    e.y = max(e.y,0.0);\n    return vec3(pow(1.0-e.y,2.0), 1.0-e.y, 0.6+(1.0-e.y)*0.4);\n  }\n\n  // sea\n  float sea_octave(vec2 uv, float choppy) {\n    uv += noise(uv);        \n    vec2 wv = 1.0-abs(sin(uv));\n    vec2 swv = abs(cos(uv));    \n    wv = mix(wv,swv,wv);\n    return pow(1.0-pow(wv.x * wv.y,0.65),choppy);\n  }\n\n  float map(vec3 p) {\n    float freq = SEA_FREQ;\n    float amp = SEA_HEIGHT;\n    float choppy = SEA_CHOPPY;\n    vec2 uv = p.xz; uv.x *= 0.75;\n    \n    float d, h = 0.0;    \n    for(int i = 0; i < ITER_GEOMETRY; i++) {        \n      d = sea_octave((uv+SEA_TIME)*freq,choppy);\n      d += sea_octave((uv-SEA_TIME)*freq,choppy);\n        h += d * amp;        \n      uv *= octave_m; freq *= 1.9; amp *= 0.22;\n        choppy = mix(choppy,1.0,0.2);\n    }\n    return p.y - h;\n  }\n\n  float map_detailed(vec3 p) {\n    float freq = SEA_FREQ;\n    float amp = SEA_HEIGHT;\n    float choppy = SEA_CHOPPY;\n    vec2 uv = p.xz; uv.x *= 0.75;\n    \n    float d, h = 0.0;    \n    for(int i = 0; i < ITER_FRAGMENT; i++) {        \n      d = sea_octave((uv+SEA_TIME)*freq,choppy);\n      d += sea_octave((uv-SEA_TIME)*freq,choppy);\n        h += d * amp;        \n      uv *= octave_m; freq *= 1.9; amp *= 0.22;\n        choppy = mix(choppy,1.0,0.2);\n    }\n    return p.y - h;\n  }\n\n  vec3 getSeaColor(vec3 p, vec3 n, vec3 l, vec3 eye, vec3 dist) {  \n    float fresnel = clamp(1.0 - dot(n,-eye), 0.0, 1.0);\n    fresnel = pow(fresnel,3.0) * 0.65;\n        \n    vec3 reflected = getSkyColor(reflect(eye,n));    \n    vec3 refracted = SEA_BASE + diffuse(n,l,80.0) * SEA_WATER_COLOR * 0.12; \n    \n    vec3 color = mix(refracted,reflected,fresnel);\n    \n    float atten = max(1.0 - dot(dist,dist) * 0.001, 0.0);\n    color += SEA_WATER_COLOR * (p.y - SEA_HEIGHT) * 0.18 * atten;\n    \n    color += vec3(specular(n,l,eye,60.0));\n    \n    return color;\n  }\n\n  // tracing\n  vec3 getNormal(vec3 p, float eps) {\n    vec3 n;\n    n.y = map_detailed(p);    \n    n.x = map_detailed(vec3(p.x+eps,p.y,p.z)) - n.y;\n    n.z = map_detailed(vec3(p.x,p.y,p.z+eps)) - n.y;\n    n.y = eps;\n    return normalize(n);\n  }\n\n  float heightMapTracing(vec3 ori, vec3 dir, out vec3 p) {  \n    float tm = 0.0;\n    float tx = 1000.0;    \n    float hx = map(ori + dir * tx);\n    if(hx > 0.0) return tx;   \n    float hm = map(ori + dir * tm);    \n    float tmid = 0.0;\n    for(int i = 0; i < NUM_STEPS; i++) {\n        tmid = mix(tm,tx, hm/(hm-hx));                   \n        p = ori + dir * tmid;                   \n      float hmid = map(p);\n    if(hmid < 0.0) {\n          tx = tmid;\n            hx = hmid;\n        } else {\n            tm = tmid;\n            hm = hmid;\n        }\n    }\n    return tmid;\n  }\n\n  // main\n  [color] thread(int x, int y) {\n    vec2 uv = vec2(\n      float(x) / float(thread.width),\n      float(y) / float(thread.height)\n    );\n    uv = uv * 2.0 - 1.0;\n    uv.y = -(uv.y + .3);\n    float time = iTime * 0.3 + iMouse.x*0.01;\n        \n    // ray\n    vec3 ang = vec3(sin(time*3.0)*0.1,sin(time)*0.2+0.3,time);    \n    vec3 ori = vec3(0.0,3.5,time*5.0);\n    vec3 dir = normalize(vec3(uv.xy,-2.0)); dir.z += length(uv) * 0.15;\n    dir = normalize(dir) * fromEuler(ang);\n    \n    // tracing\n    vec3 p;\n    heightMapTracing(ori,dir,p);\n    vec3 dist = p - ori;\n    vec3 n = getNormal(p, dot(dist,dist) * EPSILON_NRM);\n    vec3 light = normalize(vec3(0.0,1.0,0.8)); \n              \n    // color\n    vec3 color = mix(\n        getSkyColor(dir),\n        getSeaColor(p,n,light,dir,dist),\n      pow(smoothstep(0.0,-0.05,dir.y),0.3));\n        \n    // post\n  thread[0] = vec4(pow(color,vec3(0.75)), 1.0);\n  }\n  ";
+      };
+      var Video = (function () {
+          function Video(context, width, height) {
+              this.context = context;
+              this.width = width;
+              this.height = height;
+              this.compute = new hex.ComputeContext(context);
+              this.output = this.compute.createColor2D(this.width, this.height);
+              this.program = this.compute.createProgram(source());
+              this.start = Date.now();
+          }
+          Video.prototype.get = function () {
+              var delta = (Date.now() - this.start) * 0.001;
+              this.program.execute([this.output], {
+                  iTime: delta,
+                  iMouse: [1, 1]
+              });
+              this.output.pull();
+              return this.output.data;
+          };
+          return Video;
+      }());
+      exports.Video = Video;
+  });
+  define("demo/index", ["require", "exports", "src/index", "demo/meshes/voxel", "demo/meshes/text-block", "demo/meshes/video"], function (require, exports, hex, voxel_1, text_block_1, video_1) {
       "use strict";
       exports.__esModule = true;
       var canvas = document.getElementById("canvas");
       var context = canvas.getContext("webgl2");
       var renderer = new hex.Renderer(context);
       var camera = new hex.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000);
-      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, -100, -320), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
+      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, -0, -350), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
       var voxel = new voxel_1.Voxel(320, 200, 1);
       var scene = new hex.Scene();
       scene.objects.push(voxel);
-      var texture = new hex.Texture2D(16, 16, "rgb", new Uint8Array(16 * 16 * 3));
-      var renderTarget = new hex.RenderTarget(100, 100);
+      var video = new video_1.Video(context, 320, 200);
+      voxel.matrix = voxel.matrix.rotateX(180 * Math.PI / 180);
       var loop = function () { return requestAnimationFrame(function () {
+          var buffer = video.get();
+          renderer.viewport(0, 0, canvas.width, canvas.height);
           voxel.clear(0, 0, 0);
+          for (var iy = 0; iy < 200; iy++) {
+              for (var ix = 0; ix < 320; ix++) {
+                  var r = buffer[((ix + (iy * 320)) * 4) + 0] / 255;
+                  var g = buffer[((ix + (iy * 320)) * 4) + 1] / 255;
+                  var b = buffer[((ix + (iy * 320)) * 4) + 2] / 255;
+                  voxel.color(ix, iy, 0, r, g, b);
+                  var amount = Math.cos(Date.now() * 0.0005);
+                  voxel.amount(ix, iy, 0, amount >= 0 ? amount : 0);
+              }
+          }
           var block = new text_block_1.TextBlock(new Date().toString());
           for (var iy = 0; iy < block.height; iy++) {
               for (var ix = 0; ix < block.width; ix++) {
                   if (block.get(ix, iy) === 1) {
-                      var time = (new Date()).getTime() * 0.01;
-                      var r = (Math.cos(time + 1)) / 2;
-                      var g = (Math.cos(time + 2) + 1) / 2;
-                      var b = (Math.cos(time + 3) + 1) / 2;
-                      voxel.color(ix, iy + 47, 0, r, g, b);
+                      voxel.color(ix + 8, iy + 8, 0, 1, 1, 1);
                   }
               }
           }
-          voxel.matrix = voxel.matrix.rotateZ(0.01);
+          voxel.matrix = voxel.matrix.rotateY(0.01);
           renderer.clear(0.1, 0.1, 0.1, 1);
           renderer.render(camera, scene);
           renderer.render(camera, scene);

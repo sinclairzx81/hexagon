@@ -43,7 +43,7 @@ export { Vector3 }           from "./math/index"
 export { Vector4 }           from "./math/index"
 export { VectorN }           from "./math/index"
 
-export { Context }           from "./compute/index"
+export { ComputeContext }    from "./compute/index"
 export { Program }           from "./compute/index"
 export { Script }            from "./compute/index"
 export { Float1D }           from "./compute/index"

@@ -178,11 +178,6 @@ export class Renderer {
         }
         // bind: instance attributes
         for (const key in mesh.geometry.instance.attributes) {
-          // const attribute = mesh.geometry.instance.attributes[key]
-          // const location  = this.context.getAttribLocation(mesh.material.shader.program, key)
-          // if (location === -1) {
-          //   continue
-          // }
           const attribute = mesh.geometry.instance.attributes[key]
           if (attribute.location === -1) {
             attribute.location = this.context.getAttribLocation(mesh.material.shader.program, key)

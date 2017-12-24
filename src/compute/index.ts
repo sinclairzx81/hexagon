@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export { Context }                   from "./context"
+export { ComputeContext }            from "./context"
 export { Program }                   from "./program"
 export { Script, transform }         from "./script"
 export { Float1D, Float2D, Float3D } from "./float"

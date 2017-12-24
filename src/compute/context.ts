@@ -41,7 +41,7 @@ export type BufferType =
   | Color2D
   | Color3D
 
-export class Context implements Disposable {
+export class ComputeContext implements Disposable {
   private framebuf  : WebGLFramebuffer
   private plane     : Plane
   private present   : Present
@@ -50,7 +50,7 @@ export class Context implements Disposable {
    * creates a new compute context using the given webgl2 rendering context. If no
    * context is given, a new rendering context is created on a hidden element.
    * @param {WebGL2RenderingContext} context the webgl rendering context.
-   * @returns {Context}
+   * @returns {ComputeContext}
    */
   constructor(private context: WebGL2RenderingContext = undefined) {
     if(context === undefined) {

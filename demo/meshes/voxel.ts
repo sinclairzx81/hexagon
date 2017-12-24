@@ -75,17 +75,17 @@ const createGeometry = (width: number, height: number, depth: number) => {
         const x = (ix - (width / 2))
         const y = (iy - (height / 2))
         const z = (iz - (depth / 2))
-        offsets[offset_index + 0] = x * 1.2
-        offsets[offset_index + 1] = y * 1.2
-        offsets[offset_index + 2] = z * 1.2
+        offsets[offset_index + 0] = x * 1.0
+        offsets[offset_index + 1] = y * 1.0
+        offsets[offset_index + 2] = z * 1.0
         offset_index += 3
         colors[color_index + 0] = 0; Math.random()
         colors[color_index + 1] = 0; Math.random()
         colors[color_index + 2] = 0; Math.random()
         color_index += 3
-        targets[target_index + 0] = (Math.random() - 0.5) * 32
-        targets[target_index + 1] = (Math.random() - 0.5) * 32
-        targets[target_index + 2] = (Math.random() - 0.5) * 32
+        targets[target_index + 0] = (Math.random() - 0.5) * 3200
+        targets[target_index + 1] = (Math.random() - 0.5) * 3200
+        targets[target_index + 2] = (Math.random() - 0.5) * 3200
         target_index += 3 
         enableds[enabled_index] = 1
         enabled_index += 1
@@ -183,6 +183,22 @@ export class Voxel extends hex.Mesh {
     colors [index + 1] = g
     colors [index + 2] = b
     geometry.attributes["color"].needsupdate   = true
+    geometry.needsupdate = true
+  }
+  /**
+   * sets the color of this voxel
+   * @param {number} x the x position of this voxel.
+   * @param {number} y the y position of this voxel.
+   * @param {number} z the z position of this voxel.
+   * @param {number} amount range from 0.0 - 1.0
+   * @returns {void}
+   */
+  public amount (x: number, y: number, z: number, amount: number): void {
+    const geometry = this.geometry as hex.GeometryArray
+    const enabled = geometry.attributes["amount"].data  as Float32Array
+    const index = ((x + (y * this.width) + (z * this.width * this.height)))
+    enabled[((x + (y * this.width) + (z * this.width * this.height)))] = amount
+    geometry.attributes["amount"].needsupdate   = true
     geometry.needsupdate = true
   }
 }
