@@ -193,7 +193,7 @@ export class Voxel extends hex.Mesh {
    * @param {number} amount range from 0.0 - 1.0
    * @returns {void}
    */
-  public amount (x: number, y: number, z: number, amount: number): void {
+  public explode (x: number, y: number, z: number, amount: number): void {
     const geometry = this.geometry as hex.GeometryArray
     const enabled = geometry.attributes["amount"].data  as Float32Array
     const index = ((x + (y * this.width) + (z * this.width * this.height)))

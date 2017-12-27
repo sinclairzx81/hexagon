@@ -2908,6 +2908,128 @@
       exports.Sphere = sphere_1.Sphere;
       exports.Frustum = frustum_1.Frustum;
   });
+  define("src/animation/animation-track", ["require", "exports"], function (require, exports) {
+      "use strict";
+      exports.__esModule = true;
+      var AnimationTrack = (function () {
+          function AnimationTrack() {
+              this.frames = [];
+          }
+          AnimationTrack.prototype.add = function (time, value, type) {
+              if (type === void 0) { type = "step"; }
+              for (var i = 0; i < this.frames.length; i++) {
+                  if (time === this.frames[i].time) {
+                      this.frames[i].value = value;
+                      this.frames[i].type = type;
+                      return;
+                  }
+              }
+              this.frames.push({ time: time, value: value, type: type });
+              this.frames = this.frames.sort(function (a, b) {
+                  if (a.time > b.time) {
+                      return 1;
+                  }
+                  if (a.time < b.time) {
+                      return -1;
+                  }
+                  return 0;
+              });
+          };
+          AnimationTrack.prototype.remove = function (time) {
+              this.frames = this.frames.filter(function (n) { return n.time !== time; });
+          };
+          AnimationTrack.prototype.get = function (time) {
+              if (this.frames.length === 0) {
+                  return { value: 0, type: "step" };
+              }
+              if (this.frames.length === 1) {
+                  return { value: this.frames[0].value, type: this.frames[0].type };
+              }
+              if (time < this.frames[0].time) {
+                  return { value: this.frames[0].value, type: "step" };
+              }
+              if (time >= this.frames[this.frames.length - 1].time) {
+                  return {
+                      value: this.frames[this.frames.length - 1].value,
+                      type: this.frames[this.frames.length - 1].type
+                  };
+              }
+              var current_index = -1;
+              var next_index = -1;
+              for (var i = 0; i < (this.frames.length - 1); i++) {
+                  if (time >= this.frames[i].time && time < this.frames[i + 1].time) {
+                      current_index = (i);
+                      next_index = (i + 1);
+                      break;
+                  }
+              }
+              var current = this.frames[current_index];
+              var next = this.frames[next_index];
+              switch (current.type) {
+                  case "step": {
+                      return {
+                          value: current.value,
+                          type: current.type
+                      };
+                  }
+                  case "linear": {
+                      if (time === current.time) {
+                          return {
+                              value: current.value,
+                              type: current.type
+                          };
+                      }
+                      else {
+                          var delta_a = next.time - current.time;
+                          var delta_b = time - current.time;
+                          var scalar = delta_b / delta_a;
+                          var delta_c = next.value - current.value;
+                          return {
+                              value: current.value + (delta_c * scalar),
+                              type: current.type
+                          };
+                      }
+                  }
+              }
+          };
+          return AnimationTrack;
+      }());
+      exports.AnimationTrack = AnimationTrack;
+  });
+  define("src/animation/animation", ["require", "exports", "src/animation/animation-track"], function (require, exports, animation_track_1) {
+      "use strict";
+      exports.__esModule = true;
+      var Animation = (function () {
+          function Animation() {
+              this.tracks = {};
+          }
+          Animation.prototype.add = function (name, time, value, type) {
+              if (type === void 0) { type = "step"; }
+              if (this.tracks[name] === undefined) {
+                  this.tracks[name] = new animation_track_1.AnimationTrack();
+              }
+              this.tracks[name].add(time, value, type);
+          };
+          Animation.prototype.remove = function (name) {
+              delete this.tracks[name];
+          };
+          Animation.prototype.get = function (time) {
+              var state = {};
+              for (var key in this.tracks) {
+                  state[key] = this.tracks[key].get(time);
+              }
+              return state;
+          };
+          return Animation;
+      }());
+      exports.Animation = Animation;
+  });
+  define("src/animation/index", ["require", "exports", "src/animation/animation-track", "src/animation/animation"], function (require, exports, animation_track_2, animation_1) {
+      "use strict";
+      exports.__esModule = true;
+      exports.AnimationTrack = animation_track_2.AnimationTrack;
+      exports.Animation = animation_1.Animation;
+  });
   define("src/compute/dispose", ["require", "exports"], function (require, exports) {
       "use strict";
       exports.__esModule = true;
@@ -5430,7 +5552,7 @@
       exports.Texture2D = texture2D_3.Texture2D;
       exports.TextureCube = textureCube_2.TextureCube;
   });
-  define("src/index", ["require", "exports", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/scene", "src/graphics/index", "src/graphics/index", "src/graphics/index"], function (require, exports, index_2, index_3, index_4, index_5, index_6, index_7, index_8, index_9, index_10, index_11, index_12, index_13, index_14, index_15, index_16, index_17, index_18, index_19, index_20, index_21, index_22, index_23, index_24, index_25, index_26, index_27, index_28, index_29, index_30, index_31, index_32, index_33, index_34, index_35, index_36, scene_2, index_37, index_38, index_39) {
+  define("src/index", ["require", "exports", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/math/index", "src/animation/index", "src/animation/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/compute/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/index", "src/graphics/scene", "src/graphics/index", "src/graphics/index", "src/graphics/index"], function (require, exports, index_2, index_3, index_4, index_5, index_6, index_7, index_8, index_9, index_10, index_11, index_12, index_13, index_14, index_15, index_16, index_17, index_18, index_19, index_20, index_21, index_22, index_23, index_24, index_25, index_26, index_27, index_28, index_29, index_30, index_31, index_32, index_33, index_34, index_35, index_36, index_37, index_38, scene_2, index_39, index_40, index_41) {
       "use strict";
       exports.__esModule = true;
       exports.Box = index_2.Box;
@@ -5447,31 +5569,33 @@
       exports.Vector3 = index_13.Vector3;
       exports.Vector4 = index_14.Vector4;
       exports.VectorN = index_15.VectorN;
-      exports.ComputeContext = index_16.ComputeContext;
-      exports.Program = index_17.Program;
-      exports.Float1D = index_18.Float1D;
-      exports.Float2D = index_19.Float2D;
-      exports.Float3D = index_20.Float3D;
-      exports.Color1D = index_21.Color1D;
-      exports.Color2D = index_22.Color2D;
-      exports.Color3D = index_23.Color3D;
-      exports.Attribute = index_24.Attribute;
-      exports.Camera = index_25.Camera;
-      exports.PerspectiveCamera = index_26.PerspectiveCamera;
-      exports.OrthoCamera = index_27.OrthoCamera;
-      exports.Geometry = index_28.Geometry;
-      exports.CubeGeometry = index_29.CubeGeometry;
-      exports.GeometryArray = index_30.GeometryArray;
-      exports.Light = index_31.Light;
-      exports.Material = index_32.Material;
-      exports.Mesh = index_33.Mesh;
-      exports.Object3D = index_34.Object3D;
-      exports.Renderer = index_35.Renderer;
-      exports.RenderTarget = index_36.RenderTarget;
+      exports.Animation = index_16.Animation;
+      exports.AnimationTrack = index_17.AnimationTrack;
+      exports.ComputeContext = index_18.ComputeContext;
+      exports.Program = index_19.Program;
+      exports.Float1D = index_20.Float1D;
+      exports.Float2D = index_21.Float2D;
+      exports.Float3D = index_22.Float3D;
+      exports.Color1D = index_23.Color1D;
+      exports.Color2D = index_24.Color2D;
+      exports.Color3D = index_25.Color3D;
+      exports.Attribute = index_26.Attribute;
+      exports.Camera = index_27.Camera;
+      exports.PerspectiveCamera = index_28.PerspectiveCamera;
+      exports.OrthoCamera = index_29.OrthoCamera;
+      exports.Geometry = index_30.Geometry;
+      exports.CubeGeometry = index_31.CubeGeometry;
+      exports.GeometryArray = index_32.GeometryArray;
+      exports.Light = index_33.Light;
+      exports.Material = index_34.Material;
+      exports.Mesh = index_35.Mesh;
+      exports.Object3D = index_36.Object3D;
+      exports.Renderer = index_37.Renderer;
+      exports.RenderTarget = index_38.RenderTarget;
       exports.Scene = scene_2.Scene;
-      exports.Shader = index_37.Shader;
-      exports.Texture2D = index_38.Texture2D;
-      exports.TextureCube = index_39.TextureCube;
+      exports.Shader = index_39.Shader;
+      exports.Texture2D = index_40.Texture2D;
+      exports.TextureCube = index_41.TextureCube;
   });
   define("demo/meshes/voxel", ["require", "exports", "src/index"], function (require, exports, hex) {
       "use strict";
@@ -5563,7 +5687,7 @@
               geometry.attributes["color"].needsupdate = true;
               geometry.needsupdate = true;
           };
-          Voxel.prototype.amount = function (x, y, z, amount) {
+          Voxel.prototype.explode = function (x, y, z, amount) {
               var geometry = this.geometry;
               var enabled = geometry.attributes["amount"].data;
               var index = ((x + (y * this.width) + (z * this.width * this.height)));
@@ -5714,24 +5838,35 @@
       var context = canvas.getContext("webgl2");
       var renderer = new hex.Renderer(context);
       var camera = new hex.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000);
-      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, -0, -250), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
-      var voxel = new voxel_1.Voxel(256, 96, 2);
+      camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, -0, -280), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
+      var voxel = new voxel_1.Voxel(320, 200, 1);
       var scene = new hex.Scene();
       scene.objects.push(voxel);
-      var video = new video_1.Video(context, 256, 96);
+      var animation = new hex.Animation();
+      animation.add("explode", 0, 1, "linear");
+      animation.add("explode", 2000, 0.02, "linear");
+      animation.add("explode", 3000, 0, "linear");
+      animation.add("explode", 5000, 0, "linear");
+      animation.add("explode", 5500, 0.004, "linear");
+      animation.add("explode", 6000, 0, "linear");
+      animation.add("explode", 8000, 0, "linear");
+      animation.add("explode", 10000, 1, "linear");
+      var video = new video_1.Video(context, 320, 200);
       voxel.matrix = voxel.matrix.rotateX(180 * Math.PI / 180);
+      var start = Date.now();
       var loop = function () { return requestAnimationFrame(function () {
           var buffer = video.get();
           renderer.viewport(0, 0, canvas.width, canvas.height);
           voxel.clear(0, 0, 0);
-          for (var iy = 0; iy < 96; iy++) {
-              for (var ix = 0; ix < 256; ix++) {
-                  var r = buffer[((ix + (iy * 256)) * 4) + 0] / 255;
-                  var g = buffer[((ix + (iy * 256)) * 4) + 1] / 255;
-                  var b = buffer[((ix + (iy * 256)) * 4) + 2] / 255;
+          var state = animation.get((Date.now() - start) % 10000)["explode"];
+          var amount = state.value;
+          for (var iy = 0; iy < 200; iy++) {
+              for (var ix = 0; ix < 320; ix++) {
+                  var r = buffer[((ix + (iy * 320)) * 4) + 0] / 255;
+                  var g = buffer[((ix + (iy * 320)) * 4) + 1] / 255;
+                  var b = buffer[((ix + (iy * 320)) * 4) + 2] / 255;
                   voxel.color(ix, iy, 0, r, g, b);
-                  var amount = Math.cos(Date.now() * 0.0005);
-                  voxel.amount(ix, iy, 0, amount >= 0 ? amount : 0);
+                  voxel.explode(ix, iy, 0, amount);
               }
           }
           var block = new text_block_1.TextBlock(new Date().toTimeString());
@@ -5744,7 +5879,6 @@
           }
           voxel.matrix = voxel.matrix.rotateY(0.01);
           renderer.clear(0.1, 0.1, 0.1, 1);
-          renderer.render(camera, scene);
           renderer.render(camera, scene);
           loop();
       }); };
