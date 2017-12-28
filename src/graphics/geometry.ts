@@ -115,7 +115,7 @@ export class Geometry implements Disposable {
 /**
  * CubeGeometry
  * 
- * A simple cube geometry
+ * A cube geometry type.
  */
 export class CubeGeometry extends Geometry {
   constructor(private scale: number = 0.5) {
@@ -178,6 +178,36 @@ export class CubeGeometry extends Geometry {
       /* bottom */ 12, 13, 14, 12, 14, 15, 
       /* right  */ 16, 17, 18, 16, 18, 19, 
       /* left   */ 20, 21, 22, 20, 22, 23
+    ]))
+  }
+}
+
+/**
+ * PlaneGeometry
+ * 
+ * A plane geometry type.
+ */
+export class PlaneGeometry extends Geometry {
+  constructor(private scale: number = 0.5) {
+    super()
+    this.build()
+  }
+  private build() {
+    this.addAttribute("position", new Attribute(4, [
+      -this.scale, 0.0, -this.scale, 1.0, 
+      -this.scale, 0.0,  this.scale, 1.0,  
+       this.scale, 0.0,  this.scale, 1.0,  
+       this.scale, 0.0, -this.scale, 1.0,
+     
+    ]))
+    this.addAttribute("normal", new Attribute(3, [
+      0.0, 1.0, 0.0,  0.0, 1.0, 0.0,  0.0, 1.0, 0.0,  0.0, 1.0, 0.0
+    ]))
+    this.addAttribute("texcoord", new Attribute(2, [
+      0.0, 0.0,  0.0, 1.0,  1.0, 1.0,  1.0, 0.0, 
+    ]))
+    this.addIndex(new Attribute(1, [
+       0, 1, 2, 2, 3, 0
     ]))
   }
 }

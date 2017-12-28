@@ -33,7 +33,7 @@ import { Vector3 }               from "../math/vector3"
 import { Vector4 }               from "../math/vector4"
 import { Plane }                 from "../math/plane"
 import { Quaternion }            from "../math/quaternion"
-import { IDisposable }           from "./dispose"
+import { Disposable }            from "./dispose"
 import { Geometry }              from "./geometry"
 import { GeometryArray }         from "./geometry-array"
 import { Shader }                from "./shader"
@@ -51,17 +51,13 @@ import { RenderTarget }          from "./render-target"
  * 
  * WebGL 2.0 graphics renderer. 
  */
-export class Renderer implements IDisposable {
-  private framebuf: WebGLFramebuffer
-  
+export class Renderer implements Disposable {
   /**
    * creates a new webgl device context.
    * @param {WebGL2RenderingContext} canvas the html canvas element to render to..
    * @returns {Renderer}
    */
-  constructor(private context: WebGL2RenderingContext) {
-    this.framebuf = this.context.createFramebuffer()
-  }
+  constructor(private context: WebGL2RenderingContext) { }
 
   /**
    * sets this renderers viewport.
@@ -92,7 +88,9 @@ export class Renderer implements IDisposable {
 
   /**
    * renders the given node.
-   * @param {Node} the node.
+   * @param {Camera} camera the camera to render this object with.
+   * @param {Matrix} transform the current matrix transform.
+   * @param {Object3D} object the object to render.
    * @returns {void}
    */
   private render_object(camera: Camera, transform: Matrix, object: Object3D): void {
@@ -103,9 +101,9 @@ export class Renderer implements IDisposable {
 
   /**
    * renders this mesh.
-   * @param {Camera} the camera to render with.
-   * @param {Matrx} the parent transformation matrix.
-   * @param {Mesh} the mesh to render.
+   * @param {Camera} camera the camera to render with.
+   * @param {Matrix} transform the current matrix transform.
+   * @param {Mesh} mesh the mesh to render.
    * @returns {void}
    */
   private render_mesh(camera: Camera, transform: Matrix, mesh: Mesh): void {
@@ -255,10 +253,10 @@ export class Renderer implements IDisposable {
    * renders a group of objects.
    * @param {Camera} camera the camera 
    * @param {Matrix} transform the current world transform.
-   * @param {Array<Object3D>} objects the objects to render.
+   * @param {Object3D[]} objects the objects to render.
    * @returns {void}
    */
-  private render_object_list(camera: Camera, transform: Matrix, objects: Array<Object3D>): void {
+  private render_object_list(camera: Camera, transform: Matrix, objects: Object3D[]): void {
     for (const object of objects) {
       if (object instanceof Mesh) {
         this.render_mesh (camera, Matrix.mul(object.matrix, transform), object as Mesh)
@@ -317,6 +315,6 @@ export class Renderer implements IDisposable {
    * @returns {void}
    */
   public dispose(): void {
-    this.context.deleteFramebuffer(this.framebuf)
+    
   }
 } 

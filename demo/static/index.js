@@ -5092,6 +5092,35 @@
           return CubeGeometry;
       }(Geometry));
       exports.CubeGeometry = CubeGeometry;
+      var PlaneGeometry = (function (_super) {
+          __extends(PlaneGeometry, _super);
+          function PlaneGeometry(scale) {
+              if (scale === void 0) { scale = 0.5; }
+              var _this = _super.call(this) || this;
+              _this.scale = scale;
+              _this.build();
+              return _this;
+          }
+          PlaneGeometry.prototype.build = function () {
+              this.addAttribute("position", new attribute_1.Attribute(4, [
+                  -this.scale, 0.0, -this.scale, 1.0,
+                  -this.scale, 0.0, this.scale, 1.0,
+                  this.scale, 0.0, this.scale, 1.0,
+                  this.scale, 0.0, -this.scale, 1.0,
+              ]));
+              this.addAttribute("normal", new attribute_1.Attribute(3, [
+                  0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0
+              ]));
+              this.addAttribute("texcoord", new attribute_1.Attribute(2, [
+                  0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0,
+              ]));
+              this.addIndex(new attribute_1.Attribute(1, [
+                  0, 1, 2, 2, 3, 0
+              ]));
+          };
+          return PlaneGeometry;
+      }(Geometry));
+      exports.PlaneGeometry = PlaneGeometry;
   });
   define("src/graphics/geometry-array", ["require", "exports"], function (require, exports) {
       "use strict";
@@ -5383,7 +5412,6 @@
       var Renderer = (function () {
           function Renderer(context) {
               this.context = context;
-              this.framebuf = this.context.createFramebuffer();
           }
           Renderer.prototype.viewport = function (x, y, width, height) {
               this.context.viewport(x, y, width, height);
@@ -5541,13 +5569,12 @@
               }
           };
           Renderer.prototype.dispose = function () {
-              this.context.deleteFramebuffer(this.framebuf);
           };
           return Renderer;
       }());
       exports.Renderer = Renderer;
   });
-  define("src/graphics/index", ["require", "exports", "src/graphics/attribute", "src/graphics/camera", "src/graphics/geometry", "src/graphics/geometry", "src/graphics/geometry-array", "src/graphics/light", "src/graphics/material", "src/graphics/mesh", "src/graphics/object", "src/graphics/renderer", "src/graphics/render-target", "src/graphics/scene", "src/graphics/shader", "src/graphics/texture2D", "src/graphics/textureCube"], function (require, exports, attribute_2, camera_1, geometry_2, geometry_3, geometry_array_2, light_1, material_1, mesh_2, object_5, renderer_1, render_target_1, scene_1, shader_1, texture2D_3, textureCube_2) {
+  define("src/graphics/index", ["require", "exports", "src/graphics/attribute", "src/graphics/camera", "src/graphics/geometry", "src/graphics/geometry", "src/graphics/geometry", "src/graphics/geometry-array", "src/graphics/light", "src/graphics/material", "src/graphics/mesh", "src/graphics/object", "src/graphics/renderer", "src/graphics/render-target", "src/graphics/scene", "src/graphics/shader", "src/graphics/texture2D", "src/graphics/textureCube"], function (require, exports, attribute_2, camera_1, geometry_2, geometry_3, geometry_4, geometry_array_2, light_1, material_1, mesh_2, object_5, renderer_1, render_target_1, scene_1, shader_1, texture2D_3, textureCube_2) {
       "use strict";
       exports.__esModule = true;
       exports.Attribute = attribute_2.Attribute;
@@ -5556,6 +5583,7 @@
       exports.OrthoCamera = camera_1.OrthoCamera;
       exports.Geometry = geometry_2.Geometry;
       exports.CubeGeometry = geometry_3.CubeGeometry;
+      exports.PlaneGeometry = geometry_4.PlaneGeometry;
       exports.GeometryArray = geometry_array_2.GeometryArray;
       exports.Light = light_1.Light;
       exports.Material = material_1.Material;
@@ -5856,7 +5884,7 @@
       var renderer = new hex.Renderer(context);
       var camera = new hex.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000);
       camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, -0, -280), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
-      var voxel = new voxel_1.Voxel(320, 200, 2);
+      var voxel = new voxel_1.Voxel(320, 200, 1);
       var scene = new hex.Scene();
       scene.objects.push(voxel);
       var animation = new hex.Animation();

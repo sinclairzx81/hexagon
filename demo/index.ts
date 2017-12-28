@@ -15,9 +15,11 @@ camera.matrix = hex.Matrix.lookAt (
   new hex.Vector3(0, 0, 0),
   new hex.Vector3(0, 1, 0)
 )
-const voxel = new Voxel(320, 200, 2)
+const voxel = new Voxel(320, 200, 1)
 const scene = new hex.Scene()
 scene.objects.push(voxel)
+
+
 
 // animation test
 const animation = new hex.Animation()
@@ -34,7 +36,7 @@ animation.add("explode", 10000, 1,     "linear")
 const video = new Video(context, 320, 200)
 voxel.matrix = voxel.matrix.rotateX(180 * Math.PI / 180)
 const start = Date.now()
-const loop = () => requestAnimationFrame(() =>{
+const loop = () => requestAnimationFrame(() => {
   const buffer = video.get()
   renderer.viewport(0, 0, canvas.width, canvas.height)
   voxel.clear(0, 0, 0)

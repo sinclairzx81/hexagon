@@ -27,7 +27,6 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { Disposable } from "./dispose"
-import { Texture2D }  from "./texture2D"
 
 /**
  * RenderTarget
