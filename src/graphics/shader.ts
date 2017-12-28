@@ -26,7 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export class Shader {
+import { Disposable } from "./dispose"
+
+export class Shader implements Disposable {
   public context        : WebGLRenderingContext
   public program        : WebGLProgram
   public vertexShader   : WebGLShader

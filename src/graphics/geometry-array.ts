@@ -26,16 +26,16 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-
-import { Geometry }  from "./geometry"
-import { Attribute } from "./attribute"
+import { Disposable } from "./dispose"
+import { Geometry }   from "./geometry"
+import { Attribute }  from "./attribute"
 
 /**
  * GeometryArray
  * 
  * A container type for an array of the given geometry.
  */
-export class GeometryArray {
+export class GeometryArray implements Disposable {
   public attributes: { [name: string]: Attribute }
   public disposed:    boolean
   public needsupdate: boolean

@@ -1,3 +1,5 @@
+
+
 /*--------------------------------------------------------------------------
 
 hexagon - webgl graphics renderer written in typescript.
@@ -26,6 +28,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { Disposable } from "./dispose"
+
 /**
  * AttributeData
  * 
@@ -42,7 +46,7 @@ export type AttributeData =
  * 
  * A container type for a webgl geomtry attribute or index buffer.
  */
-export class Attribute {
+export class Attribute implements Disposable {
   public context:     WebGL2RenderingContext
   public buffer:      WebGLBuffer
   public location:    number
@@ -84,21 +88,6 @@ export class Attribute {
   }
 
   /**
-   * disposes of this attribute.
-   * returns {void}
-   */
-  public dispose(): void {
-    if (!this.disposed) {
-      if (this.context  === undefined)  return
-      if (this.buffer   === undefined)  return
-      this.context.deleteBuffer(this.buffer)
-      this.context  = undefined
-      this.buffer   = undefined
-      this.disposed = true
-    }
-  }
-
-  /**
    * resolves a typed array from the attribute data and target.
    * @param {WebGl2RenderingContext} context the webgl2 rendering context.
    * @param {AttributeData} buffer the buffer to resolve.
@@ -114,6 +103,21 @@ export class Attribute {
         case context.ARRAY_BUFFER:         return new Float32Array(buffer)
         default: throw Error("unable to resolve js array from target")
       }
+    }
+  }
+
+  /**
+   * disposes of this attribute.
+   * returns {void}
+   */
+  public dispose(): void {
+    if (!this.disposed) {
+      if (this.context  === undefined)  return
+      if (this.buffer   === undefined)  return
+      this.context.deleteBuffer(this.buffer)
+      this.context  = undefined
+      this.buffer   = undefined
+      this.disposed = true
     }
   }
 }

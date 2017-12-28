@@ -26,27 +26,10 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-//-----------------------------------------
-// 
-// example: 
-// new zero.Texture2D(
-//     new Uint8Array([
-//       255, 0, 0, 255,   0,   0, 0, 255,
-//       0,   0, 0, 255,   255, 0, 0, 255,
-//     ]), 2, 2, "rgba"
-// )
-//
+import { Disposable } from "./dispose"
 
-export type TextureFormat = 
-  "rgb"  |
-  "rgba" |
-  "float"
-
-export type TextureData = 
-  Uint8Array   |
-  Uint32Array  |
-  Float32Array | 
-  ArrayBufferView
+export type TextureFormat =  "rgb" | "rgba" | "float"
+export type TextureData   =  Uint8Array | Float32Array | ArrayBufferView
 
 /**
  * converts the given texture format to a gl format.
@@ -68,11 +51,12 @@ const to_format = (context: WebGL2RenderingContext, format: TextureFormat) : num
  * 
  * A standard texture2D texture type.
  */
-export class Texture2D {
-  public context     : WebGLRenderingContext
-  public texture     : WebGLTexture
-  public needsupdate : boolean
-  public disposed    : boolean
+export class Texture2D implements Disposable {
+  public context:     WebGLRenderingContext
+  public texture:     WebGLTexture
+  public pixels:      TextureData
+  public needsupdate: boolean
+  public disposed:    boolean
   
   /**
    * creates a new texture2D.
@@ -84,8 +68,12 @@ export class Texture2D {
    */
   constructor(public width   : number,
               public height  : number,
-              public format  : TextureFormat,
-              public pixels  : TextureData) {
+              public format  : TextureFormat) {
+    switch(format) {
+      case "rgba":  { this.pixels = new Uint8Array(this.width * this.height * 4); break; }
+      case "rgb":   { this.pixels = new Uint8Array(this.width * this.height * 3); break; }
+      case "float": { this.pixels = new Float32Array(this.width * this.height); break; }
+    }
     this.needsupdate = true
     this.disposed    = false
   }

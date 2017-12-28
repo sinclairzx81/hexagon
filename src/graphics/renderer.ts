@@ -33,6 +33,7 @@ import { Vector3 }               from "../math/vector3"
 import { Vector4 }               from "../math/vector4"
 import { Plane }                 from "../math/plane"
 import { Quaternion }            from "../math/quaternion"
+import { IDisposable }           from "./dispose"
 import { Geometry }              from "./geometry"
 import { GeometryArray }         from "./geometry-array"
 import { Shader }                from "./shader"
@@ -50,14 +51,16 @@ import { RenderTarget }          from "./render-target"
  * 
  * WebGL 2.0 graphics renderer. 
  */
-export class Renderer {
+export class Renderer implements IDisposable {
+  private framebuf: WebGLFramebuffer
+  
   /**
    * creates a new webgl device context.
-   * @param {HTMLCanvasElement} canvas the html canvas element to render to..
-   * @returns {Device}
+   * @param {WebGL2RenderingContext} canvas the html canvas element to render to..
+   * @returns {Renderer}
    */
   constructor(private context: WebGL2RenderingContext) {
-    
+    this.framebuf = this.context.createFramebuffer()
   }
 
   /**
@@ -275,8 +278,45 @@ export class Renderer {
    * @returns {void}
    */
   public render(camera: Camera, scene: Scene, renderTarget?: RenderTarget): void {
+    if (renderTarget !== undefined) {
+
+      renderTarget.update(this.context)
+      
+      this.context.bindFramebuffer(this.context.FRAMEBUFFER, renderTarget.framebuf)
+      this.context.drawBuffers    ([this.context.COLOR_ATTACHMENT0])
+      this.context.framebufferTexture2D(
+        this.context.FRAMEBUFFER,
+        this.context.COLOR_ATTACHMENT0,
+        this.context.TEXTURE_2D,
+        renderTarget.texture,
+        0)
+      
+      if(!(this.context.checkFramebufferStatus(this.context.FRAMEBUFFER) === this.context.FRAMEBUFFER_COMPLETE)) {
+        console.warn(`unable to attach render target.`)
+        return
+      }
+    }
+
     if (scene.visible) {
       this.render_object_list(camera, scene.matrix, scene.objects)
     }
+
+    if(renderTarget !== undefined) {
+      this.context.framebufferTexture2D (
+        this.context.FRAMEBUFFER, 
+        this.context.COLOR_ATTACHMENT0, 
+        this.context.TEXTURE_2D, 
+        null, 
+        0)
+      this.context.bindFramebuffer (this.context.FRAMEBUFFER, null)
+    }
+  }
+
+  /**
+   * disposes of this object.
+   * @returns {void}
+   */
+  public dispose(): void {
+    this.context.deleteFramebuffer(this.framebuf)
   }
 } 

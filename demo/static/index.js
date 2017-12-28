@@ -316,7 +316,7 @@
               return new Vector3(v0.v[v3i.x] - v1.v[v3i.x], v0.v[v3i.y] - v1.v[v3i.y], v0.v[v3i.z] - v1.v[v3i.z]);
           };
           Vector3.mul = function (v0, v1) {
-              return new Vector3(v0.v[v3i.x] - v1.v[v3i.x], v0.v[v3i.y] - v1.v[v3i.y], v0.v[v3i.z] - v1.v[v3i.z]);
+              return new Vector3(v0.v[v3i.x] * v1.v[v3i.x], v0.v[v3i.y] * v1.v[v3i.y], v0.v[v3i.z] * v1.v[v3i.z]);
           };
           Vector3.div = function (v0, v1) {
               return new Vector3(v0.v[v3i.x] / v1.v[v3i.x], v0.v[v3i.y] / v1.v[v3i.y], v0.v[v3i.z] / v1.v[v3i.z]);
@@ -851,7 +851,7 @@
               return new Vector4(v0.v[v4i.x] - v1.v[v4i.x], v0.v[v4i.y] - v1.v[v4i.y], v0.v[v4i.z] - v1.v[v4i.z], v0.v[v4i.w] - v1.v[v4i.w]);
           };
           Vector4.mul = function (v0, v1) {
-              return new Vector4(v0.v[v4i.x] - v1.v[v4i.x], v0.v[v4i.y] - v1.v[v4i.y], v0.v[v4i.z] - v1.v[v4i.z], v0.v[v4i.w] - v1.v[v4i.w]);
+              return new Vector4(v0.v[v4i.x] * v1.v[v4i.x], v0.v[v4i.y] * v1.v[v4i.y], v0.v[v4i.z] * v1.v[v4i.z], v0.v[v4i.w] * v1.v[v4i.w]);
           };
           Vector4.div = function (v0, v1) {
               return new Vector4(v0.v[v4i.x] / v1.v[v4i.x], v0.v[v4i.y] / v1.v[v4i.y], v0.v[v4i.z] / v1.v[v4i.z], v0.v[v4i.w] / v1.v[v4i.w]);
@@ -2640,7 +2640,7 @@
               return new Vector2(v0.v[v2i.x] - v1.v[v2i.x], v0.v[v2i.y] - v1.v[v2i.y]);
           };
           Vector2.mul = function (v0, v1) {
-              return new Vector2(v0.v[v2i.x] - v1.v[v2i.x], v0.v[v2i.y] - v1.v[v2i.y]);
+              return new Vector2(v0.v[v2i.x] * v1.v[v2i.x], v0.v[v2i.y] * v1.v[v2i.y]);
           };
           Vector2.div = function (v0, v1) {
               return new Vector2(v0.v[v2i.x] / v1.v[v2i.x], v0.v[v2i.y] / v1.v[v2i.y]);
@@ -4852,6 +4852,10 @@
       exports.Color2D = color_2.Color2D;
       exports.Color3D = color_2.Color3D;
   });
+  define("src/graphics/dispose", ["require", "exports"], function (require, exports) {
+      "use strict";
+      exports.__esModule = true;
+  });
   define("src/graphics/attribute", ["require", "exports"], function (require, exports) {
       "use strict";
       exports.__esModule = true;
@@ -4878,18 +4882,6 @@
                   this.needsupdate = false;
               }
           };
-          Attribute.prototype.dispose = function () {
-              if (!this.disposed) {
-                  if (this.context === undefined)
-                      return;
-                  if (this.buffer === undefined)
-                      return;
-                  this.context.deleteBuffer(this.buffer);
-                  this.context = undefined;
-                  this.buffer = undefined;
-                  this.disposed = true;
-              }
-          };
           Attribute.prototype.resolve_data = function (context, buffer, target) {
               if (buffer instanceof Float32Array || buffer instanceof Uint8Array || buffer instanceof Uint16Array) {
                   return buffer;
@@ -4900,6 +4892,18 @@
                       case context.ARRAY_BUFFER: return new Float32Array(buffer);
                       default: throw Error("unable to resolve js array from target");
                   }
+              }
+          };
+          Attribute.prototype.dispose = function () {
+              if (!this.disposed) {
+                  if (this.context === undefined)
+                      return;
+                  if (this.buffer === undefined)
+                      return;
+                  this.context.deleteBuffer(this.buffer);
+                  this.context = undefined;
+                  this.buffer = undefined;
+                  this.disposed = true;
               }
           };
           return Attribute;
@@ -5061,56 +5065,20 @@
                   -this.scale, -this.scale, -this.scale, 1.0
               ]));
               this.addAttribute("normal", new attribute_1.Attribute(3, [
-                  0.0, 0.0, 1.0,
-                  0.0, 0.0, 1.0,
-                  0.0, 0.0, 1.0,
-                  0.0, 0.0, 1.0,
-                  0.0, 0.0, -1.0,
-                  0.0, 0.0, -1.0,
-                  0.0, 0.0, -1.0,
-                  0.0, 0.0, -1.0,
-                  0.0, 1.0, 0.0,
-                  0.0, 1.0, 0.0,
-                  0.0, 1.0, 0.0,
-                  0.0, 1.0, 0.0,
-                  0.0, -1.0, 0.0,
-                  0.0, -1.0, 0.0,
-                  0.0, -1.0, 0.0,
-                  0.0, -1.0, 0.0,
-                  1.0, 0.0, 0.0,
-                  1.0, 0.0, 0.0,
-                  1.0, 0.0, 0.0,
-                  1.0, 0.0, 0.0,
-                  -1.0, 0.0, 0.0,
-                  -1.0, 0.0, 0.0,
-                  -1.0, 0.0, 0.0,
-                  -1.0, 0.0, 0.0
+                  0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,
+                  0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0,
+                  0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
+                  0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0,
+                  1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+                  -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0
               ]));
               this.addAttribute("texcoord", new attribute_1.Attribute(2, [
-                  0.0, 0.0,
-                  1.0, 0.0,
-                  1.0, 1.0,
-                  0.0, 1.0,
-                  0.0, 0.0,
-                  1.0, 0.0,
-                  1.0, 1.0,
-                  0.0, 1.0,
-                  0.0, 0.0,
-                  1.0, 0.0,
-                  1.0, 1.0,
-                  0.0, 1.0,
-                  0.0, 0.0,
-                  1.0, 0.0,
-                  1.0, 1.0,
-                  0.0, 1.0,
-                  0.0, 0.0,
-                  1.0, 0.0,
-                  1.0, 1.0,
-                  0.0, 1.0,
-                  0.0, 0.0,
-                  1.0, 0.0,
-                  1.0, 1.0,
-                  0.0, 1.0
+                  0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
+                  0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
+                  0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
+                  0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
+                  0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
+                  0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0
               ]));
               this.addIndex(new attribute_1.Attribute(1, [
                   0, 1, 2, 0, 2, 3,
@@ -5250,11 +5218,24 @@
           }
       };
       var Texture2D = (function () {
-          function Texture2D(width, height, format, pixels) {
+          function Texture2D(width, height, format) {
               this.width = width;
               this.height = height;
               this.format = format;
-              this.pixels = pixels;
+              switch (format) {
+                  case "rgba": {
+                      this.pixels = new Uint8Array(this.width * this.height * 4);
+                      break;
+                  }
+                  case "rgb": {
+                      this.pixels = new Uint8Array(this.width * this.height * 3);
+                      break;
+                  }
+                  case "float": {
+                      this.pixels = new Float32Array(this.width * this.height);
+                      break;
+                  }
+              }
               this.needsupdate = true;
               this.disposed = false;
           }
@@ -5364,16 +5345,33 @@
           function RenderTarget(width, height) {
               this.width = width;
               this.height = height;
+              this.buffer = new Uint8Array(this.width * this.height * 3);
+              this.needsupdate = true;
+              this.disposed = false;
           }
+          RenderTarget.prototype.update = function (context) {
+              if (this.needsupdate) {
+                  this.context = context;
+                  this.framebuf = context.createFramebuffer();
+                  this.texture = this.context.createTexture();
+                  context.bindTexture(context.TEXTURE_2D, this.texture);
+                  context.texImage2D(context.TEXTURE_2D, 0, context.RGB, this.width, this.height, 0, context.RGB, context.UNSIGNED_BYTE, this.buffer);
+                  context.texParameteri(context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.NEAREST);
+                  context.texParameteri(context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.NEAREST);
+                  context.generateMipmap(context.TEXTURE_2D);
+                  context.bindTexture(context.TEXTURE_2D, null);
+                  this.needsupdate = false;
+              }
+          };
           RenderTarget.prototype.dispose = function () {
-              if (this.disposed === true)
-                  return;
-              if (this.context === undefined)
-                  return;
-              if (this.buffer === undefined)
-                  return;
-              this.context.deleteFramebuffer(this.buffer);
-              this.disposed = true;
+              if (!this.disposed) {
+                  if (this.framebuf !== undefined) {
+                      this.context.deleteFramebuffer(this.framebuf);
+                  }
+                  if (this.texture !== undefined) {
+                      this.context.deleteTexture(this.texture);
+                  }
+              }
           };
           return RenderTarget;
       }());
@@ -5385,6 +5383,7 @@
       var Renderer = (function () {
           function Renderer(context) {
               this.context = context;
+              this.framebuf = this.context.createFramebuffer();
           }
           Renderer.prototype.viewport = function (x, y, width, height) {
               this.context.viewport(x, y, width, height);
@@ -5523,9 +5522,26 @@
               }
           };
           Renderer.prototype.render = function (camera, scene, renderTarget) {
+              if (renderTarget !== undefined) {
+                  renderTarget.update(this.context);
+                  this.context.bindFramebuffer(this.context.FRAMEBUFFER, renderTarget.framebuf);
+                  this.context.drawBuffers([this.context.COLOR_ATTACHMENT0]);
+                  this.context.framebufferTexture2D(this.context.FRAMEBUFFER, this.context.COLOR_ATTACHMENT0, this.context.TEXTURE_2D, renderTarget.texture, 0);
+                  if (!(this.context.checkFramebufferStatus(this.context.FRAMEBUFFER) === this.context.FRAMEBUFFER_COMPLETE)) {
+                      console.warn("unable to attach render target.");
+                      return;
+                  }
+              }
               if (scene.visible) {
                   this.render_object_list(camera, scene.matrix, scene.objects);
               }
+              if (renderTarget !== undefined) {
+                  this.context.framebufferTexture2D(this.context.FRAMEBUFFER, this.context.COLOR_ATTACHMENT0, this.context.TEXTURE_2D, null, 0);
+                  this.context.bindFramebuffer(this.context.FRAMEBUFFER, null);
+              }
+          };
+          Renderer.prototype.dispose = function () {
+              this.context.deleteFramebuffer(this.framebuf);
           };
           return Renderer;
       }());
@@ -5836,10 +5852,11 @@
       exports.__esModule = true;
       var canvas = document.getElementById("canvas");
       var context = canvas.getContext("webgl2");
+      var target = new hex.RenderTarget(512, 512);
       var renderer = new hex.Renderer(context);
       var camera = new hex.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000);
       camera.matrix = hex.Matrix.lookAt(new hex.Vector3(0, -0, -280), new hex.Vector3(0, 0, 0), new hex.Vector3(0, 1, 0));
-      var voxel = new voxel_1.Voxel(320, 200, 1);
+      var voxel = new voxel_1.Voxel(320, 200, 2);
       var scene = new hex.Scene();
       scene.objects.push(voxel);
       var animation = new hex.Animation();

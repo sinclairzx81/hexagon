@@ -2,11 +2,12 @@ import * as hex      from "@hexagon/index"
 import { Voxel }     from "./meshes/voxel"
 import { TextBlock } from "./meshes/text-block"
 import { Video }     from "./meshes/video"
+import { RenderTarget } from "../src/graphics/render-target";
 
 const canvas  = document.getElementById("canvas") as HTMLCanvasElement
 const context = canvas.getContext("webgl2")
 
-
+const target = new hex.RenderTarget(512, 512)
 const renderer = new hex.Renderer(context)
 const camera   = new hex.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000)
 camera.matrix = hex.Matrix.lookAt (
@@ -14,7 +15,7 @@ camera.matrix = hex.Matrix.lookAt (
   new hex.Vector3(0, 0, 0),
   new hex.Vector3(0, 1, 0)
 )
-const voxel = new Voxel(320, 200, 1)
+const voxel = new Voxel(320, 200, 2)
 const scene = new hex.Scene()
 scene.objects.push(voxel)
 
@@ -39,7 +40,7 @@ const loop = () => requestAnimationFrame(() =>{
   voxel.clear(0, 0, 0)
   const state = animation.get((Date.now() - start) % 10000)["explode"]
   const amount = state.value
-  // // render ocean
+  // render ocean
   for(let iy = 0; iy < 200; iy++) {
     for(let ix = 0; ix < 320; ix++) {
       const r = buffer[ ((ix + (iy * 320) ) * 4) + 0] / 255
@@ -60,7 +61,7 @@ const loop = () => requestAnimationFrame(() =>{
   }
   voxel.matrix = voxel.matrix.rotateY(0.01)
   renderer.clear(0.1, 0.1, 0.1, 1)
-  renderer.render(camera, scene)
+  renderer.render(camera, scene, )
   loop()
 })
 
