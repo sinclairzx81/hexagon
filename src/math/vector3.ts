@@ -687,9 +687,9 @@ export class Vector3 {
    */
   public static mul(v0: Vector3, v1: Vector3): Vector3 {
     return new Vector3(
-      v0.v[v3i.x] - v1.v[v3i.x],
-      v0.v[v3i.y] - v1.v[v3i.y],
-      v0.v[v3i.z] - v1.v[v3i.z]
+      v0.v[v3i.x] * v1.v[v3i.x],
+      v0.v[v3i.y] * v1.v[v3i.y],
+      v0.v[v3i.z] * v1.v[v3i.z]
     )
   }
 

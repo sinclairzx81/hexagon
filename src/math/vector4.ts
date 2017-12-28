@@ -640,10 +640,10 @@ export class Vector4 {
    */
   public static mul(v0: Vector4, v1: Vector4): Vector4 {
     return new Vector4(
-      v0.v[v4i.x] - v1.v[v4i.x],
-      v0.v[v4i.y] - v1.v[v4i.y],
-      v0.v[v4i.z] - v1.v[v4i.z],
-      v0.v[v4i.w] - v1.v[v4i.w]
+      v0.v[v4i.x] * v1.v[v4i.x],
+      v0.v[v4i.y] * v1.v[v4i.y],
+      v0.v[v4i.z] * v1.v[v4i.z],
+      v0.v[v4i.w] * v1.v[v4i.w]
     )
   }
 

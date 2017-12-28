@@ -591,8 +591,8 @@ export class Vector2 {
    */
   public static mul(v0: Vector2, v1: Vector2): Vector2 {
     return new Vector2(
-      v0.v[v2i.x] - v1.v[v2i.x],
-      v0.v[v2i.y] - v1.v[v2i.y]
+      v0.v[v2i.x] * v1.v[v2i.x],
+      v0.v[v2i.y] * v1.v[v2i.y]
     )
   }
 
